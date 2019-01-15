@@ -1,0 +1,19 @@
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 style="text-align: center"> <img src="assets/img/alerte_gris.png" class="img-dashboard">Serices urgents</h2>
+
+        <div class="list-group scrollable-dashboard-list">
+            <a ng-repeat="pe in pes | filter: filter.statusFilter() | orderBy : '+deadline'"class="list-group-item list-dash elmt-task" ng-click="redirect(pe.purchase_id)">
+                <div class="pull-left center-block clearfix task-icon elmt-task">
+                    <i class="fa fa-exclamation-triangle fa-2x img-alert" aria-hidden="true"></i>
+                </div>
+                <div class="dash elmt-task">
+                    <h4 class="list-group-item-heading">{{ pe.purchasable.name }}</h4>
+                    <p class="list-group-item-text">Deadline : {{pe.deadline | date :  'dd/MM/yyyy' }}</p>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</div>

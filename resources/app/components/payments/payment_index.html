@@ -1,0 +1,59 @@
+<in-wrapper>
+<div ng-controller="paymentCtrl" class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Paiement</h1>
+    </div>
+
+    <!-- Purchase -->
+    <div ng-show="purchase" class="row">
+      <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Facture n°{{ purchase.number }}</h3>
+            </div>
+            <div class="panel-body">
+              <dl class="user-horizontal dl-horizontal">
+                <dt>Total à payer</dt>
+                <dd>{{purchase.totalPrice}}</dd>
+                <!-- <dt>Détails</dt> -->
+                <dd><a ng-href="#/purchases/{{ purchase.id }}/edit" class="btn btn-adaptable-yellow">Voir la facture</a></dd>
+              </dl>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badgeuse & Payutc -->
+    <div ng-show="purchase" class="row">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Badgeuse
+                  <span ng-show="badgeuse.ok"><i class="fa fa-check-circle text-success" aria-hidden="true"></i></span>
+                  <span ng-show="!badgeuse.ok"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></span>
+                </h3>
+            </div>
+            <div class="panel-body">
+              <p>{{ badgeuse.status }}</p>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3>Payutc
+                  <span ng-show="payutc.ok"><i class="fa fa-check-circle text-success" aria-hidden="true"></i></span>
+                  <span ng-show="!payutc.ok"><i class="fa fa-times-circle text-danger" aria-hidden="true"></i></span>
+                </h3>
+            </div>
+            <div class="panel-body">
+              <p>{{ payutc.status }}</p>
+              <p ng-show="payutc.ok"><a ng-href="#/purchases/{{ purchase.id }}/edit" class="btn btn-adaptable-yellow">Terminer</a></p>
+            </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+<!-- /.row -->
+</in-wrapper>

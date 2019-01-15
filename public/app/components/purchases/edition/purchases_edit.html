@@ -1,0 +1,168 @@
+<in-wrapper>
+<div ng-controller="purchasesEditCtrl" class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header">Commande n°{{ purchase.number }}</h1>
+    </div>
+
+    <div ng-if="loading" class="text-center" style="margin-top: 100px">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+    </div>
+
+    <div class="row" ng-if="!loading">
+      <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Client</h4>
+            </div>
+            <div class="panel-body">
+                <show-user user="purchase.user"></show-user>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4>Addresse de facturation
+                            <a ng-click="loadModalAddress()" href role="button">
+                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </a>
+                            <a ng-show="purchase.address" ng-click="removeAddress()" href role="button">
+                                <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </a>
+                        </h4>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-12 text-center">
+                            <i ng-hide="purchase.address">Vous n'avez pas indiqué d'addresse de facturation</i>
+
+                                                        <address ng-show="purchase.address">
+                                <strong>{{ purchase.address.name }}</strong><br>
+                                <span style="white-space: pre-line;">{{ purchase.address.address }}</span><br>
+                                {{ purchase.address.city }}, {{ purchase.address.cp }}<br>
+                                {{ purchase.address.country }}
+                            </address>
+                        </div>
+                        <i ng-show="purchase.address && !purchase.isTotalPriceDefined">Le prix total n'a pas encore été fixée par le Fablab.</i>
+                        <div class="col-md-12 text-center top10">
+                            <button ng-if="can('generate-quotation')"
+                                    ng-click="getQuotePDF(purchase)"
+                                    ng-disabled="!purchase.address || loadingQuote || !purchase.isTotalPriceDefined"
+                                    type="button" class="btn btn-adaptable-yellow">
+                                Générer un devis
+                            </button>
+                            <button ng-if="can('generate-invoice')"
+                                    ng-disabled="!purchase.address || !purchase.paid || loadingPDF"
+                                    title="{{ !purchase.paid ? 'La commande n\'a pas été payée, impossible de générer une facture non payée.' : null }}"
+                                    ng-click="getInvoicePDF(purchase)"
+                                    data-toggle="tooltip" data-placement="right"
+                                    type="button" class="btn btn-adaptable-yellow">
+                                Générer une facture
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-12">
+              <div class="panel panel-default" ng-if="can('change-purchase-entity')">
+                  <div class="panel-heading">
+                      <h4>Entité</h4>
+                  </div>
+                  <div class="panel-body">
+                          <p ng-hide="purchase.entity"><i>Vous n'avez pas choisi d'entité</i></p>
+                          <div ng-show="purchase.entity">
+                              <div class="panel panel-default">
+                                  <div class="panel-heading">
+                                      <h4>{{ purchase.entity.name }}</h4>
+                                  </div>
+                                  <div class="panel-body">
+                                      <p ng-bind-html="purchase.entity.invoice_address"></p>
+                                  </div>
+                              </div>
+                          </div>
+                  </div>
+                    <div ng-show="purchase.entity && !membreCAS" class="panel-footer text-center">
+                        <button ng-click="loadModalEntity()" type="button" class="btn btn-adaptable-yellow">Modifier l'entité</button>
+                    </div>
+              </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Paiement</h4>
+                </div>
+                <div class="panel-body">
+                  <div ng-show="purchase.paid">
+                    <p>
+                        <i class="fa fa-check-circle fa-2x text-success" aria-hidden="true"></i>
+                        Cette commande a été payée le <b>{{ purchase.datePaid |date : 'dd/MM/yyyy à HH:mm:ss' }}</b> avec <b>{{ purchase.externalPaid ? 'un moyen extérieur de paiement' : 'Payutc' }}</b>
+                    </p>
+                  </div>
+                  <div ng-show="!purchase.paid" class="text-center">
+                    <p><i class="fa fa-bell fa-2x text-danger" aria-hidden="true"></i>
+                      Cette commande n'a pas été payée</p>
+                    <p>
+                      <i ng-show="!purchase.isTotalPriceDefined">Le prix total n'a pas encore été fixée par le Fablab.</i>
+                      <div>
+                        <a ng-href="{{ payurl }}" ng-if="can('pay-someone-payutc')" class="btn btn-adaptable-yellow" ng-disabled="!purchase.isTotalPriceDefined">Paiement badgeuse</a>
+                        <button class="btn btn-adaptable-yellow" ng-if="purchase.isServicePurchase" data-toggle="tooltip" data-placement="top" title="Vous pouvez marquer cette commande comme payée si le paiement a été fait par un moyen extérieur."
+                                ng-click="payCard()" ng-disabled="externalPaidSaving || !purchase.isTotalPriceDefined">
+                          Paiement
+                        </button>
+                        <button class="btn btn-adaptable-yellow" ng-if="can('mark-as-paid')" data-toggle="tooltip" data-placement="top" title="Vous pouvez marquer cette commande comme payée si le paiement a été fait par un moyen extérieur."
+                                ng-click="externalPaid()" ng-disabled="externalPaidSaving || !purchase.isTotalPriceDefined">
+                          Marquer comme payée
+                        </button>
+                      </div>
+                    </p>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" ng-if="!loading">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h4>
+                  Services et produits
+                  <button class="btn btn-adaptable-yellow" ng-if="purchase.statusMax < 2" ng-click="cancelPurchase()">
+                    Tout annuler
+                  </button>
+              </h4>
+          </div>
+          <div class="panel-body" id="modalService">
+              <div class="panel-group" id="accordion">
+
+                <h5>Total : {{ purchase.totalPrice }}</h5>
+
+                  <div ng-repeat="element in purchase.lastVersionElements" class="panel panel-default" ng-click="open(element, 'view')">
+                      <div class="panel-heading">
+                          <h5 class="panel-title">{{ element.purchasableName }}</h5>
+                      </div>
+                      <div id="collapseOne" class="panel-collapse collapse in">
+                          <div class="panel-body">
+                            <div><span class="col-md-2 status-icon" ng-style="iconColor(element)"></span></div>
+                            <div><span class="col-md-2">{{ element.statusName }}</span></div>
+                            <br><br>
+                            Nom : <b>{{ element.purchasable.name }}</b><br>
+                            <span ng-if="element.purchasable_type=='App\\Service'">Deadline : {{element.deadline.toString().replace(' ', 'T') | date :  "dd/MM/yyyy" }} </br></span>
+                            Quantité : {{ element.purchasedQuantity + " " + element.purchasable.quantityUnit }}<br>
+                            <span>Prix retenu : {{ element.totalPrice }} </span><br>
+                            <span ng-if="element.comment">Commentaire : {{ element.comment }}</span>                            
+                          </div>
+                      </div>
+                  </div>
+
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</in-wrapper>

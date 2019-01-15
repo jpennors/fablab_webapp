@@ -1,0 +1,44 @@
+<in-wrapper>
+    <div ng-controller="adminServicesCtrl" class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header"><img src="assets/img/handshake.png" class="img-title">
+              Gestion des services  
+            </h1>
+        </div>
+
+        <div class="row">
+            <div class="col-md-11 item-page">                    
+                <div class="row panel-heading">
+                    <h2>
+                        <div class="col-md-4">
+                            <img src="assets/img/barre.png" class="img-table">Liste des services
+                        </div>
+                        <div class="col-md-offset-1 col-md-4">
+                             <div class="form-group">
+                                <input ng-model="serviceSearch" type="text" class="form-control search-bar" placeholder="Rechercher un role">
+                            </div>
+                        </div>
+                        <div class="pull-right">
+                            <img width="30px" src="assets/img/add.png" ng-if="can('add-role')" ng-click="open(service, 'create')">
+                        </div>
+                    </h2>
+                </div>
+                <div class="panel-body">
+                   <div ng-show="loading" class="text-center"><i class="fa fa-spinner fa-2x fa-pulse fa-fw"></i></div>
+                    <div class="list-group" ng-hide="loading">
+                        <button ng-repeat="service in services | filter:serviceSearch"
+                                ng-click="open(service, 'edit')"
+                                type="button" class="list-group-item" ng-if="can('edit-service')">
+                            <b>{{ service.name }}</b>
+                            <span class="pull-right"><b>{{ service.typeString }}</b></span>
+                            <br>
+                            <span>{{ service.description }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.row -->
+</in-wrapper>

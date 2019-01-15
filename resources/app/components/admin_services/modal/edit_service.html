@@ -1,0 +1,165 @@
+<div class="modal-print">
+    <div class="modal-header">
+        <h2 ng-if="type=='create'" class="pull-left">
+            <i class="fa fa-plus fa-3x img-edit" aria-hidden="true"></i>
+            Ajouter un service
+        </h2>
+        <h2 ng-if="type=='edit'" class="pull-left">
+            <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+            Modifier le service
+        </h2>
+        <a confirm="Êtes-vous sûr de supprimer ce rôle?" class="pull-right btn-delete" role="button" ng-if="can('delete-service') && type=='edit'" ng-click="deleteModal()">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-6">
+                            Informations descriptives
+                        </div>
+                    </h3>
+                </div>
+                <div class="panel-body row">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Nom</label>
+                            <div class="col-sm-9">
+                                <input ng-model="service.name" type="text" class="form-control" placeholder="ex: Découpe sur machine XXX">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Description</label>
+                            <div class="col-sm-9">
+                                <input ng-model="service.description" type="text" class="form-control" placeholder="ex: Service destiné aux découpes simple">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Type</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" name="type" ng-model="service.type">
+                                    <option value="printing">Découpe</option>
+                                    <option value="cutting">Impression</option>
+                                    <option value="other">Autre</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            
+                <!-- Machine -->
+                <hr>
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-6">
+                            Machines
+                        </div>
+                    </h3>
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <!-- MACHINE CHOISIE -->
+                            <div ng-show="service.engine">
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <b>{{service.engine.name}}</b>
+                                        <br>
+                                        <i>{{service.engine.description}}</i>
+                                    </div>
+                                    
+                                </div>        
+                                <div class="text-center">
+                                    <button class="btn btn-grey" ng-click="setEngine(null)">Modifier</button>
+                                </div>
+                            </div>
+                            <!-- CHOIX DE LA MACHINE -->
+                            <div ng-hide="service.engine">
+                                <div class="text-center">
+                                    <h4>
+                                        Choisissez une machine
+                                    </h4>
+                                </div>
+                                <div class="form-group">
+                                    <input ng-model="engineSearch" type="text" class="form-control" placeholder="Rechercher une machine">
+                                </div>
+                                <div class="list-group">
+                                    <button ng-repeat="engine in engines | filter:engineSearch" type="button" class="list-group-item" ng-click="setEngine(engine)">
+                                        <div class="list-group-item-text">
+                                            <b>{{ engine.name }}</b>
+                                            <br>
+                                            <i>{{ engine.description }}</i>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Prix -->
+                <hr>
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-6">
+                            Fonction de prix
+                        </div>
+                    </h3>
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <!-- SCRIPT CHOISI -->
+                            <div ng-show="service.script">
+                                <div class="list-group">
+                                    <div class="list-group-item">
+                                        <b>{{service.script.name}}</b>
+                                        <br>
+                                        <i>{{service.script.description}}</i>
+                                    </div>
+                                    
+                                </div>        
+                                <div class="text-center">
+                                    <button class="btn btn-grey" ng-click="setScript(null)">Modifier</button>
+                                </div>
+                            </div>
+                            <!-- CHOIX DU SCRIPT -->
+                            <div ng-hide="service.script">
+                                <div class="text-center">
+                                    <h4>
+                                        Choisissez une fonction de prix
+                                    </h4>
+                                </div>
+                                <div class="form-group">
+                                    <input ng-model="scriptSearch" type="text" class="form-control" placeholder="Rechercher une fonction de prix">
+                                </div>
+                                <div class="list-group">
+                                    <button ng-repeat="script in scripts | filter:scriptSearch" type="button" class="list-group-item" ng-click="setScript(script)">
+                                        <div class="list-group-item-text">
+                                            <b>{{ script.name }}</b>
+                                            <br>
+                                            <i>{{ script.description }}</i>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Prix -->
+                <hr>
+                <div class="text-center">
+                    <button class="btn btn-yellow" ng-click="save()" ng-disabled="!service.script || !service.name || !service.description || !service.type">
+                        Enregistrer
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div ng-show="errors && !saving" class="row">
+            <hr>
+            <show-errors errors-data="errors"></show-errors>
+        </div>
+    </div>
+</div>
+

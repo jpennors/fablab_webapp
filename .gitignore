@@ -1,0 +1,12 @@
+**/.DS_Store
+
+/vendor
+node_modules
+Homestead.yaml
+Homestead.json
+.env
+resources/app/env.js
+/storage
+
+public/app/env.js
+_ide_helper.php

@@ -1,0 +1,56 @@
+<div class="modal-print"> 
+  <div class="modal-header">
+    <h2>Ajouter une adresse de facturation</h2>
+  </div>
+  <div class="modal-body">
+
+    <div ng-show="errors" class="alert alert-danger" role="alert">
+      {{ errors.message }}
+    </div>
+
+    <form class="form-horizontal">
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Nom Prénom ou Institution</label>
+        <div class="col-sm-9">
+          <input ng-model="address.name" type="text" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="comment" class="col-sm-3 control-label">Adresse</label>
+        <div class="col-sm-9">
+          <textarea ng-model="address.address" class="form-control" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Ville</label>
+        <div class="col-sm-9">
+          <input ng-model="address.city" type="text" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Code postal</label>
+        <div class="col-sm-9">
+          <input ng-model="address.cp" type="text" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Pays</label>
+        <div class="col-sm-9">
+          <input ng-model="address.country" type="text" class="form-control">
+        </div>
+      </div>
+
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <span ng-if="saving"><i class="fa fa-spinner fa-pulse fa-fw"></i>Enregistrement...</span>
+    <button class="btn btn-grey" ng-click="cancel()">Annuler</button>
+    <button class="btn btn-yellow" ng-click="save()">Enregistrer</button>
+  </div>
+</div>

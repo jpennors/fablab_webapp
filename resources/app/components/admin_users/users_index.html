@@ -1,0 +1,53 @@
+<in-wrapper>
+<div ng-controller="adminUsersCtrl">
+  <div class="row" ng-if="can('edit-user')">
+    <div class="col-lg-12">
+        <h1 class="page-header"><img src="assets/img/user_config.png" class="img-title">
+          Gestion des utilisateurs  
+        </h1>
+    </div>
+
+    <div ng-show="users" class="row">
+      <div class="col-md-11 item-page">
+        <div class="row panel-heading">
+          <h2>
+            <div class="col-md-4">
+              <img src="assets/img/barre.png" class="img-table">Liste des utilisateurs
+            </div>
+            <div class="form-group col-md-offset-1 col-md-4">
+              <div class="input-group">
+                <input ng-model="userSearch" type="text" class="form-control search-bar" placeholder="Rechercher un utilisateur">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Trier par rôle <span class="caret"></span></button>
+                  <ul class="dropdown-menu dropdown-menu-right" ng-click="$event.stopPropagation();">
+                    <li><a style="cursor: pointer" ng-repeat="role in roles" ng-click="toggleRole(role)">
+                      <i style="margin-right: 5px" ng-class="{'fa-square-o' : role.selected, 'fa-check-square-o' : !role.selected}" class="fa ng-scope fa-check-square-o" aria-hidden="true"></i>
+                      {{ role.name }}
+                    </a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="pull-right">
+             <img width="30px" src="assets/img/sync.png" style="margin-right: 10px" ng-if="can('edit-user') && can('add-user')" ng-click="synchUsers()">
+             <img width="30px" src="assets/img/add.png" ng-if="can('add-user')" ng-click="open('create')">
+            </div>
+          </div>
+        </h2>
+        <div class="row panel-body">
+          <div ng-show="loading" class="text-center"><i class="fa fa-spinner fa-2x fa-pulse fa-fw"></i></div>
+          <div class="list-group">
+            <button ng-repeat="user in users | filter:userSearch | filter:inRole"
+                    ng-click="open('edit', user.id)" class="list-group-item">
+              <b>{{ user.firstName + " " + user.lastName }}</b>
+              <span ng-if="user.login">({{ user.login }})</span>
+              <i ng-if="user.email"><{{ user.email }}></i>
+              <span ng-if="user.role" class="pull-right"><b>{{ user.role.name }}</b></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- /.row -->
+</in-wrapper>

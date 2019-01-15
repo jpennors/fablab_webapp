@@ -1,0 +1,252 @@
+<div class="modal-print">   
+    <div class="modal-header">
+        <h2 ng-if="type=='create'" class="pull-left">
+            Création : {{service.name}}
+        </h2>
+        <h2 ng-if="type=='view'" class="pull-left">
+            <img src="assets/img/oeil.png" class="img-view">
+            {{service.name}}
+        </h2>
+
+        <h2 ng-if="type=='edit'" class="pull-left">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            Modification : {{service.name}}
+        </h2>
+
+        <h2 ng-if="type=='history'" class="pull-left">
+            <i class="fa fa-list" aria-hidden="true"></i>
+            Historique commande : {{service.name}}
+        </h2>        
+
+                <a class="pull-right btn-edit" role="button" ng-if="element.status < 2 && type != 'edit'" ng-click="editType('edit')" data-toggle="tooltip" data-placement="top" title="Editer">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+        <a class="pull-right btn-edit" role="button" ng-if="type == 'view' && !membreCAS" ng-click="editType('history')" data-toggle="tooltip" data-placement="top" title="Historique">
+            <i class="fa fa-history" aria-hidden="true"></i>
+        </a>
+        <a confirm="Êtes-vous sûr de supprimer cette commande?" class="pull-right btn-edit" ng-if="element.status < 3 && type == 'view' && can('edit-order')" role="button" ng-click="delete()" data-toggle="tooltip" data-placement="top" title="Supprimer">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+
+    </div>
+
+        <div class="modal-body">
+        <div class="row">
+            <div class="col-md-12">
+                <h5 class="text-center">
+                    {{service.description}}
+                </h5>
+            </div>
+            <div class="col-md-12">
+                <div class="panel-heading row">
+                    <div class="form-group row" ng-if="can('edit-order')" ng-show="type=='history'">
+                        <label class="col-md-2 control-label print_item">Version</label>
+                        <div class="col-md-2">
+                            <select class="form-control" ng-model="versionSelectionnee.version" ng-change="changeVersion(versionSelectionnee.version)">
+                                <option ng-repeat="versionSelectionnee in versions" ng-selected="element.version == versionSelectionnee.version" value="{{versionSelectionnee.version}}">{{versionSelectionnee.version}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row" ng-if="can('edit-order') && type == 'history'">
+                        <label class="col-sm-3 control-label print_item">Edité par</label>
+                        <div class="col-sm-8">
+                            <span ng-disabled="!edit" type="text" class=" print_item">{{element.login_edit}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-10">
+                            Contrainte de temps
+                        </div>
+                    </h3>                    
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group" ng-if="type != 'create'">
+                                <label class="col-md-4 control-label">Deadline</label>
+                                <div class="col-md-6">
+                                    <input ng-disabled="type != 'edit' || element.status > 1 || membreCAS" ng-model="element.deadlineInput" type="date" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group" ng-if="type=='create'">
+                                <label class="col-md-4 control-label">Intervalle de temps toléré</label>
+                                <div class="input-group col-md-6">
+                                    <input type="number" min=3 step=1 ng-model="service.time" aria-describedby="addon" class="form-control"></input>
+                                    <span class="input-group-addon" id="addon">jours</span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div ng-if="service.script.args && (hasPublicPermission || !membreCAS)">
+                    <hr>
+                    <div class="panel-heading row">
+                        <h3>
+                            <div class="col-md-10">
+                                Champs à remplir
+                            </div>
+                        </h3>               
+                    </div>
+                    <div class="panel-body row">
+                        <div class="panel panel-default">
+                          <div class="panel-body">
+                            <form class="form-horizontal">
+                                <div ng-repeat="arg in service.script.args track by $index" class="form-group" ng-if="(arg.permission) || (!arg.permission && can('edit-order'))">
+                                    <label ng-attr-for="arg.name" class="col-md-4 control-label">{{ arg.desc }}</label>
+                                    <div class="col-md-6">
+                                        <input  ng-if="arg.type == 'string'"
+                                        ng-attr-id="arg.name"
+                                        ng-model="element.args[arg.name]"
+                                        ng-change="fonctionPrix.finalPrice=showPriceModal()"
+                                        type="text" class="form-control"
+                                        ng-disabled="type=='view' || type == 'history'">
+                                        <input  ng-if="arg.type == 'int'"
+                                        ng-attr-id="arg.name"
+                                        ng-model="element.args[arg.name]"
+                                        ng-change="fonctionPrix.finalPrice = showPriceModal()"
+                                        step="1"
+                                        type="number" class="form-control"
+                                        ng-disabled="type=='view' || type == 'history'">
+                                        <input  ng-if="arg.type == 'float'"
+                                        ng-attr-id="arg.name"
+                                        ng-model="element.args[arg.name]"
+                                        ng-change="fonctionPrix.finalPrice = showPriceModal()"
+                                        type="number" step="0.1" class="form-control"
+                                        ng-disabled="type=='view' || type == 'history'">
+                                        <select ng-if="arg.type == 'list'"
+                                        ng-attr-id="arg.name"
+                                        ng-model="element.args[arg.name]"
+                                        ng-change="fonctionPrix.finalPrice = showPriceModal()"
+                                        ng-options="choice for choice in arg.listChoices"
+                                        class="form-control"
+                                        ng-disabled="type=='view' || type == 'history'">
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-10">
+                            Commentaires
+                        </div>
+                    </h3>                    
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <form class="form-horizontal">
+                                <textarea ng-model="element.comment" type="text" class="form-control" rows="4" ng-disabled="type=='view' || type == 'history'"></textarea>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div ng-show="!membreCAS || element.finalPrice">
+                <hr>
+                <div class="panel-heading row">
+                    <h3>
+                        <div class="col-md-10">
+                            Prix
+                        </div>
+                    </h3>
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <form class="form-horizontal">
+                                <div class="from-group row">
+                                    <label for="finalPrice" class="col-sm-3 control-label print_item">Prix final (€)</label>
+                                    <div class="col-sm-5">
+                                        <input ng-disabled="type=='view'  || !can('edit-order') || type == 'history'" ng-model="element.finalPrice"
+                                        id="finalPrice" type="number" step="0.1" class="form-control">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="form-group" ng-show="can('edit-order')">
+                                        <label for="suggestedPrice" class="col-sm-3 control-label print_item">Prix suggéré (€)</label>
+                                        <div class="col-sm-5">
+                                            <p ng-if="showPriceModal() != null" class="top10">{{ showPriceModal() | currency:'' }}€</p>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </form>   
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div ng-if="(element.status < 3 || type == 'create') && (type != 'history')" ng-hide="type == 'view' && element.files.length == 0">
+                <hr>
+                <div class="panel-heading row" >
+                    <h3>
+                        <div class="col-md-12">
+                            Fichiers
+                        </div>
+                    </h3>  
+                    <i>Si nécessaire vous pouvez ajouter des fichiers</i>                  
+                </div>
+                <div class="panel-body row">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div ng-show="element.fileError" class="col-md-12">
+                                <div class="alert alert-danger top10">
+                                    <p>{{ element.fileError }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3" ng-if="type == 'edit' || type == 'create'">
+                                <label class="btn btn-yellow">
+                                    Ajouter des fichiers
+                                    <input type="file" files-model="element.newFiles" style="display:none;" multiple>
+                                </label>
+                            </div>
+                            <div class="col-md-7 col-md-offset-1">
+                                 <div class="alert alert-info" ng-repeat="file in element.files track by $index">
+
+                                     <a ng-click="downloadFile(file)" style="text-decoration: none">{{file.name}}</a>
+                                     <a class="pull-right" ng-click="deleteFile($index, file.name)" data-toggle="tooltip" data-placement="top" title="Supprimer" style="color: rgb(89,89,89)" ng-if="type == 'edit' || type == 'create'">
+                                        <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                                    </a>
+                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="text-center" ng-if="type == 'create'">
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Annuler</button>
+                        <button class="btn btn-yellow" type="button" ng-click="add()">Ajouter</button>
+                    </div>
+                    <div class="text-center" ng-if="type == 'edit' && element.status < 4">
+                        <button class="btn btn-yellow" type="button" ng-click="edit()">Mettre à jour</button>
+                    </div>
+                    <div class="text-center" ng-if="type == 'view' && element.status == 1" ng-hide="versions[0].login_edit != user.login">
+                        <button class="btn btn-yellow" type="button" ng-click="confirm(2)">Valider</button>
+                    </div>
+                    <div class="text-center" ng-if="type == 'view' && element.status == 2 && can('edit-order')">
+                        <button class="btn btn-yellow" type="button" ng-click="confirm(3)">Réaliser</button>
+                    </div>
+                </div>
+            </div> 
+            <br>
+            <div ng-show="error" class="row alert alert-danger">
+                <b>Erreur: </b><p>{{error}}</p>
+            </div>   
+        </div>
+    </div>
+</div>
+
+

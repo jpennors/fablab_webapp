@@ -1,0 +1,12 @@
+<!-- Products -->
+<div class="form-group">
+  <input ng-model="productSearch" type="text" class="form-control" placeholder="Rechercher un produit">
+</div>
+<div class="list-group">
+  <button ng-repeat="product in products | filter:productSearch"
+          ng-click="callback({product : product})"
+          type="button" class="list-group-item">
+    <h5>{{ product.name }}</h5>
+    {{ product.description }}
+  </button>
+</div><!-- ./Products -->

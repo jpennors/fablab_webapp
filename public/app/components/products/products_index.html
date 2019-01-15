@@ -1,0 +1,55 @@
+<in-wrapper>
+    <div ng-controller="productsCtrl" class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header"><img src="assets/img/produit.png" class="img-title">
+                PRODUITS
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-md-11 item-page">
+                <div class="table-responsive">
+                    <table ng-show="products.length" class="table table-hover table-striped col-md-12">
+                        <div class="panel-heading">
+                            <a class="pull-right item-new" role="button" ng-click="open(product.id, 'create')" ng-if="can('add-product')"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+                            <div class="col-md-4">
+                                <h2><img src="assets/img/barre.png" class="img-table">Liste des produits</h2>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <input ng-model="productSearch" type="text" class="form-control search-list" placeholder="Rechercher un produit...">
+                            </div>
+                            <div class="col-md-3">
+                                    <a ng-click="alertFilterOn = !alertFilterOn" class="btn btn-sm btn-critics">
+                                        <span ng-show="!alertFilterOn">Montrer les produits critiques</span>
+                                        <span ng-show="alertFilterOn">Montrer tous les produits</span>
+                                    </a>
+                            </div>
+                        </div>
+
+                        <thead>
+                            <tr>
+                                <th>Nom du produit<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Fournisseur<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Stock disponible<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th ng-show="can('edit-product')">Seuil d'alerte<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Unité<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th ng-show="can('edit-product')">Localisation<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Prix (€)<br><img src="assets/img/fleche.png" class="img-th"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-click="open(product.id, 'view')" ng-repeat="product in products | filter:productSearch | filter:(alertFilterOn ? alertFilter : '')">
+                                <td class="col-md-1">{{ product.name }}</td>
+                                <td class="col-md-1 td-list">{{ product.supplier }}</td>
+                                <td class="col-md-1 td-list">{{ product.remainingQuantity }}</td>
+                                <td class="col-md-1 td-list" ng-show="can('edit-tool')">{{ product.minQuantity }}</td>
+                                <td class="col-md-1 td-list">{{ product.quantityUnit || '-' }}</td>
+                                <td class="col-md-1 text-center" ng-show="can('edit-tool')">{{ product.room.name || '-' }}{{ product.wardrobe.name || '-' }}</td>
+                                <td class="col-md-1 td-list">{{ product.price }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</in-wrapper>

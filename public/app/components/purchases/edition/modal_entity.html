@@ -1,0 +1,26 @@
+<div class="modal-header">
+	<h2>Sélectionner une entité</h2>
+</div>
+<div class="modal-body">
+ 	<div ng-show="errors" class="alert alert-danger" role="alert">
+    	{{ errors.message }}
+  	</div>
+	<div class="form-group">
+	 	<input ng-model="entitySearch" type="text" class="form-control" placeholder="Rechercher une entité">
+	</div>
+	<div class="list-group">
+	    <button ng-repeat="entity in entities | filter:entitySearch"
+	          ng-click="selectedEntity(entity)"
+	          ng-class="{active: entity.selected}"
+	          type="button" class="list-group-item">
+	    	<b>{{ entity.name}}</b> ({{entity.abreviation}})<br/>
+	    	<span style="white-space: pre-line;">{{ entity.address }}</span>
+	 	</button>
+	</div>
+
+</div>
+<div class="modal-footer">
+  	<span ng-if="saving"><i class="fa fa-spinner fa-pulse fa-fw"></i>Enregistrement...</span>
+  	<button class="btn btn-grey" ng-click="cancel()">Annuler</button>
+  	<button class="btn btn-yellow" ng-click="save()">Enregistrer</button>
+</div>

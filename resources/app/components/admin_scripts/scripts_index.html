@@ -1,0 +1,36 @@
+<in-wrapper>  
+  <div ng-controller="adminScriptsCtrl" class="row">
+    <div class="col-lg-12">
+        <div class="col-lg-12">
+            <h1 class="page-header"><img src="assets/img/money.png" class="img-title">
+            Fonctions de prix
+            </h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-11 item-page">
+            <div class="row panel-heading">
+                <h2>
+                    <div class="col-md-5">
+                        <img src="assets/img/barre.png" class="img-table">Liste des fonctions de prix
+                    </div>
+                        <div class="form-group col-md-offset-1 col-md-4">
+                            <input ng-model="scriptSearch" type="text" class="form-control search-bar" placeholder="Rechercher une fonction de prix">
+                        </div>
+                    <div class="pull-right">
+                        <img width="30px" src="assets/img/add.png" ng-if="can('add-price')" ng-click="open(script, 'create')">
+                    </div>
+              </h2>
+            </div>
+            <div class="panel-body">
+                <div class="list-group">
+                    <button ng-repeat="script in scripts | filter:scriptSearch" ng-click="open(script, 'edit')" class="list-group-item">
+                    <h5 class="list-group-item-heading">{{ script.name }}</h5>
+                    <p class="list-group-item-text">{{ script.description }}</p>
+                </button>
+            </div>
+        </div>
+    </div>
+<!-- /.row -->
+</in-wrapper>

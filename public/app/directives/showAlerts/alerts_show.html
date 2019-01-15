@@ -1,0 +1,60 @@
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 style="text-align: center"> <img src="assets/img/alerte_gris.png" class="img-dashboard"> Alertes stocks</h2>
+
+        <div class="list-group scrollable-dashboard-list">
+            <a ng-repeat="expendable in alerts.expendables" ng-click="open(expendable, 'expendable')" class="list-group-item list-dash">
+                <table class="task-list-table">
+                    <tr>
+                        <td class="task-list-img">
+                            <i class="fa fa-exclamation-triangle fa-2x img-alert" aria-hidden="true"></i>
+                        </td>
+                        <td class="task-list-info">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4 class="list-group-item-heading">{{ expendable.name }}</h4>
+                                    <p class="list-group-item-text">Stock disponible : <strong>{{ expendable.remainingQuantity }}</strong> &emsp; Seuil d'alerte : <strong>{{ expendable.minQuantity }}</strong></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </a>
+            <a ng-repeat="product in alerts.products" ng-click="open(product, 'product')" class="list-group-item list-dash elmt-task">
+                <table class="task-list-table">
+                    <tr>
+                        <td class="task-list-img">
+                            <i class="fa fa-exclamation-triangle fa-2x img-alert" aria-hidden="true"></i>
+                        </td>
+                        <td class="task-list-info">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4 class="list-group-item-heading">{{ product.name }}</h4>
+                                    <p class="list-group-item-text">Stock disponible : <strong>{{ product.remainingQuantity }}</strong> &emsp; Seuil d'alerte : <strong>{{ product.minQuantity }}</strong></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </a>
+            <a ng-repeat="tool in alerts.tools" ng-click="open(tool, 'tool')" class="list-group-item list-dash elmt-task">
+                <table class="task-list-table">
+                    <tr>
+                        <td class="task-list-img">
+                            <i class="fa fa-exclamation-triangle fa-2x img-alert" aria-hidden="true"></i>
+                        </td>
+                        <td class="task-list-info">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4 class="list-group-item-heading">{{ tool.name }}</h4>
+                                    <p class="list-group-item-text">Stock disponible : <strong>{{ tool.remainingQuantity }}</strong> &emsp; Seuil d'alerte : <strong>{{ tool.minQuantity }}</strong></p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </a>
+        </div>
+    </div>
+</div>

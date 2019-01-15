@@ -1,0 +1,86 @@
+<div class="modal-print">
+    <div class="modal-header">
+        <h2>Synchroniser depuis le portail des assos</h2>
+    </div>
+    <div class="modal-body">
+        <show-errors errors-data="errors"></show-errors>
+        <div ng-show="waiting" class="text-center">
+            <h4>Récupération des membres depuis le portail des assos.</h4>
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+        <div ng-hide="waiting">
+            <div class="panel panel-default">
+                <div class="panel-heading">Aide</div>
+                <div class="panel-body">
+                    <span class="glyphicon glyphicon-plus text-success"></span> L'utilisateur sera ajouté à l'application<br/>
+                    <span class="glyphicon glyphicon-minus text-danger"></span> L'utilisateur sera supprimé de l'application<br/>
+                    <span class="glyphicon glyphicon-pencil text-warning"></span> Le role de l'utilisateur va être modifié
+                </div>
+            </div>
+            <div ng-hide="users.length > 0" class="text-center">
+                <span class="glyphicon glyphicon-ok" style="font-size:2em;"></span>
+                <h3>L'application est synchronisée avec le portail des assos</h3>
+            </div>
+            <h3 ng-show="users.length > 0">Utilisateurs à synchroniser</h3>
+            <ul class="list-group">
+                <li class="list-group-item"
+                    style="margin-right: 18px;"
+                    ng-repeat="user in users"
+                    ng-class="{'list-group-item-success': user.action == 'add',
+                               'list-group-item-danger':  user.action == 'delete',
+                               'list-group-item-warning': user.action == 'edit'}"
+                >
+                    <span class="glyphicon" style="margin-right: 5px"
+                          ng-class="{'glyphicon-plus': user.action == 'add',
+                                     'glyphicon-minus':  user.action == 'delete',
+                                     'glyphicon-pencil': user.action == 'edit'}"
+                    ></span>
+                    <b>{{ user.firstName }} {{ user.lastName }}</b>
+                    <span class="pull-right">
+                        <span ng-if="user.old_role_id">
+                            <span>{{ getRoleFromId(user.old_role_id).name }}</span>
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </span>
+                        <select ng-options="role.id as role.name for role in roles" ng-change="roleChanged(user)" ng-model="user.role_id">
+                            <option ng-if="user.id" style="font-weight: bolder;" value="">Supprimé</option>
+                        </select>
+                        <span style="cursor: pointer;position: absolute;top: 50%;transform: translateY(-50%);right: -20px;color: #777;" class="glyphicon glyphicon-remove" data-toggle="tooltip" ng-click="remove(user)" data-placement="right" title="Ne pas synchroniser ce changement."></span>
+                    </span>
+                </li>
+            </ul>
+
+            <h3 ng-show="removedUsers.length > 0">Changements annulés</h3>
+            <ul class="list-group">
+                <li class="list-group-item"
+                    style="margin-right: 18px;"
+                    ng-repeat="user in removedUsers"
+                    ng-class="{'list-group-item-success': user.action == 'add',
+                               'list-group-item-danger':  user.action == 'delete',
+                               'list-group-item-warning': user.action == 'edit'}"
+                >
+                    <span class="glyphicon" style="margin-right: 5px"
+                          ng-class="{'glyphicon-plus': user.action == 'add',
+                                     'glyphicon-minus':  user.action == 'delete',
+                                     'glyphicon-pencil': user.action == 'edit'}"
+                    ></span>
+                    <b>{{ user.firstName }} {{ user.lastName }}</b>
+                    <span class="pull-right">
+                        <span ng-if="user.old_role_id">
+                            <span>{{ getRoleFromId(user.old_role_id).name }}</span>
+                            <span class="glyphicon glyphicon-chevron-right"></span>
+                        </span>
+                        <select ng-options="role.id as role.name for role in roles" ng-change="roleChanged(user)" ng-model="user.role_id">
+                            <option ng-if="user.id" value="">Supprimé</option>
+                        </select>
+                        <span style="cursor: pointer;position: absolute;top: 50%;transform: translateY(-50%);right: -20px;color: #777;" class="glyphicon glyphicon-plus" data-toggle="tooltip" ng-click="unremove(user)" data-placement="right" title="Synchroniser ce changement."></span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <span ng-if="saving"><i class="fa fa-spinner fa-pulse fa-fw"></i>Synchronisation...</span>
+        <button class="btn btn-grey" ng-click="cancel()">Annuler</button>
+        <button class="btn btn-yellow" ng-click="save()" ng-disabled="saving">Synchroniser</button>
+    </div>
+</div>

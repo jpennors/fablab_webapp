@@ -1,0 +1,1250 @@
+<in-wrapper>
+	<div ng-controller="helpCtrl" class="row">
+	    <div class="row">
+		    <div class="col-lg-12">
+		        <h1 class="page-header"><img src="assets/img/help.png" class="img-title">
+		         	Page d'aide 
+		        </h1>
+		    </div>
+		</div>
+    	<div class="row">
+      		<div class="col-md-11 item-page">
+
+      			<!-- DASHBOARD -->
+      			<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Dashboard
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed = !isCollapsed">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							Le <strong>dashboard</strong> est divisé en 3 parties : La ToDo liste | Les alertes stocks | Les alertes services.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								La ToDo liste
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									Vous pouvez directement ajouter des ToDo dans le dashboard. 
+	      									<br>
+	      									Ces derniers sont composés de la manière suivante:
+	      									<ul style="list-style-type: none">
+	      										<li>&#8594 Titre</li>
+	      										<li>&#8594 Description</li>
+	      										<li>&#8594 Deadline (qui peut être précise à l'heure près)</li>
+	      										<li>&#8594 Pourcentage de progression</li>
+	      									</ul>Ils peuvent être mis à jour à tout moment, notamment pour la progression
+	      								</li>
+	      								<li class="top15">
+	      									Les ToDo sont affichés à l'écran par ordre de deadline, le premier présenté étant le plus urgent. En survolant un ToDo il est possible de voir qui l'a créé.
+	      								</li>
+	      								<li class="top15">
+	      									Un ToDo peut être à 100%, il ne sera pour autant pas supprimé. Si vous voulez définitivement supprimer ce dernier il faudra cliquer dessus puis sur l'icône de suppression.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Les alertes stocks
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Tous les produits, consommables et outils ont une quantité et un seuil d'alerte, c'est à dire une valeur en dessous de laquelle il faut impérativement effectuer une nouvelle commande. Ainsi les produits, consommables et outils ayant une quantité inférieure ou égale au seuil d'alerte sont affichés.
+	      							<br> 
+	      							Il est possible en cliquant dessus de regarder leur description précise.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Les alertes services
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Les services commandés et validés à la fois par le client et par le Fablab sont en cours de réalisation. Cette onglet permet de visualiser tous les services à effectuer et sont triés par rapport à leur deadline, la réalisation du service le plus urgent étant la première présentée.
+	      							<br>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+      			<!-- PRODUITS -->
+      			<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed1 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Produits
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed1 = !isCollapsed1">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed1"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed1"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed1">
+	      				<div class="panel panel-default black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Produits</strong> est divisée en 2 parties : Index des produits | Gestion d'un produit.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Index des produits
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Produits dans la barre de navigation, l'index des produits s'affiche. Il permet d'avoir un aperçu de tous les produits. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom du produit</li>
+  										<li>&#8594 Fournisseur</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte</li>
+  										<li>&#8594 Unité</li>
+  										<li>&#8594 Localisation</li>
+  										<li>&#8594 Prix (en €)</li>
+  									</ul>
+  									<br>
+  									Quatre autres fonctionnalités sont disponibles :
+  									<ul type="circle">
+	      								<li class="top15">
+	      									En appuyant sur le bouton "Montrer les produits critiques", l'index n'affichera plus que les produits dont la quantité restante est inférieure ou égale au seuil d'alerte. Cela veut dire que le produit doit être recommandé.
+	      									<br>
+	      									Il est possible de revenir en arrière en appuyant sur le même bouton qui s'intitule à présent "Montrer tous les produits".
+	      								</li>
+	      								<li class="top15">
+	      									Une barre de recherche est disponible pour retrouver un produit ou un groupe de produits en particulier.
+	      								</li>
+	      								<li class="top15">
+	      									En cliquant sur un produit en particulier, ce dernier s'affiche dans une modale (cf. partie 2 des Produits).
+	      								</li>
+	      								<li class="top15">
+	      									En appuyant sur le signe "+" en haut à droite, il est possible d'ajouter un nouveau produit en remplissant les champs dans la modale (cf. partie 2 des Produits).
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Gestion d'un produit
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Cette partie est visible dans une modale uniquement. Un produit possède les propriétés suivantes :
+	      							<br>
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Nom du produit</li>
+  										<li>&#8594 Catégorie (correspond aux catégories existantes sur l'espace WeezeEvent du Fablab)</li>
+  										<li>&#8594 Salle</li>
+  										<li>&#8594 Etagère</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte (seuil sous lequel le produit doit être recommandé)</li>
+  										<li>&#8594 Unité de quantité (g, L, unitaire, ...)</li>
+  										<li>&#8594 Prix</li>
+  										<li>&#8594 Marque</li>
+  										<li>&#8594 Fournisseur</li>
+  										<li>&#8594 Lien fournisseur</li>
+  										<li>&#8594 Documentation</li>
+  										<li>&#8594 Description</li>
+  										<li>&#8594 Fiche technique</li>
+  										<li>&#8594 Image</li>
+  									</ul>
+  									<br>
+  									Diverses actions peuvent être effectuées sur un produit en particulier:
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Création :
+	      									</strong>
+	      									Lorsque vous appuyez sur le bouton "+" dans l'index. Vous devez alors remplir les champs. Certains sont obligatoires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Consultation :
+	      									</strong>
+	      									Lors d'un clic sur un produit. Il est alors possible de regarder les différents attributs du produit.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Edition :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton d'édition pour éditer les champs nécessaires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppression :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton de suppression. Une confirmation vous sera demandée.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+	      		<!-- Outils -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed2 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Outils
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed2 = !isCollapsed2">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed2"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed2"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed2">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Outils</strong> est divisée en 2 parties : Index des outils | Gestion d'un outil.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Index des outils
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Outils dans la barre de navigation, l'index des outils s'affiche. Il permet d'avoir un aperçu de tous les outils. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom de l'outil</li>
+  										<li>&#8594 Toxicité (seulement pour les produits chimiques)</li>
+  										<li>&#8594 Fournisseur</li>  										
+  										<li>&#8594 Localisation</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte</li>
+  									</ul>
+  									<br>
+  									Quatre autres fonctionnalités sont disponibles :
+  									<ul type="circle">
+	      								<li class="top15">
+	      									En appuyant sur le bouton "Montrer les outils critiques", l'index n'affichera plus que les outils dont la quantité restante est inférieure ou égale au seuil d'alerte. Cela veut dire que l'outil doit être recommandé.
+	      									<br>
+	      									Il est possible de revenir en arrière en appuyant sur le même bouton qui s'intitule à présent "Montrer tous les outils".
+	      								</li>
+	      								<li class="top15">
+	      									Une barre de recherche est disponible pour retrouver un outil ou un groupe d'outils en particulier.
+	      								</li>
+	      								<li class="top15">
+	      									En cliquant sur un outil en particulier, ce dernier s'affiche dans une modale (cf. partie 2 des Outils).
+	      								</li>
+	      								<li class="top15">
+	      									En appuyant sur le signe "+" en haut à droite, il est possible d'ajouter un nouvel outil en remplissant les champs dans la modale (cf. partie 2 des Outils).
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Gestion d'un outil
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Cette partie est visible dans une modale uniquement. Un outil possède les propriétés suivantes :
+	      							<br>
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Nom de l'outil</li>
+  										<li>&#8594 Type (Il peut être soit un outil, soit un produit chimique)</li>
+  										<li>&#8594 Fournisseur</li>
+  										<li>&#8594 Unité de quantité (g, L, unitaire, ...)</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte (seuil sous lequel l'outil doit être recommandé)</li>
+  										<li>&#8594 Salle</li>
+  										<li>&#8594 Etagère</li>
+  										<li>&#8594 Toxicité (seulement pour les outils)</li>
+  										<li>&#8594 Date d'achat (seulement pour les outils)</li>
+  										<li>&#8594 Date d'expiration (seulement pour les outils)</li>
+  										<li>&#8594 Description</li>
+  										<li>&#8594 Image</li>
+  									</ul>
+  									<br>
+  									Diverses actions peuvent être effectuées sur un outil en particulier :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Création :
+	      									</strong>
+	      									Lorsque vous appuyez sur le bouton "+" dans l'index. Vous devez alors remplir les champs. Certains sont obligatoires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Consultation :
+	      									</strong>
+	      									Lors d'un clic sur un produit. Il est alors possible de regarder les différents attributs de l'outil.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Edition :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton d'édition pour éditer les champs nécessaires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppression :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton de suppression. Une confirmation vous sera demandée.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+	      		<!-- Consommables -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed3 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Consommables
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed3 = !isCollapsed3">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed3"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed3"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed3">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Consommables</strong> est divisée en 2 parties : Index des consommables | Gestion d'un consommable.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Index des consommables
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Consommables dans la barre de navigation, l'index des consommables s'affiche. Il permet d'avoir un aperçu de tous les consommables. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom du consommable</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte</li>  										
+  										<li>&#8594 Unité</li>
+  										<li>&#8594 Localisation</li>
+  									</ul>
+  									<br>
+  									Quatre autres fonctionnalités sont disponibles :
+  									<ul type="circle">
+	      								<li class="top15">
+	      									En appuyant sur le bouton "Montrer les consommables critiques", l'index n'affichera plus que les consommables dont la quantité restante est inférieure ou égale au seuil d'alerte. Cela veut dire que le consommable doit être recommandé.
+	      									<br>
+	      									Il est possible de revenir en arrière en appuyant sur le même bouton qui s'intitule à présent "Montrer tous les consommables".
+	      								</li>
+	      								<li class="top15">
+	      									Une barre de recherche est disponible pour retrouver un consommable ou un groupe de consommables en particulier.
+	      								</li>
+	      								<li class="top15">
+	      									En cliquant sur un consommable en particulier, ce dernier s'affiche dans une modale (cf. partie 2 des Consommables).
+	      								</li>
+	      								<li class="top15">
+	      									En appuyant sur le signe "+" en haut à droite, il est possible d'ajouter un nouveau consommable en remplissant les champs dans la modale (cf. partie 2 des Consommables).
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Gestion d'un consommable
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Cette partie est visible dans une modale uniquement. Un consommable possède les propriétés suivantes :
+	      							<br>
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Nom du consommable</li>
+  										<li>&#8594 Salle</li>
+  										<li>&#8594 Etagère</li>
+  										<li>&#8594 Stock disponible</li>
+  										<li>&#8594 Seuil d'alerte (seuil sous lequel le consommable doit être recommandé)</li>
+  										<li>&#8594 Unité de quantité (g, L, unitaire, ...)</li>
+  										<li>&#8594 Marque</li>
+  										<li>&#8594 Fournisseur</li>
+  										<li>&#8594 Lien fournisseur</li>
+  										<li>&#8594 Description</li>
+  										<li>&#8594 Image</li>
+  									</ul>
+  									<br>
+  									Diverses actions peuvent être effectuées sur un consommable en particulier :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Création :
+	      									</strong>
+	      									Lorsque vous appuyez sur le bouton "+" dans l'index. Vous devez alors remplir les champs. Certains sont obligatoires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Consultation :
+	      									</strong>
+	      									Lors d'un clic sur un consommable. Il est alors possible de regarder les différents attributs du consommable.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Edition :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton d'édition pour éditer les champs nécessaires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppression :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton de suppression. Une confirmation vous sera demandée.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+	      		<!-- Machines -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed4 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Machines
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed4 = !isCollapsed4">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed4"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed4"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed4">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Machines</strong> est divisée en 2 parties : Index des machines | Gestion d'une machine.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Index des machines
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Machines dans la barre de navigation, l'index des machines s'affiche. Il permet d'avoir un aperçu de toutes les machines. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom de la machine</li>
+  										<li>&#8594 Salle</li>
+  										<li>&#8594 Statut (une machine peut être disponible, en utilisation ou en maintenance)</li>  										
+  									</ul>
+  									<br>
+  									Trois autres fonctionnalités sont disponibles :
+  									<ul type="circle">
+	      								<li class="top15">
+	      									Une barre de recherche est disponible pour retrouver une machine ou un groupe de machines en particulier.
+	      								</li>
+	      								<li class="top15">
+	      									En cliquant sur une machine en particulier, cette dernière s'affiche dans une modale (cf. partie 2 des Machines).
+	      								</li>
+	      								<li class="top15">
+	      									En appuyant sur le signe "+" en haut à droite, il est possible d'ajouter une nouvelle machine en remplissant les champs dans la modale (cf. partie 2 des Machines).
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Gestion d'une machine
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Cette partie est visible dans une modale uniquement. Une machine possède les propriétés suivantes :
+	      							<br>
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Nom de la machine</li>
+  										<li>&#8594 Statut</li>
+  										<li>&#8594 Documentation</li>
+  										<li>&#8594 Salle</li>
+  										<li>&#8594 Description</li>
+  										<li>&#8594 Fiche technique</li>
+  										<li>&#8594 Image</li>
+  									</ul>
+  									<br>
+  									Diverses actions peuvent être effectuées sur une machine en particulier :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Création :
+	      									</strong>
+	      									Lorsque vous appuyez sur le bouton "+" dans l'index. Vous devez alors remplir les champs. Certains sont obligatoires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Consultation :
+	      									</strong>
+	      									Lors d'un clic sur une machine. Il est alors possible de regarder les différents attributs de la machine.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Edition :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton d'édition pour éditer les champs nécessaires.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppression :
+	      									</strong>
+	      									En mode consultation il est possible d'appuyer sur le bouton de suppression. Une confirmation vous sera demandée.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>	
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+	      		<!-- Commandes -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed5 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Commandes
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed5 = !isCollapsed5">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed5"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed5"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed5">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Commandes</strong> est divisée en 5 parties : 
+	      							<br>
+	      							Qu'est ce qu'une commande ? | Passer une commande | Editer une commande | Index des commandes | Payer une commande.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Qu'est ce qu'une commande ?
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Une commande est faite de diverses ressources : 
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									Un <strong>login</strong>, à savoir celui de la personne qui recevra la commande
+	      								</li>
+	      								<li class="top15">
+	      									Une <strong>entité</strong>, par défaut le Fablab
+	      								</li>
+	      								<li class="top15">
+	      									Une <strong>adresse</strong>, si le commanditeur veut recevoir une facture il devra entrer une adresse
+	      								</li>
+	      								<li class="top15">
+	      									Eventuellement une <strong>association</strong>
+	      								</li>
+	      								<li class="top15">
+	      									Un <strong>statut</strong>, calculé dynamiquement en fonction des statuts des éléments présents dans la commande. Il sera égal au plus faible statut trouvé dans les éléments qui lui sont associés (Demande envoyée < Validé Fablab < Validé Client < Réalisé < Annulé, voir en dessous dans les éléments).
+	      								</li>
+	      								<li class="top15">
+	      									Un ou plusieurs <strong>élément(s)</strong>. Il existe deux types d'éléments différents : les <strong>produits</strong> et les <strong>services</strong>. 
+	      									<br>
+	      									<br>
+	      									Un produit aura les propriétés suivantes :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Une quantité</li>
+		  										<li>&#8594 Un prix</li>
+		  									</ul>
+		  									<br>
+		  									Un service requiert plus de propriétés et aura ainsi :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Une quantité mise à 1</li>
+		  										<li>&#8594 Un login (Cela correspond à la personne ayant effectuée la manipulation)</li>
+		  										<li>&#8594 Un ou plusieurs argument(s) (Les arguments dépendent de la fonction de prix associée au service, voir section Administration / Services.)</li>
+		  										<li>&#8594 Un commentaire (optionnel, l'utilisateur peut laisser un commentaire)</li>
+		  										<li>&#8594 Un prix suggéré (Après avoir entré les valeurs des différents arguments de la fonction de prix associée au service, le calcul du prix est renvoyé dans cette variable.)</li>
+		  										<li>&#8594 Un prix final (qui peut être différent de celui suggéré)</li>
+		  										<li>&#8594 Une deadline (au minimum 3 jours arpès la commande, et qui peut être modifiée par le Fablab)</li>
+		  									</ul>
+		  									<br>
+		  									Tous les éléments ont également un statut. Il existe 5 statuts différents :
+		  									<br>
+		  									<br>
+		  									<div class="text-center">
+		  										<img src="assets/img/status.png" width="600px">
+		  									</div>
+		  									<br>
+		  									Les achats de produits ne pouvant être effectués que par un membre du Fablab, ces derniers sont automatiquement associés au status "Réalisé". En revanche les commandes de service sont différentes. Voici la procédure que suivra le statut d'un <strong>service</strong>.
+		  									<br>
+		  									<br>
+		  									<div class="text-center">
+		  										<img src="assets/img/process_purchase.png" width="600px">
+		  									</div>
+		  									<br>
+		  									Ainsi quand un membre du Fablab effectue une commande, il est considéré que lui et le client (qui peut être lui même) sont d'accord et que la commande est validée pour les deux parties. Toutefois, si lors du passage de la commande le prix n'est pas fixé, la commande sera tout de même envoyée dans le statut "Demande envoyée" en attendant que son prix soit fixé par un membre de Fablab.
+		  									<br>
+		  									<br>
+		  									Une commande peut être <strong>annulée</strong> quand elle se trouve dans les statuts suivants : "Demande envoyée", "Validé Fablab".
+	      								</li>
+	      								
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Passer une commande
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Plusieurs données sont à entrer lors du passage d'une commande : 
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									Un <strong>login</strong> (Si l'utilisateur est un membreCAS, son login est entré automatiquement, il ne peut pas commander pour un tiers).
+	      								</li>
+	      								<li class="top15">
+	      									Une <strong>entité</strong> (Si l'utilisateur est un membreCAS, l'entité associée est le FablabUTC.) 
+	      								</li>
+	      								<li class="top15">
+	      									Un ou plusieurs <strong>élément(s)</strong>, qui peuvent être des produits ou des services.
+	      									<br>
+	      									<br>
+	      									Pour les produits, il suffit de cliquer sur ceux désirés et d'ajuster la quantité.
+	      									<br>
+	      									<br>
+	      									Pour les services, une modale s'ouvre. Elle permet de rentrer les différentes informations du service, à savoir la deadline, les arguments (publiques pour les membresCAS, tous pour les membres du Fablab), ainsi que le prix pour les membres du Fablab. 
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Editer une commande
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Une fois qu'une commande est passée, il est possible de réaliser plusieurs actions : 
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									Modifier l'<strong>éntité</strong> (Si l'utilisateur est un membre du Fablab seulement).
+	      								</li>
+	      								<li class="top15">
+	      									Ajouter ou modifier une<strong> adresse</strong>.
+	      								</li>
+	      								<li class="top15">
+	      									Demander un <strong>devis</strong> (seulement si une adresse a été renseignée) 
+	      								</li>
+	      								<li class="top15">
+	      									Demander une <strong>facture</strong> (seulement si une adresse a été renseignée et que la commande a été payée, voir partie Payer une commande)
+	      								</li>
+	      								<li class="top15">
+	      									<strong>Payer</strong> (si la commande a bien un prix, voir partie Payer une commande) 
+	      								</li>
+	      								<li class="top15">
+	      									Editer un <strong>service</strong> en modifiant ses différents attributs (voir partie Qu'est ce qu'une commande?). Il est également possible pour les membres Fablab de consulter l'<strong>historique</strong> des modifications sur le service. 
+	      								</li>
+	      							</ul>
+	      							<br>	      							
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Index des commandes
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Il existe 3 différents index pour les commandes :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>Mes commandes</strong>
+	      									<br>
+	      									Cette partie recense uniquement les commandes liées à votre login UTC.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>Commandes en cours</strong>
+	      									<br>
+	      									Elles sont décomposées en 2 sous-parties :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Commandes en cours : toutes les commandes dont le statut n'est pas réalisé ou annulé, et par conséquent dont il existe des éléments n'étant ni réalisés ni annulés. Cela n'apporte pas de précisions sur les éléments de la commande</li>
+		  										<li>&#8594 Services en cours : Cette section permet de donner les détails sur tous le services qui sont en cours (demande envoyée, validé Fablab ou validé Client). Il est possible de filtrer les résultats pour mieux les cibler.</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>Historique</strong>
+	      									<br>
+	      									C'est ici que sont recensées toutes les commandes dont le statut est réalisé ou annulé, et donc par conséquent dont tous les éléments la composant ont un statut réalisé ou annulé.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Paiement des commandes
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Il existe 3 types de paiement : 
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>Paiement externe</strong>
+	      									<br>
+	      									Si le paiement a été effectué hors du site de gestion il est possible d'enregistrer le fait que la transaction ait bien eu lieu.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>Paiement par badgeuse</strong>
+	      									<br>
+	      									Uniquement accessible aux membres du Fablab, cela permet à l'aide d'une badgeuse de faire payer grâce à la carte étudiante.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>Paiement Nemopay</strong>
+	      									<br>
+	      									Il existe une dernière option, accessible à tous, <strong>uniquement pour les commandes de services</strong>, permettant de payer via Nemopay en ligne (avec son compte Payutc ou par carte bancaire).
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+	      		<!-- Administration -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed6 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Administration
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed6 = !isCollapsed6">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed6"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed6"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed6">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Administration</strong> est divisée en 7 parties : 
+	      							<br>
+	      							Général | Utilisateurs | Roles | Prix | Services | Adresses | Entités.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Général
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								Cet onglet permet d'afficher les paramètres généraux de l'application. Ces derniers sont :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Site web</li>
+  										<li>&#8594 Email</li>
+  										<li>&#8594 Adresse facture</li>  
+  										<li>&#8594 Numéro d'asso</li> 
+  										<li>&#8594 Numéro de Siren</li> 										
+  									</ul>
+  									<br>
+  									Tous ces paramètres peuvent être éditer.
+	      						</p>
+	      						<br>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Utilisateurs
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Utilisateurs dans la barre de navigation, l'index des utilisateurs s'affiche. Seuls les utilisateurs ayant des rôles autres que MembreCAS (voir section Rôles) apparaissent. Cela permet d'avoir un aperçu de tous les utilisateurs liés au Fablab. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom / Prénom</li>
+  										<li>&#8594 Login</li>
+  										<li>&#8594 Adresse email</li>  	
+  										<li>&#8594 Rôle</li>									
+  									</ul>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'un utilisateur :
+	      									</strong>
+	      									Les informations d'un utilisateur peuvent être consultées et/ou modifiées en cliquant dessus. Seuls certains champs peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Rôle</li>
+		  										<li>&#8594 Entité</li>
+		  										<li>&#8594 Charte signée (charte informatique pas encore mise en place)</li>  	
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur un utilisateur en particulier il est possible de le supprimer en cliquant sur l'icône de suppression. Un utilisateur n'est en réalité jamais supprimé, son rôle est simplement mis à jour sur MembreCAS.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche / Tri :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche, et même de trier les résultats en sélectionnant les rôles désirés.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'un utilisateur :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer le login de la personne. Après avoir entré 3 caractères, des suggestions seront faites.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Synchronisation :
+	      									</strong>
+	      									>>>> A VENIR <<<<
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+      							<h2 class="text-center top15">
+	      							<strong>
+	      								Rôles
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Rôles dans la barre de navigation, l'index des rôles s'affiche. Cela permet d'avoir un aperçu de tous les rôles existants. L'information suivante est affichée :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Label du rôle</li>									
+  									</ul>
+  									Les rôles comportent également une série de permissions. Chaque permission possède une description et un slug. Par exemple il existe la permission "Se connecter au site de gestion" avec le slug "login". Cela signifie que pour se connecter au site de gestion il faut que l'utilisateur possède cette permisison. Chaque utilisateur est lié à un rôle qui contient une série de permissions, permettant de définir qui peut faire quoi.
+  									<br>
+  									Le rôle "MembreCAS" défini est celui qui sera affecté par défaut à tout membre de l'UTC n'ayant pas déjà de rôle en se connectant via le CAS au site de gestion.
+  									<br>
+  									<br>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'un rôle :
+	      									</strong>
+	      									Les informations d'un rôle peuvent être consultées et/ou modifiées en cliquant dessus. Les champs suivants peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Label</li>
+		  										<li>&#8594 Permissions (liste exhaustive des permissions qui peut être modifiée)</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur un rôle en particulier il est possible de le supprimer en cliquant sur l'icône de suppression.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche sur le label des rôles.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'un rôle :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer le label du nouveau rôle ainsi que de cocher les permissions à associer.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Prix
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Prix dans la barre de navigation, l'index des fonctions de prix s'affiche. Cela permet d'avoir un aperçu de toutes les fonctions de prix existantes. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom de la fonction de prix</li>
+  										<li>&#8594 Description</li>									
+  									</ul>
+  									Les fonctions de prix, en plus de cela, comportent des arguments. Chacun de ces arguments est composé d'une description, d'une variable associée, d'un type, et d'une visibilité publique ou privée. Les arguments peuvent être utilisées dans un script JavaScript qui renvoie un prix, dernier élément composant une fonction de prix.
+  									<br>
+  									<br>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'une fonction de prix :
+	      									</strong>
+	      									Les informations d'une fonction de prix peuvent être consultées et/ou modifiées en cliquant dessus. Les champs suivants peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Nom</li>
+		  										<li>&#8594 Description</li>
+		  										<li>
+		  											&#8594 Arguments (de zéro à plusieurs arguments), contenant lui même :
+		  											<ul type="circle">
+		  												<li>Description</li>
+		  												<li>Variable (qui sera réutilisée dans le script)</li>
+		  												<li>Type (Choix entre entier, décimal et liste. Les composants de la liste doivent être définis par des chaînes de caractère séparées par une virgule.)</li>
+		  												<li>Argument publique ? (Si la case est cochée l'argument sera visible et ainsi remplissable par un membreCAS. S'il est privé il sera disponible uniquement pour les membres du Fablab.)</li>
+		  											</ul>
+		  										</li>
+		  										<li>&#8594 Script (Ecrit en JavaScript, il renvoie un prix à l'aide, ou non, des arguments définis dans la fonction de prix.)</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur une fonction de prix en particulier il est possible de la supprimer en cliquant sur l'icône de suppression.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche sur le nom ou la description de la fonction de prix.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'une fonction :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer les différentes informations qui sont énoncés au-dessus dans l'action "Edition / Consultation d'une fonction de prix".
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Services
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Services dans la barre de navigation, l'index des services s'affiche. Cela permet d'avoir un aperçu de tous les services existants. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom du service</li>
+  										<li>&#8594 Description</li>	
+  										<li>&#8594 Type de service</li>								
+  									</ul>
+  									Un service lie en fait une fonction de prix avec éventuellement une machine. Les services seront vendus, et non la fonction de prix.
+  									<br>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'un service :
+	      									</strong>
+	      									Les informations d'un service peuvent être consultées et/ou modifiées en cliquant dessus. Les champs suivants peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Nom</li>
+		  										<li>&#8594 Description</li>
+		  										<li>
+		  											&#8594 Type (une liste contenant) :
+		  											<ul type="circle">
+		  												<li>Découpe</li>
+		  												<li>Impression</li>
+		  											</ul>
+		  										</li>
+		  										<li>&#8594 Machine (L'ajout d'une machine est optionnelle.)</li>
+		  										<li>&#8594 Fonction de prix</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur un service en particulier il est possible de le supprimer en cliquant sur l'icône de suppression.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche sur le nom, la description ou le type du service.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'un service :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer les différentes informations du service, à savoir le nom, la description, son type, éventuellement la machine associée et la fonction de prix.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>	
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Adresses
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Adresses dans la barre de navigation, l'index des adresses s'affiche. Cela permet d'avoir un aperçu de toutes les adresses existantes. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom Prénom ou Institution</li>
+  										<li>&#8594 Adresse</li>	
+  										<li>&#8594 Ville</li>			
+  										<li>&#8594 Code postal</li>	
+  										<li>&#8594 Pays</li>						
+  									</ul>
+  									Les adresses sont enregistrées lors de la réalisation du passage d'une commande. En effet, si l'utilisateur désire recevoir un devis ou une facture il devra alors entrer une adresse. 
+  									<br>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'un service :
+	      									</strong>
+	      									Les informations d'une adresse peuvent être consultées et/ou modifiées en cliquant dessus. Les champs suivants peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Nom Prénom ou Institution</li>
+		  										<li>&#8594 Adresse</li>
+		  										<li>&#8594 Ville</li>
+		  										<li>&#8594 Code postal</li>
+		  										<li>&#8594 Pays</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur une adresse en particulier il est possible de la supprimer en cliquant sur l'icône de suppression.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche sur n'importe quelle information d'une adresse.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'une adresse :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer les différentes informations d'une adresse, à savoir les nom/prénom ou l'institution, l'adresse, la ville, le code postal et le pays.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Entités
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+      								En cliquant sur l'onglet Administration / Entités dans la barre de navigation, l'index des entités s'affiche. Cela permet d'avoir un aperçu de toutes les entités existantes. Les informations suivantes sont affichées :
+      								<ul style="list-style-type: none">
+  										<li>&#8594 Nom de l'entité</li>
+  										<li>&#8594 Sigle de l'entité</li>	
+  									</ul>
+  									Une entité peut vendre des produits et des services dans l'onglet Commandes. Par défaut, les membreCAS ne peuvent sélectionner uniquement le FablabUTC dans l'outil Commandes.
+  									<br>
+  									Diverses actions peuvent être effectuées :
+	      							<ul type="circle">
+	      								<li class="top15">
+	      									<strong>
+	      										Edition / Consultation d'une entité :
+	      									</strong>
+	      									Les informations d'une entité peuvent être consultées et/ou modifiées en cliquant dessus. Les champs suivants peuvent être modifiés :
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Institution</li>
+		  										<li>&#8594 Sigle</li>
+		  										<li>&#8594 Numéro d'asso</li>
+		  										<li>&#8594 Siren</li>
+		  										<li>&#8594 Email</li>
+		  										<li>&#8594 Site</li>
+		  										<li>&#8594 Adresse</li>
+		  										<li>&#8594 Téléphone</li>
+		  										<li>&#8594 Mentions légales (utilisées pour les factures)</li>
+		  									</ul>
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Suppresion :
+	      									</strong>
+	      									En cliquant sur une entité en particulier il est possible de la supprimer en cliquant sur l'icône de suppression.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Recherche :
+	      									</strong>
+	      									Il est posible d'effectuer une recherche sur le nom et le sigle de l'entité.
+	      								</li>
+	      								<li class="top15">
+	      									<strong>
+	      										Ajout d'un service :
+	      									</strong>
+	      									Une modale s'ouvre et vous propose de rentrer les différentes informations d'une entité. Le nom, le sigle, l'email et l'adresse sont obligatoires.
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+
+
+	      		<!-- Import/Export -->
+	      		<div>
+	      			<div class="panel-heading bottom10 row" ng-init="isCollapsed7 = false">
+	      				<h3 class="pull-left">
+	                    		<i class="fa fa-angle-right color-yellow" aria-hidden="true"></i>
+	                        	Import / Export
+	                	</h3>
+	                	<h3 class="pull-right color-yellow">
+		                	<a ng-click="isCollapsed7 = !isCollapsed7">
+		                		<i class="fa fa-plus-circle" aria-hidden="true" ng-if="!isCollapsed7"></i>
+		                		<i class="fa fa-minus-circle" aria-hidden="true" ng-if="isCollapsed7"></i>
+		                	</a>
+		                </h3>
+	      			</div>
+	      			<div class="panel-body row" ng-if="isCollapsed7">
+	      				<div class="panel panel-default font16 black">
+	      					<div class="top10 bottom10 left10 right10">
+	      						<p class="text-center">
+	      							<br>
+	      							La section <strong>Import / Export</strong> est divisée en 2 parties : Les imports | Les exports.
+	      							<br>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Les imports
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Les ressources suivantes peuvent être importées : 
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Produits</li>
+  										<li>&#8594 Consommables</li>
+  										<li>&#8594 Machines</li>
+  										<li>&#8594 Outils</li>
+  									</ul>
+  									<br>
+  									Plusieurs étapes sont à suivre pour importer un fichier :
+									<ul type="circle">
+	      								<li class="top15">
+	      									Sélection de la ressource à importer, puis clic sur "Importer"
+	      								</li>
+	      								<li class="top15">
+	      									Lecture des instructions, sélection du fichier à importer au format CSV, puis clic sur "Valider"
+	      								</li>
+	      								<li class="top15">
+	      									Consultation du résultat du parsage, pour vérifier que tout est au bon endroit.
+	      								</li>
+	      								<li class="top15">
+	      									Clic en bas du résultat sur "Importer".
+	      									<ul style="list-style-type: none">
+		  										<li>&#8594 Si des erreurs sont détectées elles sont automatiquement reportées en bas de la page.</li>
+		  										<li>&#8594 En cas de succès de l'import, un message de validation apparaît sur la page.</li>
+	      								</li>
+	      							</ul>
+	      							<br>
+	      						</p>
+	      						<hr>
+	      						<h2 class="text-center top15">
+	      							<strong>
+	      								Les exports
+	      							</strong>
+	      						</h2>
+	      						<p>
+	      							<br>
+	      							Les ressources suivantes peuvent être exportées : 
+	      							<ul style="list-style-type: none">
+  										<li>&#8594 Produits</li>
+  										<li>&#8594 Consommables</li>
+  										<li>&#8594 Machines</li>
+  										<li>&#8594 Outils</li>
+  									</ul>
+	      							<br>
+	      							L'export permet le téchargement d'un fichier .xlsx contenant tous les éléments actifs d'une table en cliquant sur le bouton "Exporter".
+	      							<br>
+	      							<br>
+	      						</p>
+	      					</div>
+	      				</div>
+	      			</div>
+	      		</div>
+      		
+      		</div>
+      	</div>
+    </div>
+</in-wrapper>
+    

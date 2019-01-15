@@ -1,0 +1,43 @@
+<in-wrapper>
+  <div ng-controller="adminAddressesCtrl" class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header"><img src="assets/img/address.png" class="img-title">
+        Adresses de facturation
+      </h1>
+    </div>
+
+    <div class="row">
+      <div class="col-md-11 item-page">
+        <div class="row panel-heading">
+          <h2>
+            <div class="col-md-4">
+              <img src="assets/img/barre.png" class="img-table">Liste des adresses
+            </div>
+            <div class="form-group col-md-offset-1 col-md-4">
+              <input ng-model="addressSearch" type="text" class="form-control search-bar" placeholder="Rechercher une adresse">
+            </div>
+            <div class="pull-right">
+             <img width="30px" src="assets/img/add.png" ng-if="can('add-address')" ng-click="open(adress, 'create')">
+            </div>
+          </h2>
+        </div>
+        <div class="row panel-body">
+          <div class="list-group">
+            <button ng-repeat="address in addresses | filter:addressSearch"
+                    ng-click="open(address, 'edit')"
+                    type="button" class="list-group-item">
+              <b>{{ address.name}}</b>
+              <br/>
+              <span style="white-space: pre-line;">{{ address.address }}</span>
+              <br>
+              {{ address.city }}, {{ address.cp }}
+              <br>
+              {{ address.country }}
+            </button>
+          </div>
+        </div>
+      </div>   
+    </div>
+  </div>
+<!-- /.row -->
+</in-wrapper>

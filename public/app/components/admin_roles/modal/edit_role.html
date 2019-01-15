@@ -1,0 +1,58 @@
+<div class="modal-print">
+    <div class="modal-header">
+        <h2 ng-if="type=='create'" class="pull-left">
+            <i class="fa fa-plus fa-3x img-edit" aria-hidden="true"></i>
+            Ajouter rôle
+        </h2>
+        <h2 ng-if="type=='edit'" class="pull-left">
+            <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+            Modifier le rôle
+        </h2>
+        <a confirm="Êtes-vous sûr de supprimer ce rôle?" class="pull-right btn-delete" role="button" ng-if="can('delete-role') && type=='edit'" ng-click="deleteModal()">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="modal-body">
+        <show-errors errors-data="errors"></show-errors>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <h4>Label</h4>
+            </div>
+            <div class="col-lg-8">
+                <input ng-model="role.name" type="text" class="form-control">
+            </div>
+        </div>
+        <br><hr>
+        <div class="form-group row">
+            <div class="col-lg-4">
+                <h4>Permissions du rôle</h4>
+            </div>
+            <div class="form-group col-lg-8">
+                <input ng-model="permissionSearch" type="text" class="form-control search-bar" placeholder="Rechercher une permission">
+            </div>
+        </div>
+        <form class="form-horizontal">
+            <div class="row">
+                <div ng-show="loading" class="text-center"><i class="fa fa-spinner fa-2x fa-pulse fa-fw"></i></div>
+                <div class="list-group col-sm-12" style="height: 311px; overflow-y:scroll;" ng-hide="loading">
+                    <button ng-repeat="permission in role.permissions | filter:permissionSearch"
+                            class="list-group-item"
+                            ng-class="{'list-group-item-strong': permission.changed}"
+                            ng-click="permission.toggleSelected()">
+                        <div class="pull-left center-block clearfix" style="margin-right: 10px">
+                            <i ng-class="{'fa-square-o' : !permission.selected, 'fa-check-square-o' : permission.selected}" class="fa fa-2x ng-scope" aria-hidden="true"></i>
+                        </div>
+                        <b style="vertical-align: middle;">{{ permission.description }}</b>
+                        <i style="vertical-align: middle;" ng-can="super-admin">[{{ permission.slug }}]</i>
+                        <span class="badge badge-primary badge-pill"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <span ng-if="saving"><i class="fa fa-spinner fa-pulse fa-fw"></i>Enregistrement...</span>
+        <button class="btn btn-grey" ng-click="cancel()">Annuler</button>
+        <button class="btn btn-yellow" ng-click="save()" ng-disabled="saving">Enregistrer</button>
+    </div>
+</div>

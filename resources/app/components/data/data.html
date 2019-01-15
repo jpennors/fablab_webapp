@@ -1,0 +1,158 @@
+<in-wrapper>
+    <div ng-controller="dataCtrl">
+        <div class="row" ng-if="can('list-data')">
+            <div class="col-md-12">
+                <h1 class="page-header"><i class="fa fa-exchange" aria-hidden="true"><img class="img-title"></i>
+                    IMPORTATION / EXPORTATION
+                </h1>
+            </div>
+
+            <div class="row">
+                <div class="col-md-offset-1 col-md-4">
+                    <h3 ng-hide="pqrsing">Choisissez une table</h3>
+                    <h4 ng-show="parsing">Vous avez choisi la table :</h4>
+                    <select class="form-control" ng-model="data.type" ng-disabled="parsing">
+                        <option ng-selected="!type" value="products">Produits</option>
+                        <option value="expendables">Consommables</option>
+                        <option value="engines">Machines</option>
+                        <option value="tools">Outils</option>
+                        <!--
+                        <option value="wardrobes">Etagères</option>
+                        <option value="rooms">Salles</option>
+                        <option value="users">Utilisateurs</option>
+                        <option value="categories">Catégories</option>
+                        <option value="permissions">Permissions</option>
+                        <option value="purchases">Commandes</option>
+                        <option value="printings">Impressions</option>
+                        <option value="cuttings">Découpes</option>
+                        <option value="roles">Roles</option>
+                        <option value="service/scripts">Service scripts</option>
+                        -->
+                    </select>
+                </div> 
+
+                <div class="col-md-offset-2 col-md-5">
+                    <br>
+                    <button class="btn btn-yellow" ng-hide="parsing" ng-click="export()">Exporter</button>
+                    <br>
+                    <br>
+                    <button class="btn btn-yellow" ng-hide="import" ng-click="inputFile()">Importer</button>
+                    <div class="row" ng-show="import && !parsing">
+                        <input class="col-md-6" type="file" class="input-group form-control-file" files-model="data.file">
+                        <button class="col-md-6 btn btn-yellow" ng-disabled="!data.file" ng-click="csvParse()">Valider</button>
+                    </div>
+                </div>
+                
+            </div>
+            <hr>
+            <div class="row" ng-if="imported">
+                <div class="col-md-offset-3 col-md-6 col-sm-12 alert alert-success" role="alert">
+                L'importation a été correctement effectuée.
+              </div>
+            </div>
+            <div ng-show="import && !parsing">
+                <div class="row">
+                    <div class="col-md-11 item-page">
+                        <h1 class="page-header">Instructions</h1><br>
+                        <h3>Format</h3>
+                        <p>Le seul format accepté pour importer des données dans le site de gestion est le format <strong>CSV</strong> (séparateur point:virgule).</p>
+                        <h3>Colonne</h3>
+                        <p>La première ligne du fichier CSV doit comporter les titres des colonnes. Si ces derniers ne sont pas présents, le premier item ne sera pas enregistré en base de données. Les éléments doivent êtres placés dans l'ordre suivant :<br>
+                            <span ng-show="data.type=='products'">
+                                <strong>Nom / Description / Image / Prix / Quantité / Quantité minimale / Marque / Fournisseur / Lien fournisseur / Documentation / Fiche technique / Salle / Etagère / Catégorie /</strong>
+                            </span>
+                            <span ng-show="data.type=='engines'">
+                                <strong>Nom / Description / Image / Statut / Documentation / Fiche technique / Salle /</strong>
+                            </span>
+                            <span ng-show="data.type=='tools'">
+                                <strong>Type/ Nom / Description / Image / Fournisseur / Unité / Quantité / Quantité minimale / Toxicité/ Date d'expiration / Date d'achat / Salle / Etagère /</strong>
+                            </span>
+                            <span ng-show="data.type=='expendables'">
+                                <strong>Nom / Marque / Fournisseur / Lien fournisseur / Unité / Quantité / Quantité minimale / Description / Image / Salle / Etagère /</strong>
+                            </span>
+                        </p>
+                        <div ng-show="data.type=='tools'">
+                            <h3>Type</h3>
+                            <p>Chaque outil a un type. Il doit être selon l'un des deux éléments suivants (à la majuscule près!) :<br>
+                            <span><strong>chemical / tool /</strong></span><br>Si tu as fait de manière différente dans ton fichier CSV, Ctrl+H est ton ami ;)</p>
+                        </div>
+                        <div ng-show="data.type=='tools'">
+                            <h3>Date</h3>
+                            <p> 
+                                <span ng-show="data.type=='tools'">Chaque produit chimique a une date d'achat et une date d'expiration.</span>
+                                <br>Une date doit s'écrire de la manière suivante : <strong>AAAA-MM-JJ</strong>. Dans le cas contraire une erreur apparaîtra.
+                            </p>
+                        </div>
+                        <div ng-show="data.type=='products'">
+                            <h3>Catégorie</h3>
+                            <p>Le nom de la catégorie doit être rempli selon les données présentes en base de données (à la majuscule près!). Actuellement, les différentes catégories sont :<br>
+                            <span ng-repeat="categorie in categories"><strong>{{categorie.name}} / </strong></span><br>Si tu as fait de manière différente dans ton fichier CSV, Ctrl+H est ton ami ;)</p>
+                        </div>
+                        <div ng-show="data.type=='products' || data.type=='expendables' || data.type=='engines' || data.type=='tools'">
+                            <h3>Salle</h3>
+                            <p>Le nom de la salle doit être rempli selon les données présentes en base de données (à la majuscule près!). Actuellement, les différentes salles sont :<br>
+                            <span ng-repeat="room in rooms"><strong>{{room.name}} / </strong></span><br>Si tu as fait de manière différente dans ton fichier CSV, Ctrl+H est ton ami ;)</p>
+                        </div>
+                        <div ng-show="data.type=='products' || data.type=='expendables' || data.type=='tools'">
+                            <h3>Etagère</h3>
+                            <p>Le nom de l'étagère doit être rempli selon les données présentes en base de données (à la majuscule près!). Une étagère est assignée à une salle. Voici la liste actuelle des étagères selon la salle.<br>
+                                <ul>
+                                    <div ng-repeat="room in rooms">
+                                        <li><h5>{{room.description}}</h5></li>
+                                        <span ng-repeat="wardrobe in wardrobes" ng-show="wardrobe.room_id==room.id"><strong>{{wardrobe.name}} / </strong></span>
+                                    </div>
+                                </ul>
+                            Si tu as fait de manière différente dans ton fichier CSV, Ctrl+H est ton ami ;)</p>
+                            <br><br>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+            <div ng-show="parsing">
+                <div class="row" ng-show="data.type=='products'">
+                    <!-- On lie la directive csvProducts aux données reçues de la Factory csvProducts -->
+                    <csv-products items="items" headers="headers"></csv-products>
+                </div>
+                <div class="row" ng-show="data.type=='engines'">
+                    <csv-engines items="items" headers="headers"></csv-engines>
+                </div>
+                <div class="row" ng-show="data.type=='expendables'">
+                    <csv-expendables items="items" headers="headers"></csv-expendables>
+                </div>
+                <div class="row" ng-show="data.type=='tools'">
+                    <csv-tools items="items" headers="headers"></csv-tools>
+                </div>
+                <div ng-show="inputErrors" class="col-md-12">
+                    <div class="alert alert-danger top10">
+                        <ul>
+                            <li ng-repeat="(input, errors) in inputErrors">
+                                <b>{{ input }} : <span ng-repeat="error in errors">{{ error }} </span></b>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+                <div ng-show="messageError" class="col-md-12">
+                    <div class="alert alert-danger top10">{{messageError}}</div>
+                </div>
+                <div ng-show="errorsFromFront.length" class="col-md-12">
+                    <div class="alert alert-danger top10">
+                        <p>Votre fichier CSV comporte des erreurs que vous devez corriger pour que ces éléments soient envoyés en base de données.</p><br>
+                        <ul>
+                            <li ng-repeat="error in errorsFromFront">
+                                <b>{{error}}</b>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="pull-right">
+                    <button class="btn btn-grey" ng-click="clearImport()">
+                        Annuler
+                    </button>
+                    <button class="btn btn-yellow" ng-click="saveCsv()">
+                        Importer
+                    </button>
+                    <br><br>
+                </div>
+        </div>
+    </div>
+</in-wrapper>

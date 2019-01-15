@@ -1,0 +1,15 @@
+production:
+    host: fablabutc.fr
+    stage: production
+    roles: app
+    user: samir
+    deploy_path: /var/www/vhosts/fablabutc.fr/gestion.fablabutc.fr
+    branch: master
+
+preview:
+    host: fablabutc.fr
+    stage: preview
+    roles: app
+    user: samir
+    deploy_path: /var/www/vhosts/fablabutc.fr/preview.gestion.fablabutc.fr
+    branch: preview

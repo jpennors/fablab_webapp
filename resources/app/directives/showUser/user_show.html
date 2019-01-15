@@ -1,0 +1,56 @@
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4>{{ user.firstName + " " + user.lastName }}</h4>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div class="col-lg-offset-4 col-lg-4" style="text-align: right">
+        <img class="user-picture" ng-src="https://demeter.utc.fr/portal/pls/portal30/portal30.get_photo_utilisateur?username={{user.login}}" alt="">
+      </div>
+    </div>
+    <div class="row">
+        <table class="col-sm-12">
+            <p>
+                <tr ng-if="user.email">
+                    <td class="col-sm-offset-1 col-sm-4"><b>Email:</b></td>
+                    <td>
+                        <a ng-href="mailto:{{ user.email }}">{{ user.email }}</a>
+                    </td>
+                </tr>
+            </p>
+            <p>
+                <tr ng-if="user.login">
+                    <td class="col-sm-offset-1 col-sm-4"><b>Login:</b></td>
+                    <td>
+                        {{ user.login }}
+                    </td>
+                </tr>
+            </p>
+            <p>
+                <tr ng-if="user.status">
+                    <td class="col-sm-offset-1 col-sm-4"><b>Statut:</b></td>
+                    <td>
+                        {{ user.status }}
+                    </td>
+                </tr>
+            </p>
+            <p>
+                <tr ng-if="user.role">
+                    <td class="col-sm-offset-1 col-sm-4"><b>Rôle:</b></td>
+                    <td>
+                        {{ user.role.name }}
+                    </td>
+                </tr>
+            </p>
+            <p>   
+                <tr ng-if="user.isCotisant">
+                    <td class="col-sm-offset-1 col-sm-4"><b>Cotisant:</b></td>
+                    <td>
+                        {{ user.isCotisant ? 'Oui' : 'Non' }}
+                    </td>
+                </tr>
+            </p>
+        </table>      
+    </div>
+  </div>
+</div>

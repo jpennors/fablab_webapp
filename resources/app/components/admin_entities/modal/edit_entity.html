@@ -1,0 +1,93 @@
+<div class="modal-print">   
+    <div class="modal-header">
+        <h2 ng-if="type=='create'" class="pull-left">
+          <i class="fa fa-plus fa-3x img-edit" aria-hidden="true"></i>
+          Ajouter une entité
+        </h2>
+        <h2 ng-if="type=='edit'" class="pull-left">
+          <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+          Modifier l'entité
+        </h2>
+        <a confirm="Êtes-vous sûr de supprimer ce produit?" class="pull-right btn-delete" role="button" ng-if="can('delete-address') && type=='edit'" ng-click="deleteModal()">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="modal-body">
+
+      <show-errors errors-data="errors"></show-errors>
+
+      <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Institution</label>
+            <div class="col-sm-9">
+              <input ng-model="entity.name" type="text" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Sigle (pour le numéro de facture)</label>
+              <div class="col-sm-9">
+                  <input ng-model="entity.abreviation" type="text" class="form-control">
+              </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Numéro d'asso</label>
+            <div class="col-sm-9">
+              <input ng-model="entity.asso_number" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Siren</label>
+            <div class="col-sm-9">
+              <input ng-model="entity.siren" type="text" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Email</label>
+              <div class="col-sm-9">
+                  <input ng-model="entity.mail" type="text" class="form-control">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Site</label>
+              <div class="col-sm-9">
+                  <input ng-model="entity.site" type="text" class="form-control">
+              </div>
+          </div>
+
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Adresse</label>
+            <div class="col-sm-9">
+                <textarea ng-model="entity.invoice_address" type="text" class="form-control"></textarea>
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Téléphone</label>
+              <div class="col-sm-9">
+                  <input ng-model="entity.phone" type="text" class="form-control">
+              </div>
+          </div>
+
+          <div class="form-group">
+              <label class="col-sm-3 control-label">Mentions légales (pour les factures)</label>
+              <div class="col-sm-9">
+                  <textarea ng-model="entity.legals" type="text" class="form-control"></textarea>
+              </div>
+          </div>
+      </form>
+
+    </div>
+    <div class="modal-footer">
+      <span ng-if="saving"><i class="fa fa-spinner fa-pulse fa-fw"></i>Enregistrement...</span>
+      <button class="btn btn-grey" ng-click="cancel()">Annuler</button>
+      <button class="btn btn-yellow" ng-click="save()"
+              ng-disabled="saving">
+              Enregistrer
+      </button>
+    </div>
+</div>

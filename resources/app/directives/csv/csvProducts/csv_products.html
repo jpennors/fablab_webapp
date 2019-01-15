@@ -1,0 +1,38 @@
+<div class="col-md-11 item-page">
+    <div class="table-responsive">
+        <table class="table table-hover table-striped col-md-12">
+            <div class="panel-heading">
+                <div class="col-md-4">
+                    <h2><img src="assets/img/barre.png" class="img-table">Résultat du parsage</h2>
+                </div>
+            </div>
+            
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th ng-repeat="header in headers.data">{{header}}<br><img src="assets/img/fleche.png" class="img-th"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="item in items.data">  
+                    <td class="col-md-1">{{$index + 1}}</td>                          
+                    <td class="col-md-1 td-list">{{item.name}}</td>
+                    <td class="col-md-3 td-list">{{item.description}}</td>
+                    <td class="col-md-1 td-list">{{item.picture}}</td>
+                    <td class="col-md-1 td-list">{{item.price}}</td>
+                    <td class="col-md-1 td-list">{{item.quantityUnit}}</td>
+                    <td class="col-md-1 td-list">{{item.remainingQuantity}}</td>
+                    <td class="col-md-1 td-list">{{item.minQuantity}}</td>
+                    <td class="col-md-1 td-list">{{item.brand}}</td>
+                    <td class="col-md-1 td-list">{{item.supplier}}</td>
+                    <td class="col-md-1 td-list">{{item.supplierLink}}</td>
+                    <td class="col-md-1 td-list">{{item.documentation}}</td>
+                    <td class="col-md-2 td-list">{{item.dataSheet}}</td>
+                    <td class="col-md-1 td-list">{{item.room}}</td>
+                    <td class="col-md-1 td-list">{{item.wardrobe}}</td>
+                    <td class="col-md-1 td-list">{{item.categorie}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

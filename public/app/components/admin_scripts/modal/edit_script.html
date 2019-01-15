@@ -1,0 +1,187 @@
+<div class="modal-print">   
+    <div class="modal-header">
+       <h2 ng-if="type=='create'" class="pull-left">
+          <i class="fa fa-plus fa-3x img-edit" aria-hidden="true"></i>
+          Nouvelle fonction de prix
+        </h2>
+        <h2 ng-if="type=='edit'" class="pull-left">
+          <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+          Modifier la fonction de prix
+        </h2>
+        <a confirm="Êtes-vous sûr de supprimer ce produit?" class="pull-right btn-delete" role="button" ng-if="can('delete-price') && type=='edit'" ng-click="deleteModal()">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+
+              <div class="panel-heading row">
+                <h3>
+                    <div class="col-md-6">
+                        Informations descriptives
+                    </div>
+                </h3>
+              </div>
+              <div class="panel-body row">
+                <form class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Nom</label>
+                    <div class="col-sm-9">
+                      <input ng-model="script.name" type="text" class="form-control" placeholder="Prix pour imprimante XXX">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Description</label>
+                    <div class="col-sm-9">
+                      <input ng-model="script.description" type="text" class="form-control" placeholder="Prend en compte le temps en ms, etc">
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            <hr>
+              <div class="panel-heading row">
+                <h3>
+                    <div class="col-md-10">
+                        Arguments de la fonction
+                    </div>
+                    <div class="pull-right">
+                        <img width="30px" src="assets/img/add.png" ng-if="can('add-price')" ng-click="addArg()">
+                    </div>
+                </h3>                    
+              </div>
+              <div class="panel-body row">
+                    <div ng-repeat="arg in script.args track by $index">
+                        <div class="panel panel-default">
+                          <div class="panel-body">
+
+                            <form class="form-horizontal" name="editArg">
+
+                              <div class="form-group form-group-sm">
+                                <label class="col-sm-2 control-label">Description</label>
+                                <div class="col-sm-10">
+                                  <input ng-model="arg.desc" class="form-control" type="text" placeholder="ex: Temps estimé en millisecondes">
+                                  <span id="helpType" class="help-block">Soyez précis sur l'unité de cette donnée</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group form-group-sm" ng-class="{'has-error' : editArg.name.$error.pattern}">
+                                <label class="col-sm-2 control-label">Variable</label>
+                                <div class="col-sm-10">
+                                  <input  ng-model="arg.name" ng-pattern="varRegex"
+                                          name="name" class="form-control" type="text" placeholder="ex: t, s, n, i, ..." aria-describedby="helpVar">
+                                  <span ng-if="editArg.name.$error.pattern"  id="helpVar" class="help-block">Mauvais nom de variable ! (ne doit pas contenir de caracètres spéciaux, pas d'espaces et doit commencer par une lettre ou un _ )</span>
+                                  <span ng-if="!editArg.name.$error.pattern" id="helpVar" class="help-block">Vous devrez utiliser exactement ce nom de variable dans le script</span>
+                                </div>
+                              </div>
+
+                              <div class="form-group form-group-sm">
+                                <label class="col-sm-2 control-label">Type</label>
+                                <div class="col-sm-10">
+                                  <select ng-model="arg.type" class="form-control" aria-describedby="helpType" required>
+                                    <option value="float">Réel</option>
+                                    <option value="int">Entier</option>
+                                    <option value="list">Liste</option>
+                                  </select>
+                                  <div ng-show="arg.type== 'list'">
+                                      <h5>Veuillez indiquer les éléments de la liste</h5>
+                                      <input ng-model="arg.listChoices" type="text" class="form-control">
+                                      <span id="helpType" class="help-block">Choix séparés par des virgules (ex: étudiant, professeur)</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="form-group">
+                                <label class="col-sm-2 control-label">
+                                  Argument publique?
+                                </label>
+                                <div class="col-sm-10">
+                                  <input type="checkbox" ng-model="arg.permission">
+                                </div>   
+                              </div>
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <div class="text-center">
+                                    <button class="btn btn-grey" ng-click="delArg(arg)">Supprimer</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+
+                    </div>
+              </div>
+
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h3>Script de calcul</h3>
+              </div>
+              <div class="panel-body">
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <p class="lead">Conseils</p>
+                    <p>Le langage que vous devez utiliser est le <a href="https://openclassrooms.com/courses/dynamisez-vos-sites-web-avec-javascript" target="_blank">JavaScript</a>.</p>
+                    <ul>
+                      <li>
+                        Vous devez <b>obligatoirement</b> conserver la structure de départ:<br>
+                        <pre>(function(args){ ... });</pre>
+                      </li>
+                      <li>
+                        Vous <b>devez</b> utiliser les variables définies précédemment de la manière suivante:<br>
+                        <pre>var t = args["t"]; // Pour récupérer le contenu de variable associé au symbole t</pre>
+                      </li>
+                      <li>
+                        Vous pouvez créer des variables pour vous aider, par <b>exemple</b>:<br>
+                        <pre>var prixAlaSeconde = 0.30; // Pour fixer à 30 centimes le prix à la seconde d'un service</pre>
+                      </li>
+                      <li>
+                        Enfin, n'oubliez pas de retourner le résultat du calcul, qui doit être le <b>prix en euros</b>:<br>
+                        <pre>return prix; // la variable prix contient le résultat du calcul du prix</pre>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="row top15">
+                  <div class="col-md-12">
+                    <p class="lead">Script</p>
+                    <ui-codemirror ng-model="script.script" ui-codemirror-opts="editorOptions" ui-refresh="true"></ui-codemirror>
+                  </div>
+                </div>
+
+                <div class="row top15">
+                  <div class="col-md-12">
+                    <div ng-show="scriptErrors.length > 0" class="alert alert-danger" role="alert">
+                      <span ng-repeat="error in scriptErrors">
+                        Console: Erreur: <b>{{ error.description }}</b> <i>(ligne {{ error.lineNumber }})</i><br>
+                      </span>
+                    </div>
+                    <div ng-show="scriptErrors.length == 0" class="alert alert-success" role="alert">
+                      Console: syntaxe JavaScript valide
+                    </div>
+                    <div ng-show="argListError" class="alert alert-danger" role="alert">
+                      Argument: Au moins un argument de la fonction de prix est de type Liste et ne possède aucun élément de liste.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="text-center">
+                      <button class="btn btn-yellow" ng-click="save()" ng-disabled="scriptErrors.length > 0 || saving">Enregistrer</button>
+                    </div>
+                  </div>
+                </div>
+
+                </div>
+                </div>  
+                <div ng-show="errors && !saving" class="row">
+                    <show-errors errors-data="errors"></show-errors>
+                </div>   
+            </div>
+        </div>
+    </div>
+</div>
+

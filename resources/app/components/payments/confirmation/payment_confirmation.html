@@ -1,0 +1,48 @@
+<in-wrapper>
+
+<div ng-controller="paymentConfirmationCtrl" class="row">
+	
+	<h1 ng-if="transaction.status=='V'" class="page-header"><img src="assets/img/handshake.png" class="img-title">Confirmation de paiement</h1>
+	<h1 ng-if="transaction.status=='W'" class="page-header"><i class="fa fa-times" aria-hidden="true">Paiement non effectué</i></h1>
+	<h1 ng-if="transaction.status=='A'" class="page-header"><i class="fa fa-times" aria-hidden="true">Annulé</i></h1>
+
+	<div ng-if="loading" class="text-center" style="margin-top: 100px">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+	</div>
+
+	<div ng-if="transaction">
+        <div class="col-sm-offset-2 col-sm-8 col-md-offset-4 col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="center" ng-if="transaction.status=='V'">Confirmation Nemopay</h3>
+                    <h3 class="center" ng-if="transaction.status=='W'">Commande non payée</h3>
+                    <h3 class="center" ng-if="transaction.status=='A'">Paiement annulé</h3>
+                </div>
+                <div class="panel-body" ng-if="transaction.status=='V' || transaction.status=='A'">
+                	<div class="form-group row">
+			            <label class="col-sm-4 control-label print_item">N° Transaction</label>
+			            <label class="col-sm-8">
+			                {{transaction.id}}
+			            </label>
+			        </div>
+			        <div class="form-group row">
+			            <label class="col-sm-4 control-label print_item">Créé le</label>
+			            <label class="col-sm-8">
+			                {{transaction.created | date :  "dd/MM/yyyy 'à' hh:mm"}}
+			            </label>
+			        </div>
+			        <div class="form-group row">
+			            <label class="col-sm-4 control-label print_item">Email</label>
+			            <label class="col-sm-8">
+			                {{transaction.email}}
+			            </label>
+			        </div>
+			    </div>
+			    <div class="panel-body center" ng-if="transaction.status=='W'">
+			    	<a class="btn btn-adaptable-yellow" href="https://payutc.nemopay.net/validation?tra_id={{transaction.id}}">Retenter</a>
+			    </div>
+            </div>
+        </div>
+    </div>
+
+</in-wrapper>

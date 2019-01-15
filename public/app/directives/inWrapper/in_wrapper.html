@@ -1,0 +1,129 @@
+<div id="wrapper">
+
+    <nav class="navbar navbar-default navbar-static-top " role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand " style="" href="#/">
+                <img height="80px" src="assets/img/logo-fablab.png" alt="Logo Fablab">
+            </a>
+
+            <div class="div-search">
+                <div search id="search"></div>
+            </div>
+
+        </div>
+
+        <ul class="nav navbar-top-links navbar-right">
+            <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                    <i><img height="40px" src="assets/img/compte.png"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a href="#/account" class="dropdown-elmt-account"><i class="fa fa-user fa-fw"></i> Mon compte</a></li>
+                    <li><a href="https://gitlab.utc.fr/smarchie/fablab-webapp/issues/new" target="_blank" class="dropdown-elmt-account"><i class="fa fa-bug fa-fw"></i> Signaler un bug</a></li>
+                    <li><a href="#/logout" class="dropdown-elmt-account"><i class="fa fa-sign-out fa-fw"></i> Déconnexion</a></li>
+                </ul>
+            </li>
+        </ul>
+
+        <div class="navbar-default sidebar" role="navigation">
+            <div class="sidebar-nav navbar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li>
+                        <a href="#/" class="menuelmt"><i class="fa fa-home img"></i> Tableau de bord</a>
+                    </li>
+                    <li ng-show="$root.can('list-product')">
+                        <a href="#/products" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/produit.png"></i> Produits</a>
+                    </li>
+                    <li ng-show="$root.can('list-tool')">
+                        <a href="#/tools" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/tool.png"></i> Outils</a>
+                    </li>
+                    <li ng-show="$root.can('list-expendable')">
+                        <a href="#/expendables" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/expendable.png"></i> Consommables</a>
+                    </li>
+
+                    <li ng-show="$root.can('list-engine')">
+
+                        <a role="button" ng-init="isCollapsed1 = true" ng-click="isCollapsed1 = !isCollapsed1; isCollapsed2 = true; isCollapsed3 = true; isCollapsed4 = true" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/machine.png"></i> Machines<span class="fa arrow"></span></a>
+                        <ul uib-collapse="isCollapsed1" class="nav nav-second-level" ng-class="{collapse1: isCollapsed1}">
+                            <li ng-show="$root.can('list-engine')">
+                                <a href="#/engines" class="menuelmt-second"><i><img class="nav-icone" width="17px" src="assets/img/barre.png"></i> Liste des machines</a>
+                            </li>
+                            <li ng-show="$root.can('list-maintenance')">
+                                <a href="" class="menuelmt-second"><i><img class="nav-icone" width="17px" src="assets/img/maintenance.png"></i> Maintenance</a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                    <li>
+                        <a role="button" ng-init="isCollapsed2 = true" ng-click="isCollapsed2 = !isCollapsed2; isCollapsed1 = true; isCollapsed3 = true; isCollapsed4 = true" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/commandes.png"></i> Commandes<span class="fa arrow"></span></a>
+                        <ul uib-collapse="isCollapsed2" class="nav nav-second-level" ng-class="{collapse2: isCollapsed2}">
+                            <li ng-show="$root.can('order-CAS-member')">
+                                <a href="#/mypurchases" class="menuelmt-second"><i><img class="nav-icone" width="17px" src="assets/img/commande_en_cours.png"></i> Mes commandes</a>
+                            </li>
+                            <li ng-show="$root.can('order-for-someone')">
+                                <a href="#/purchases" class="menuelmt-second"><i><img class="nav-icone" width="17px" src="assets/img/commande_en_cours.png"></i> Commandes en cours</a>
+                            </li>
+                            <li ng-show="$root.can('order-CAS-member')">
+                                <a href="#/purchases/create" class="menuelmt-second"><i><img class="nav-icone" width="17px" src="assets/img/passer_commande.png"></i> Passer commande</a>
+                            </li>
+                            <li ng-show="$root.can('order-for-someone')">
+                                <a href="#/purchases/history" class="menuelmt-second"><i><img class="nav-icone" height="16px" src="assets/img/historique.png"></i> Historique</a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+
+                    <li ng-show="$root.can('super-admin')">
+                        <a role="button" ng-init="isCollapsed4 = true" ng-click="isCollapsed4 = !isCollapsed4; isCollapsed1 = true; isCollapsed2 = true; isCollapsed3 = true" class="menuelmt"><i class="fa fa-university img"></i> Administration<span class="fa arrow"></span></a>
+                        <ul uib-collapse="isCollapsed4" class="nav nav-second-level" ng-class="{collapse4: isCollapsed4}">
+                            <li ng-show="$root.can('edit-administrative')">
+                                <a href="#/admin/settings" class="menuelmt-second"><img class="nav-icone" width="17px" src="assets/img/setting.png">Général</a>
+                            </li>
+                            <li ng-show="$root.can('list-user')">
+                                <a href="#/admin/users" class="menuelmt-second"><img class="nav-icone" width="17px" src="assets/img/user_config.png">Utilisateurs</a>
+                            </li>
+                            <li ng-show="$root.can('edit-role')">
+                                <a href="#/admin/roles" class="menuelmt-second"><img class="nav-icone" height="18px" src="assets/img/shield.png"></i>Rôles</a>
+                            </li>
+                            <li ng-show="$root.can('edit-price')">
+                                <a href="#/admin/scripts" class="menuelmt-second"><img class="nav-icone" width="17px" src="assets/img/money.png"></i>Prix</a>
+                            </li>
+                            <li ng-show="$root.can('edit-service')">
+                                <a href="#/admin/services" class="menuelmt-second"><img class="nav-icone" width="17px" src="assets/img/handshake.png"></i>Services</a>
+                            </li>
+
+                            <li ng-show="$root.can('edit-address')">
+                                <a href="#/admin/addresses" class="menuelmt-second"><img class="nav-icone" height="19px" src="assets/img/address.png">Adresses</a>
+                            </li>
+                            <li ng-show="$root.can('edit-entity')">
+                                <a href="#/admin/entities" class="menuelmt-second"><img class="nav-icone" height="17px" src="assets/img/entity.png">Entités</a>
+                            </li>
+                        </ul>
+
+                    </li>
+                    <li ng-show="$root.can('list-data')">
+                        <a href="#/data" class="menuelmt"><i class="fa fa-exchange" aria-hidden="true"><img class="nav-icone"></i> Import / Export</a>
+                    </li>
+
+                    <li ng-show="$root.can('read-doc')">
+                        <a href="#/help" class="menuelmt"><i><img class="nav-icone" width="17px" src="assets/img/help.png"></i> Aide</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div id="page-wrapper" ng-transclude>
+    </div>
+
+
+
+</div>

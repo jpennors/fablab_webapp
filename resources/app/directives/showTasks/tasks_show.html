@@ -1,0 +1,110 @@
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <a class="pull-right task-new" role="button" ng-click="newTask()"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+        <h2 style="text-align: center"><img src="assets/img/task.png" class="img-dashboard" >Todo List</h2>
+
+        <div class="list-group scrollable-dashboard-list">
+            <a ng-repeat="task in tasks | orderBy : 'deadline_date'" class="list-group-item list-dash" role="button" uib-popover-template="dynamicPopover.templateUrl" popover-title="{{dynamicPopover.title}}"
+            popover-trigger="{ 'mouseenter': 'mouseleave'}" ng-mouseover="detectTask(task)" ng-click="modifyTask(task)">
+            <table class="task-list-table">
+                <tr>
+                    <td class="task-list-img">
+                        <div class="pull-left center-block clearfix task-icon">
+                            <span class="status-icon icon-green" ng-style="iconColor()" ng-if="task.percents_realized==100"></span>
+                            <span class="status-icon icon-yellow" ng-style="iconColor()" ng-if="task.percents_realized<100 && task.percents_realized>=50"></span>
+                                <span class="status-icon icon-red" ng-style="iconColor()" ng-if="task.percents_realized<50"></span>
+                            </div>
+                        </td>
+                        <td class="task-list-info">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h4 class="list-group-item-heading">{{ task.name }}</h4>
+                                    <p class="list-group-item-text">{{ task.description }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p class="list-group-item-text task-list-col-2-text">Pour le :</p>
+                                    <p class="list-group-item-text task-list-col-2-date">{{ task.deadline_date.toString().replace(' ', 'T') | date :  "dd/MM/yyyy" }}</p>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!--Popover -->
+<script type="text/ng-template" id="myPopoverTemplate.html">
+    <div>
+        <p>Lancé par :
+            <i ng-hide="dynamicPopover.author">utilisateur supprimé</i>
+            <a ng-show="dynamicPopover.author" href="#/users/{{ dynamicPopover.author.id }}">
+                {{ dynamicPopover.author.firstName }} {{ dynamicPopover.author.lastName }}
+            </a>
+            <p>
+                <p>Deadline : {{ dynamicPopover.deadline.toString().replace(' ', 'T') | date :  "dd/MM/yyyy" }}</p>
+            </div>
+            <div><uib-progressbar class="progress-striped" value="dynamicPopover.progress">{{ dynamicPopover.progress }} %</uib-progressbar></div>
+        </script>
+
+        <!--Modal -->
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-print">
+                <div class="modal-header">
+                    <h2>
+                        <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+                        Tâche
+                        <a confirm="Êtes-vous sûr de supprimer cette tâche?" class="pull-right" role="button" ng-if="$ctrl.canDelete" ng-click="$ctrl.delete()">
+                            <i class="fa fa-trash-o" aria-hidden="true"></i>
+                        </a>
+                    </h2>
+                </div>
+                <div class="modal-body" id="modal-body">
+                    <form role="form">
+                        <div class="form-group">
+                            <label class="control-label print_item">Nom de la tâche</label>
+                            <input class="form-control" type="text" name="name" ng-model="$ctrl.res.name">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label print_item">Description de la tâche</label>
+                            <textarea class="form-control" type="text" name="description" ng-model="$ctrl.res.description"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label class="control-label print_item">Deadline</label>
+                                <p class="input-group" style="margin-top:13px;">
+                                    <input type="text" class="form-control" uib-datepicker-popup ng-model="$ctrl.res.deadline_date" is-open="$ctrl.popupDate.opened" datepicker-options="$ctrl.dateOptions" close-text="Close" />
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn" ng-click="$ctrl.openPopupDate()" style="background-color: rgb(89,89,89)"><i class="glyphicon glyphicon-calendar" style="color: #FFFDF4"></i></button>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <div uib-timepicker ng-model="$ctrl.res.deadline_time" ng-change="changed()" show-meridian="false"></div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-lg-4">
+                                <label class="control-label print_item">Progression</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="number" name="progress" ng-model="$ctrl.res.progress" min="0" max="100"><div class="input-group-addon">%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-grey" type="button" ng-click="$ctrl.cancel()">Annuler</button>
+                    <button class="btn btn-yellow" type="button" ng-click="$ctrl.ok()">Enregistrer</button>
+                </div>
+            </div>
+        </script>

@@ -1,0 +1,39 @@
+<in-wrapper>
+    <div ng-controller="adminEntitiesCtrl" class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header"><img src="assets/img/entity.png" class="img-title">
+            Gestion des entités
+            </h1>
+        </div>
+        <div class="row">
+            <div class="col-md-11 item-page">
+                <div class="row panel-heading">
+                    <h2>
+                        <div class="col-md-4">
+                            <img src="assets/img/barre.png" class="img-table">Liste des entités
+                        </div>
+                        <div class="form-group col-md-offset-1 col-md-4">
+                            <input ng-model="entitySearch" type="text" class="form-control search-bar" placeholder="Rechercher une entité">
+                        </div>
+                        <div class="pull-right">
+                            <img width="30px" src="assets/img/add.png" ng-if="can('add-entity')" ng-click="open(entity, 'create')">
+                        </div>
+                    </h2>
+                </div>
+                <div class="panel-body">
+                    <div class="list-group">
+                        <button ng-repeat="entity in entities | filter:entitySearch"
+                              ng-click="open(entity, 'edit')"
+                              ng-class="{active: entity.selected}"
+                              type="button" class="list-group-item" ng-if="can('edit-price')">
+                            <b>{{ entity.name}}</b> 
+                            ({{entity.abreviation}})
+                            <br/>
+                            <span style="white-space: pre-line;">{{ entity.address }}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</in-wrapper>

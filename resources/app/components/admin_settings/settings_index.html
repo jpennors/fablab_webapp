@@ -1,0 +1,49 @@
+<in-wrapper>
+<div ng-controller="adminSettingsCtrl">
+  <div class="row" ng-if="can('super-admin')">
+    <div class="col-lg-12">
+        <h1 class="page-header"><img src="assets/img/setting.png" class="img-title"> 
+          Administration générale
+        </h1>
+    </div>
+
+    <div ng-show="errors && !saving" class="row">
+      <div class="col-md-offset-1 col-md-10">
+        <div class="alert alert-danger">
+          Une erreur est survenue : {{ errors.message }}
+        </div>
+      </div>
+    </div>
+
+    <div ng-show="success && !saving && !error" class="row">
+      <div class="col-md-offset-1 col-md-10">
+        <div class="alert alert-success">
+          Enregistrement réussi !
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-11 item-page">
+        <br><br>
+        <div class="row">
+          <form class="form-horizontal">
+            <div ng-repeat="admin in admins" class="form-group">
+              <label class="col-sm-2 control-label">{{ admin.desc }}</label>
+              <div class="col-sm-8">
+                <textarea ng-model="admin.value" class="form-control" rows="3"></textarea>
+              </div>
+            </div>
+
+            <div class="form-group text-center">
+              <button class="btn btn-yellow" ng-disabled="saving" ng-click="update()">Enregistrer</button>
+            </div>
+            <br>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- /.row -->
+</in-wrapper>
