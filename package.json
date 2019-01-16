@@ -12,7 +12,7 @@
     "gulp-connect": "latest",
     "gulp-notify": "^2.2.0",
     "gulp-strip-comments": "^2.5.2",
-    "laravel-elixir": "^5.0.0"
+    "laravel-elixir": "6.0.0-18"
   },
   "dependencies": {
     "moment": "^2.23.0"
