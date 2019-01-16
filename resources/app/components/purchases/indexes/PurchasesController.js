@@ -7,6 +7,7 @@ app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $
         *  Initialisation de la page
         */
         $scope.user = $rootScope.auth.member;
+        $scope.membreCAS = $rootScope.isExtern();
 
         $scope.selectedTab = 'commandes';
 
@@ -46,11 +47,14 @@ app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $
         /**
         *   Chargement des Purchased Elements
         */
-        PurchasedElements.get({}, function(res){
-            $scope.elements = res.data;
-        }, function(error){
-            ErrorHandler.alert(error);
-        });
+        if (!$scope.membreCAS) {
+            PurchasedElements.get({}, function(res){
+                $scope.elements = res.data;
+            }, function(error){
+                ErrorHandler.alert(error);
+            });
+        }
+            
 
 
 

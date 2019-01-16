@@ -11,6 +11,8 @@ use App\Categorie;
 use Payutc;
 use Validator;
 use Log;
+use Auth;
+use Gate;
 use Exception;
 
 use App\Purchase;
@@ -98,57 +100,64 @@ class PayutcController extends Controller
         // Récupération de la purchase liée à l'id
         $p = Purchase::find($id);
 
-        // Vérification de l'existence de la purchase
-        if (!$p) {
-            return response()->error("Id $id doesn't found", 404);
+        if(Gate::check('pay-someone-payutc') || $p->login == Auth::user()->login){
+
+            // Vérification de l'existence de la purchase
+            if (!$p) {
+                return response()->error("Id $id doesn't found", 404);
+            }
+
+            // Vérifie que la facture n'a pas déjà été payée
+            if($p->paid)
+                return response()->error("La facture a déjà été payée", 409);
+
+            $validator = Validator::make($request->all(), [
+              'return_url' => 'required|string',
+            ]);
+
+            // Si la vérification échoue, renvoie d'une erreur
+            if ($validator->fails())
+                return response()->error('Mauvais inputs', 422, $validator->errors());
+
+
+            $objects = Payutc::getServicesElement($p);
+
+            // Procède aux requêtes de paiement vers Nemopay
+            try {
+
+                // Création d'une transaction avec Payutc
+                $res = Payutc::payCard($objects, $request->return_url);
+
+            } catch (PayutcException $e) {
+          
+                Log::error($e->getMessage());
+                return response()->error($e->getMessage(), $e->getStatus());
+        
+            } catch (\Exception $e) {
+          
+                // Au cas où une PayutcException n'est pas raised
+                Log::error($e->getMessage());
+                return response()->error("Impossible d'effectuer le paiement, erreur interne.", 500);
+        
+            }
+
+            // On enregistre la transaction, pas encore payé
+            $transaction = new Transaction([
+                'name'          => $res['name'],
+                'session_id'    => $res['session_id'],
+                'payutc_id'     => $res['payutc_id'],
+                'purchase_id'   =>  $p->id,
+                'paid'          => false
+            ]);
+            $transaction->save();
+
+            // On renvoie l'URL pour payer la transaction
+            return response()->success($res['url']);
+
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
 
-        // Vérifie que la facture n'a pas déjà été payée
-        if($p->paid)
-            return response()->error("La facture a déjà été payée", 409);
-
-        $validator = Validator::make($request->all(), [
-          'return_url' => 'required|string',
-        ]);
-
-        // Si la vérification échoue, renvoie d'une erreur
-        if ($validator->fails())
-            return response()->error('Mauvais inputs', 422, $validator->errors());
-
-
-        $objects = Payutc::getServicesElement($p);
-
-        // Procède aux requêtes de paiement vers Nemopay
-        try {
-
-            // Création d'une transaction avec Payutc
-            $res = Payutc::payCard($objects, $request->return_url);
-
-        } catch (PayutcException $e) {
-      
-            Log::error($e->getMessage());
-            return response()->error($e->getMessage(), $e->getStatus());
-    
-        } catch (\Exception $e) {
-      
-            // Au cas où une PayutcException n'est pas raised
-            Log::error($e->getMessage());
-            return response()->error("Impossible d'effectuer le paiement, erreur interne.", 500);
-    
-        }
-
-        // On enregistre la transaction, pas encore payé
-        $transaction = new Transaction([
-            'name'          => $res['name'],
-            'session_id'    => $res['session_id'],
-            'payutc_id'     => $res['payutc_id'],
-            'purchase_id'   =>  $p->id,
-            'paid'          => false
-        ]);
-        $transaction->save();
-
-        // On renvoie l'URL pour payer la transaction
-        return response()->success($res['url']);
     }
 
 
@@ -156,7 +165,7 @@ class PayutcController extends Controller
     * Get Transaction information
     *
     */
-    public function getTransactionInfo(){
+    protected function getTransactionInfo(){
 
         // Appel vers Payutc pour récupérer les informations
         $info = Payutc::getTransactionInfo();
@@ -176,6 +185,7 @@ class PayutcController extends Controller
     */
     public function categories()
     {
+        $this->authorize('list-product');
 
         $data = Payutc::getCategories();
         return response()->success($data);

@@ -16,6 +16,7 @@ use Validator;
 use File;
 use Illuminate\Support\Facades\Storage;
 use Response;
+use Gate;
 
 
 class PurchasedElementsController extends Controller
@@ -23,6 +24,8 @@ class PurchasedElementsController extends Controller
 
     public function index()
     {
+
+        $this->authorize('view-all-entity-purchase');
 
         $elements = PurchasedElement::where("purchasable_type", "<>", "App\Product")->get();
         $maxVersions = [];
@@ -60,102 +63,111 @@ class PurchasedElementsController extends Controller
 
         $p = Purchase::findOrFail($request->input('purchase_id'));
 
-        // Création de l'instance reliée à la Purchase
-        $pe = new PurchasedElement();
-        $pe->purchase()->associate($p);
+        if(Gate::check('order-for-someone') || $p->login == Auth::user()->login){
 
-        // Ajout du lien entre le Service/Product associé
- 
-        if ($request->input('purchasable_type') == 'service') {
-            Service::find($request->input('purchasable')["id"])->purchases()->save($pe);
-            $pe->args = $request->input('args');
-            $pe->deadline = $request->input('deadline');
-            $pe->comment = $request->input('comment');
-            $pe->status = $request->input('status');
-        } else {
-            Product::find($request->input('purchasable')["id"])->purchases()->save($pe);
+            // Création de l'instance reliée à la Purchase
+            $pe = new PurchasedElement();
+            $pe->purchase()->associate($p);
 
-            // Lorsqu'on achète un produit, le statut est automatiquement à 3
-            $pe->status = 3;
-
-            $prod = Product::findOrFail($request->input('purchasable')["id"]);
-            if(($prod->remainingQuantity - $request->input('purchasedQuantity')) < 0 ) {
-
-                return response()->error("Pas assez de ".$prod->name." disponible.", 422);
+            // Ajout du lien entre le Service/Product associé
+     
+            if ($request->input('purchasable_type') == 'service') {
+                Service::find($request->input('purchasable')["id"])->purchases()->save($pe);
+                $pe->args = $request->input('args');
+                $pe->deadline = $request->input('deadline');
+                $pe->comment = $request->input('comment');
+                $pe->status = $request->input('status');
             } else {
-                $prod->remainingQuantity -= $request->input('purchasedQuantity');
-                $prod->save();
+                Product::find($request->input('purchasable')["id"])->purchases()->save($pe);
+
+                // Lorsqu'on achète un produit, le statut est automatiquement à 3
+                $pe->status = 3;
+
+                $prod = Product::findOrFail($request->input('purchasable')["id"]);
+                if(($prod->remainingQuantity - $request->input('purchasedQuantity')) < 0 ) {
+
+                    return response()->error("Pas assez de ".$prod->name." disponible.", 422);
+                } else {
+                    $prod->remainingQuantity -= $request->input('purchasedQuantity');
+                    $prod->save();
+                }
             }
+
+            // Ajout des infos supplémentaires
+            // On utilise pas l'auto incrémentation car la clé d'un purchasedElement est (id, version)
+            $pe->id = PurchasedElement::all()->max('id')+1;
+
+            $pe->purchasedQuantity = $request->input('purchasedQuantity');
+            $pe->suggestedPrice = $request->input('suggestedPrice');
+            $pe->finalPrice = $request->input('finalPrice');
+            $pe->login_edit = $p->login;
+            $pe->version = 1;
+
+            try {
+                $pe->save();
+            } catch(\Exception $e) {
+                return response()->error("Can't save the purchased element", 500);
+            }
+            return response()->success(array("newId" => $pe->id), 201);
+            
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-
-        // Ajout des infos supplémentaires
-        // On utilise pas l'auto incrémentation car la clé d'un purchasedElement est (id, version)
-        $pe->id = PurchasedElement::all()->max('id')+1;
-
-        $pe->purchasedQuantity = $request->input('purchasedQuantity');
-        $pe->suggestedPrice = $request->input('suggestedPrice');
-        $pe->finalPrice = $request->input('finalPrice');
-        $pe->login_edit = $p->login;
-        $pe->version = 1;
-
-        try {
-            $pe->save();
-        } catch(\Exception $e) {
-            return response()->error("Can't save the purchased element", 500);
-        }
-        return response()->success(array("newId" => $pe->id), 201);
-        
     }
 
 
     public function updateElement(Request $request) {
 
         $p = Purchase::findOrFail($request->input("purchase_id"));
-        // return response()->success("pouletto");
 
-        // Création de l'instance reliée à la Purchase
-        $pe = new PurchasedElement();
-        $pe->purchase()->associate($p);
+        if(Gate::check('edit-order') || $p->login == Auth::user()->login){
+
+            // Création de l'instance reliée à la Purchase
+            $pe = new PurchasedElement();
+            $pe->purchase()->associate($p);
 
 
-        // Ajout du lien entre le Service/Product associé
-        if($request->input("purchasable_type") == "service" || $request->input("purchasable_type") == "App\Service") {
-            Service::find($request->input("purchasable_id"))->purchases()->save($pe);
-            $pe->args = $request->input("args");
-            $pe->deadline = ($request->has("deadline") ? $request->input("deadline") : null);
-            $pe->comment = ($request->has("comment") ? $request->input("comment") : null);
-        }
-        else
-            Product::find($request->input("purchasable_id"))->purchases()->save($pe);
-
-        // Ajout des infos supplémentaires
-        $pe->id = $request->input("id");
-        $pe->purchasedQuantity = $request->input("purchasedQuantity");
-        $pe->suggestedPrice = $request->input("suggestedPrice");
-        $pe->finalPrice = $request->input("finalPrice");
-        $pe->login_edit = $request->input("login_edit");
-        $pe->version = $request->input("version");
-        $pe->status = $request->input("status");
-
-        try {
-            $pe->save();
-        } catch(\Exception $e) {
-            return response()->error("Can't update the purchased element", 500);
-        }
-
-        // Suppression des fichiers
-        if($request->has('deleted_files')){
-            foreach ($request->input('deleted_files') as $deleted_file) {
-                $this->deleteFile($pe->id, $deleted_file);
+            // Ajout du lien entre le Service/Product associé
+            if($request->input("purchasable_type") == "service" || $request->input("purchasable_type") == "App\Service") {
+                Service::find($request->input("purchasable_id"))->purchases()->save($pe);
+                $pe->args = $request->input("args");
+                $pe->deadline = ($request->has("deadline") ? $request->input("deadline") : null);
+                $pe->comment = ($request->has("comment") ? $request->input("comment") : null);
             }
-        }
+            else
+                Product::find($request->input("purchasable_id"))->purchases()->save($pe);
 
-        // Suppression du répertoire quand le service est terminé        
-        if($pe->status == 4 || $pe->status == 5 || $pe->status == 3){
-            $this->deleteDirectory($pe->id);
+            // Ajout des infos supplémentaires
+            $pe->id = $request->input("id");
+            $pe->purchasedQuantity = $request->input("purchasedQuantity");
+            $pe->suggestedPrice = $request->input("suggestedPrice");
+            $pe->finalPrice = $request->input("finalPrice");
+            $pe->login_edit = $request->input("login_edit");
+            $pe->version = $request->input("version");
+            $pe->status = $request->input("status");
+
+            try {
+                $pe->save();
+            } catch(\Exception $e) {
+                return response()->error("Can't update the purchased element", 500);
+            }
+
+            // Suppression des fichiers
+            if($request->has('deleted_files')){
+                foreach ($request->input('deleted_files') as $deleted_file) {
+                    $this->deleteFile($pe->id, $deleted_file);
+                }
+            }
+
+            // Suppression du répertoire quand le service est terminé        
+            if($pe->status == 4 || $pe->status == 5 || $pe->status == 3){
+                $this->deleteDirectory($pe->id);
+            }
+            
+            return response()->success($pe);
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-        
-        return response()->success($pe);
     }
 
 
@@ -165,30 +177,38 @@ class PurchasedElementsController extends Controller
 
     public function saveFile(Request $request, $id) {
 
-        try {
+        $p = Purchase::findOrFail($id);
 
-            $nb = PurchaseFile::where('purchased_id', $id)->count() + 1;
-            $file = $request->file('file');
-            $fileName = $nb.'_'.$file->getClientOriginalName();
+        if(Gate::check('edit-order') || Gate::check('order-for-someone') || $p->login == Auth::user()->login){
 
-            // Enregistrement du fichier
-            Storage::putFileAs('public/purchased/'.$id, $file, $fileName);
+            try {
 
-            // Une fois le fichier créé, on crée le PurchaseFile
-            $p = new PurchaseFile();
-            $p->nom  = $fileName;
-            $p->purchased_id = $id;
-            $p->save();
+                $nb = PurchaseFile::where('purchased_id', $id)->count() + 1;
+                $file = $request->file('file');
+                $fileName = $nb.'_'.$file->getClientOriginalName();
 
-        } catch(\Exception $e) {
-            // return response()->inputError("Can't delete the files", 500);
+                // Enregistrement du fichier
+                Storage::putFileAs('public/purchased/'.$id, $file, $fileName);
+
+                // Une fois le fichier créé, on crée le PurchaseFile
+                $p = new PurchaseFile();
+                $p->nom  = $fileName;
+                $p->purchased_id = $id;
+                $p->save();
+
+            } catch(\Exception $e) {
+                // return response()->inputError("Can't delete the files", 500);
+            }
+
+            return response()->success();
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-
-        return response()->success();
     }
 
 
-    public function deleteDirectory($id){
+    private function deleteDirectory($id){
+
         try {
 
             Storage::deleteDirectory('public/purchased/'.$id);
@@ -204,7 +224,8 @@ class PurchasedElementsController extends Controller
         }
     }
 
-    public function deleteFile($id, $fileName){
+    private function deleteFile($id, $fileName){
+
         try {
 
             Storage::delete('public/purchased/'.$id.'/'.$fileName);
@@ -223,26 +244,41 @@ class PurchasedElementsController extends Controller
 
     public function getFileList(Request $request, $id) {
 
-        $files = PurchaseFile::where('purchased_id', $id)->pluck('nom');
+        $p = Purchase::findOrFail($id);
 
-        return response()->success($files);
+        if(Gate::check('view-all-entity-purchase') || $p->login == Auth::user()->login){
+
+            $files = PurchaseFile::where('purchased_id', $id)->pluck('nom');
+
+            return response()->success($files);
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
+        }
     }
 
 
     public function getFile(Request $request, $id, $fileName) {
+
+        $p = Purchase::findOrFail($id);
+
+        if(Gate::check('view-all-entity-purchase') || $p->login == Auth::user()->login){
         
-        $path = 'public/purchased/'.$id.'/'.$fileName;
-        try {
-            $file = Storage::get($path);
-        } catch (Exception $e) {
-            
+            $path = 'public/purchased/'.$id.'/'.$fileName;
+            try {
+                $file = Storage::get($path);
+            } catch (Exception $e) {
+                
+            }
+
+            $type = File::mimeType(storage_path('app/'.$path));
+
+            $response = Response::make($file, 200);
+            $response->header("Content-Type", $type);
+            return $response;
+
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-
-        $type = File::mimeType(storage_path('app/'.$path));
-
-        $response = Response::make($file, 200);
-        $response->header("Content-Type", $type);
-        return $response;
     }
 
 }

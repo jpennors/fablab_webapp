@@ -49,27 +49,33 @@ class PurchasesController extends Controller
      */
     public function store(Request $request)
     {
-        // Validation des inputs
-        $validator = Validator::make($request->all(), Purchase::$rules);
 
-        // Mauvaises données, on retourne les erreurs
-        if($validator->fails()) {
-            return response()->inputError($validator->errors(), 422);
+        if (Gate::check('order-for-someone') || Gate::check('order-CAS-member')){
+
+            // Validation des inputs
+            $validator = Validator::make($request->all(), Purchase::$rules);
+
+            // Mauvaises données, on retourne les erreurs
+            if($validator->fails()) {
+                return response()->inputError($validator->errors(), 422);
+            }
+
+            $purchase = new Purchase();
+            $purchase->association = $request['association'];
+            $purchase->entity_id = $request['entity_id'];
+            $purchase->login = $request['login'];
+
+
+
+            try {
+                $purchase->save();
+            } catch(\Exception $e) {
+                return response()->error("Can't save the resource", 500);
+            }
+            return response()->success(array("newId" => $purchase->id), 201);
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-
-        $purchase = new Purchase();
-        $purchase->association = $request['association'];
-        $purchase->entity_id = $request['entity_id'];
-        $purchase->login = $request['login'];
-
-
-
-        try {
-            $purchase->save();
-        } catch(\Exception $e) {
-            return response()->error("Can't save the resource", 500);
-        }
-        return response()->success(array("newId" => $purchase->id), 201);
     }
 
 
@@ -82,7 +88,14 @@ class PurchasesController extends Controller
     public function show($id)
     {
         $data = Purchase::findOrFail($id);
-        return response()->success($data);
+     
+        if(Gate::check('view-all-entity-purchase') || $data->login == Auth::user()->login){
+            return response()->success($data);
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
+        }
+
+        
     }
 
 
@@ -207,67 +220,6 @@ class PurchasesController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Auth\Access\AuthorizationException
-     */
-    public function updateElement(Request $request, $id)
-    {
-
-        $p = Purchase::findOrFail($request->input("purchase_id"));
-        // return response()->success("pouletto");
-
-        // Création de l'instance reliée à la Purchase
-        $pe = new PurchasedElement();
-        $pe->purchase()->associate($p);
-
-
-        // Ajout du lien entre le Service/Product associé
-        if($request->input("purchasable_type") == "service" || $request->input("purchasable_type") == "App\Service") {
-            Service::find($request->input("purchasable_id"))->purchases()->save($pe);
-            $pe->args = $request->input("args");
-            $pe->deadline = ($request->has("deadline") ? $request->input("deadline") : null);
-            $pe->comment = ($request->has("comment") ? $request->input("comment") : null);
-        }
-        else
-            Product::find($request->input("purchasable_id"))->purchases()->save($pe);
-
-        // Ajout des infos supplémentaires
-        $pe->id = $request->input("id");
-        $pe->purchasedQuantity = $request->input("purchasedQuantity");
-        $pe->suggestedPrice = $request->input("suggestedPrice");
-        $pe->finalPrice = $request->input("finalPrice");
-        $pe->login_edit = $request->input("login_edit");
-        $pe->version = $request->input("version");
-        $pe->status = $request->input("status");
-
-        try {
-            $pe->save();
-        } catch(\Exception $e) {
-            return response()->error("Can't update the purchased element", 500);
-        }
-
-        // Suppression des fichiers
-        if($request->has('deleted_files')){
-            foreach ($request->input('deleted_files') as $deleted_file) {
-                $this->deleteFile($pe->id, $deleted_file);
-            }
-        }
-
-        // Suppression du répertoire quand le service est terminé        
-        if($pe->status == 4 || $pe->status == 5 || $pe->status == 3){
-            $this->deleteDirectory($pe->id);
-        }
-        
-        return response()->success($pe);
-
-    }
-
-
-    /**
      * Ajoute une adresse pour la facture
      *
      * @param  \Illuminate\Http\Request  $request
@@ -278,50 +230,61 @@ class PurchasesController extends Controller
     {
         $p = Purchase::findOrFail($id);
 
-        $validator = Validator::make($request->all(), Address::$rules);
+        if(Gate::check('edit-order') || $p->login == Auth::user()->login){
 
-        // Mauvaises données, on retourne les erreurs
-        if($validator->fails()) {
-            return response()->inputError($validator->errors(), 422);
-        }
+            $validator = Validator::make($request->all(), Address::$rules);
 
-        $address = Address::where('name', $request->input('name'))->get()->first();
+            // Mauvaises données, on retourne les erreurs
+            if($validator->fails()) {
+                return response()->inputError($validator->errors(), 422);
+            }
 
-        if($address) {
-            // dd($address);
-            $address->address = $request->input('address');
-            $address->city = $request->input('city');
-            $address->cp = $request->input('cp');
-            $address->country = $request->input('country');
+            $address = Address::where('name', $request->input('name'))->get()->first();
+
+            if($address) {
+                // dd($address);
+                $address->address = $request->input('address');
+                $address->city = $request->input('city');
+                $address->cp = $request->input('cp');
+                $address->country = $request->input('country');
+            } else {
+                $address = new Address([
+                    'name' => $request->input('name'),
+                    'address' => $request->input('address'),
+                    'city' => $request->input('city'),
+                    'cp' => $request->input('cp'),
+                    'country' => $request->input('country')
+                ]);
+            }
+
+            try {
+                $address->save();
+                $p->address()->associate($address);
+                $p->save();
+            } catch(\Exception $e) {
+                return response()->inputError("Impossible d'enregistrer l'adresse.", 500);
+            }
+            return response()->success();
         } else {
-            $address = new Address([
-                'name' => $request->input('name'),
-                'address' => $request->input('address'),
-                'city' => $request->input('city'),
-                'cp' => $request->input('cp'),
-                'country' => $request->input('country')
-            ]);
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
-
-        try {
-            $address->save();
-            $p->address()->associate($address);
-            $p->save();
-        } catch(\Exception $e) {
-            return response()->inputError("Impossible d'enregistrer l'adresse.", 500);
-        }
-        return response()->success();
     }
 
 
     public function removeAddress(Request $request, $id){
+
         $p = Purchase::findOrFail($id);
 
-        try {
-            $p->address_id = null;
-            $p->save();
-        } catch(\Exception $e) {
-            return response()->inputError("Impossible de supprimer l'adresse.", 500);
+        if(Gate::check('edit-order') || $p->login == Auth::user()->login){
+
+            try {
+                $p->address_id = null;
+                $p->save();
+            } catch(\Exception $e) {
+                return response()->inputError("Impossible de supprimer l'adresse.", 500);
+            }
+        } else {
+            return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
     }
 
@@ -336,6 +299,7 @@ class PurchasesController extends Controller
     public function entity(Request $request, $id)
     {
         $this->authorize('change-purchase-entity');
+
         /** @var Purchase $purchase */
         $purchase = Purchase::findOrFail($id);
 
