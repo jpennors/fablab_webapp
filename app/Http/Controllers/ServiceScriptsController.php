@@ -6,6 +6,8 @@ use App\ServiceScript;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Validator;
+use App\Exports\ServiceScriptsExport;
+use Excel;
 
 class ServiceScriptsController extends Controller
 {
@@ -154,5 +156,59 @@ class ServiceScriptsController extends Controller
             $request->merge(array('args' => "[]"));
         return $request;
     }
+
+
+    /*
+    *
+    * EXPORT / IMPORT
+    *
+    */
+
+    public function exportFile()
+    {
+        $this->authorize('export-data');
+        
+        return Excel::download(new ServiceScriptsExport('App\ServiceScript'), 'data.xlsx');
+    
+    }
+
+    public function importSave(Request $newScripts){
+
+        $this->authorize('import-data');
+
+        foreach ($newScripts->data as $newScript) {
+            
+            // Validation des inputs
+            $validator = Validator::make($newScript, ServiceScript::$rules);
+            
+            // Mauvaises données, on retourne les erreurs
+            if($validator->fails()) {
+                $validator->errors()->add("L'erreur porte sur l'item", $newScript["name"]);
+                return response()->inputError($validator->errors(), 422);
+            }
+        }
+
+        $scripts = ServiceScript::all();
+        
+        foreach ($scripts as $script) {
+            $this->destroy($script->id);
+        }
+
+        foreach ($newScripts->data as $newScript) {
+
+            //On vérifie si la combinaison id et nom n'est pas également a un élément dans la bdd
+            $s = ServiceScript::withTrashed()->where('name', $newScript['name'])->get()->first();
+
+            if($s){
+                $s->restore();
+                $s->update($newScript);
+            }
+            else{
+                $request = new Request($newScript);
+                $this->store($request);
+            }
+        }
+    }
+
 
 }
