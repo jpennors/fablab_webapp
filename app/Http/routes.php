@@ -285,6 +285,10 @@ Route::group(['prefix' => 'api/v1'], function(){
 
         Route::resource('/scripts', 'ServiceScriptsController');
 
+        Route::get('export/scripts','ServiceScriptsController@exportFile');
+
+        Route::post('import/scripts','ServiceScriptsController@importSave');
+
 
         /**
         *       STUDENT BADGE
