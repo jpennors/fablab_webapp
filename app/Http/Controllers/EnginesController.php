@@ -164,6 +164,7 @@ class EnginesController extends Controller
 
     public function exportFile()
     {
+        $this->authorize('export-data');
         
         return Excel::download(new EnginesExport('App\Engine'), 'data.xlsx');
     
@@ -171,6 +172,9 @@ class EnginesController extends Controller
 
     
     public function importSave(Request $newEngines){
+
+        $this->authorize('import-data');
+
 
         // Vérification de toutes les données de l'import
         foreach ($newEngines->data as $newEngine) {

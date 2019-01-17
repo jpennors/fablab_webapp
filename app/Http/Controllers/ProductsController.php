@@ -166,10 +166,13 @@ class ProductsController extends Controller
 
     public function exportFile()
     {
+        $this->authorize('export-data');
         return Excel::download(new ProductsExport, 'data.xlsx');
     }
 
     public function importSave(Request $newProducts){
+        
+        $this->authorize('import-data');
 
         foreach ($newProducts->data as $newProduct) {
 

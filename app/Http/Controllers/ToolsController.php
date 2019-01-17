@@ -209,6 +209,8 @@ class ToolsController extends Controller
     */
     public function exportFile()
     {
+        $this->authorize('export-data');
+
         return Excel::download(new ToolsExport('App\Tool'), 'data.xlsx');
     }
 
@@ -218,6 +220,8 @@ class ToolsController extends Controller
     *
     */
     public function importSave(Request $newTools){
+
+        $this->authorize('import-data');
 
         foreach ($newTools->data as $newTool) {
 

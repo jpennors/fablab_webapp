@@ -171,11 +171,14 @@ class ExpendablesController extends Controller
     */
     public function exportFile()
     {
+        $this->authorize('export-data');
         return Excel::download(new ExpendablesExport('App\Expendable'), 'data.xlsx');
     }
 
 
     public function importSave(Request $newExpendables){
+
+        $this->authorize('import-data');
 
         foreach ($newExpendables->data as $newExpendable) {
 
