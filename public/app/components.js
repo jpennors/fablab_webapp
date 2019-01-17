@@ -1,3 +1,23 @@
+app.controller('accountCtrl', function($scope, Users, Roles, ErrorHandler, $rootScope, $location) {
+  $scope.entities = [];
+
+  Users.self({}, function(data){
+    if(!$rootScope.can('list-role')){
+      $scope.user = data.data;
+    }
+    else{
+      Roles.get({id: data.data.role_id}, function (role) {
+          $scope.user = data.data;
+          $scope.user.role = role.data;
+      }, function (error) {
+          ErrorHandler.alert(error);
+      });
+    }
+  }, function(error){
+    ErrorHandler.alert(error);
+  });
+});
+
 app.controller('adminAddressesCtrl', function($scope, $http, ErrorHandler, $uibModal, Addresses, $rootScope, $location){
 
   if(!$rootScope.can('list-address'))
@@ -41,26 +61,6 @@ app.controller('adminAddressesCtrl', function($scope, $http, ErrorHandler, $uibM
 
     };
   }
-});
-
-app.controller('accountCtrl', function($scope, Users, Roles, ErrorHandler, $rootScope, $location) {
-  $scope.entities = [];
-
-  Users.self({}, function(data){
-    if(!$rootScope.can('list-role')){
-      $scope.user = data.data;
-    }
-    else{
-      Roles.get({id: data.data.role_id}, function (role) {
-          $scope.user = data.data;
-          $scope.user.role = role.data;
-      }, function (error) {
-          ErrorHandler.alert(error);
-      });
-    }
-  }, function(error){
-    ErrorHandler.alert(error);
-  });
 });
 
 app.controller('adminEntitiesCtrl', function($scope, $http, ErrorHandler, $uibModal, Entities, $rootScope, $location){

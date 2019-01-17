@@ -270,7 +270,7 @@ app.factory('Csv', function(){
     }
 });
 
-app.factory('CsvVerification', function(){
+app.factory('CsvVerification', function(Esprima){
 
 
     return factory = {
@@ -535,6 +535,10 @@ app.factory('CsvVerification', function(){
                     errors.push(response)
                 }
 
+                if (response = this.checkScript(elements[i].script, i, elements[i].name)) {
+                    errors.push(response)
+                }
+
                 for (var j = i+1; j < elements.length; j++) {
                     if (i!=j && elements[i].name == elements[j].name){
                         errors.push("Noms similaires : Les items numero" + (i+1) + " et " + (j+1) + " ont le même nom " + elements[i].name )
@@ -606,7 +610,22 @@ app.factory('CsvVerification', function(){
                 return "Date erronée : La propriété " + propertieName + " de l'élément " + elementName + " numéro " + (index+1) + " n'est pas valide et/ou au format AAAA-MM-JJ."
             }
             return null
-        }
+        },
+
+        checkScript: function(script, index, elementName) {
+
+            try {
+                var syntax = Esprima.parse(script);
+
+                                if (syntax.errors && syntax.errors>0) {
+                    return "Script erronée : Le script de l'élément " + elementName + " numéro " + (index+1) + " est erroné."
+                }
+                return null
+
+            } catch(e) {
+                return "Script erronée : Impossible de parser le script de l'élément " + elementName + " numéro " + (index+1) +  "."
+            }
+        },
     }
 });
 

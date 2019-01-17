@@ -39,6 +39,17 @@ app.directive('inWrapper', function($rootScope) {
     };
 });
 
+app.directive('outWrapper', function($rootScope) {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    scope: {},
+    controller: function($rootScope, $scope, $element, $attrs) {
+    },
+    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
+  };
+});
+
 app.directive('confirm', function(ConfirmFactory) {
     return {
         restrict: 'A',
@@ -79,17 +90,6 @@ app.directive('modalConfirm', function() {
 
     },
     templateUrl: 'app/directives/modalConfirm/modal_show.html'
-  };
-});
-
-app.directive('outWrapper', function($rootScope) {
-  return {
-    restrict: 'EA',
-    transclude: true,
-    scope: {},
-    controller: function($rootScope, $scope, $element, $attrs) {
-    },
-    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
   };
 });
 
