@@ -16,6 +16,7 @@
                         <option value="expendables">Consommables</option>
                         <option value="engines">Machines</option>
                         <option value="tools">Outils</option>
+                        <option value="scripts">Fonctions de prix</option>
                         <!--
                         <option value="wardrobes">Etagères</option>
                         <option value="rooms">Salles</option>
@@ -70,6 +71,9 @@
                             <span ng-show="data.type=='expendables'">
                                 <strong>Nom / Marque / Fournisseur / Lien fournisseur / Unité / Quantité / Quantité minimale / Description / Image / Salle / Etagère /</strong>
                             </span>
+                            <span ng-show="data.type=='scripts'">
+                                <strong>Nom / Description / Script / Args /</strong>
+                            </span>
                         </p>
                         <div ng-show="data.type=='tools'">
                             <h3>Type</h3>
@@ -121,6 +125,9 @@
                 </div>
                 <div class="row" ng-show="data.type=='tools'">
                     <csv-tools items="items" headers="headers"></csv-tools>
+                </div>
+                <div class="row" ng-show="data.type=='scripts'">
+                    <csv-scripts items="items" headers="headers"></csv-scripts>
                 </div>
                 <div ng-show="inputErrors" class="col-md-12">
                     <div class="alert alert-danger top10">

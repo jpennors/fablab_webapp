@@ -161,5 +161,28 @@ app.factory('Csv', function(){
             ];
             return headers;
         },
+
+        scripts : function(csvLines){
+
+            var scripts = [];
+            for (var i = 1; i < csvLines.length - 1 ; i++) {
+                scripts[i-1]={}
+                scripts[i-1].name = csvLines[i][0]
+                scripts[i-1].description = csvLines[i][1]
+                scripts[i-1].script = csvLines[i][2]
+                scripts[i-1].args = csvLines[i][3];
+            }
+            return scripts;
+        },
+
+        scriptsHeader : function(){
+            var headers = [
+                'Nom', 
+                'Description', 
+                'Script',
+                'Args'
+            ];
+            return headers;
+        },
     }
 });

@@ -1,23 +1,3 @@
-app.controller('accountCtrl', function($scope, Users, Roles, ErrorHandler, $rootScope, $location) {
-  $scope.entities = [];
-
-  Users.self({}, function(data){
-    if(!$rootScope.can('list-role')){
-      $scope.user = data.data;
-    }
-    else{
-      Roles.get({id: data.data.role_id}, function (role) {
-          $scope.user = data.data;
-          $scope.user.role = role.data;
-      }, function (error) {
-          ErrorHandler.alert(error);
-      });
-    }
-  }, function(error){
-    ErrorHandler.alert(error);
-  });
-});
-
 app.controller('adminAddressesCtrl', function($scope, $http, ErrorHandler, $uibModal, Addresses, $rootScope, $location){
 
   if(!$rootScope.can('list-address'))
@@ -61,6 +41,26 @@ app.controller('adminAddressesCtrl', function($scope, $http, ErrorHandler, $uibM
 
     };
   }
+});
+
+app.controller('accountCtrl', function($scope, Users, Roles, ErrorHandler, $rootScope, $location) {
+  $scope.entities = [];
+
+  Users.self({}, function(data){
+    if(!$rootScope.can('list-role')){
+      $scope.user = data.data;
+    }
+    else{
+      Roles.get({id: data.data.role_id}, function (role) {
+          $scope.user = data.data;
+          $scope.user.role = role.data;
+      }, function (error) {
+          ErrorHandler.alert(error);
+      });
+    }
+  }, function(error){
+    ErrorHandler.alert(error);
+  });
 });
 
 app.controller('adminEntitiesCtrl', function($scope, $http, ErrorHandler, $uibModal, Entities, $rootScope, $location){
@@ -167,6 +167,55 @@ app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorH
     }
 });
 
+app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
+
+  if(!$rootScope.can('list-price'))
+      $location.path("/error/404");
+
+  else{
+
+    $scope.scripts = [];
+
+    $scope.update = function(){
+      Scripts.get({}, function(data){
+        $scope.scripts = data.data;
+      }, function(error) {
+        ErrorHandler.alert(error);
+      });
+    }
+
+    $scope.update();
+
+    $scope.open = function(script, type) {
+      var modalInstance = $uibModal.open({
+          backdrop: true,
+          keyboard: true,
+          size:'lg',
+          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
+
+          resolve: {
+              script: function() {
+                return script;
+              },
+              type: function(){
+                return type
+              }
+          },
+          controller: 'editScriptCtrl'
+      });
+      modalInstance.result.then(function() {
+        $scope.update();
+      })
+
+    };
+
+    $scope.goEdit = function(script) {
+      $location.path("/admin/scripts/" + script.id + "/edit");
+    }
+  }
+
+});
+
 app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Services, $location, $rootScope){
 
 	if(!$rootScope.can('edit-service'))
@@ -227,55 +276,6 @@ app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Se
 	        })
 		};
 	}
-
-});
-
-app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
-
-  if(!$rootScope.can('list-price'))
-      $location.path("/error/404");
-
-  else{
-
-    $scope.scripts = [];
-
-    $scope.update = function(){
-      Scripts.get({}, function(data){
-        $scope.scripts = data.data;
-      }, function(error) {
-        ErrorHandler.alert(error);
-      });
-    }
-
-    $scope.update();
-
-    $scope.open = function(script, type) {
-      var modalInstance = $uibModal.open({
-          backdrop: true,
-          keyboard: true,
-          size:'lg',
-          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
-
-          resolve: {
-              script: function() {
-                return script;
-              },
-              type: function(){
-                return type
-              }
-          },
-          controller: 'editScriptCtrl'
-      });
-      modalInstance.result.then(function() {
-        $scope.update();
-      })
-
-    };
-
-    $scope.goEdit = function(script) {
-      $location.path("/admin/scripts/" + script.id + "/edit");
-    }
-  }
 
 });
 
@@ -533,6 +533,10 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
                             $scope.items.data = Csv.expendables($scope.csvLines)
                             $scope.headers.data = Csv.expendablesHeader();
                             break;
+                        case 'scripts' :
+                            $scope.items.data = Csv.scripts($scope.csvLines)
+                            $scope.headers.data = Csv.scriptsHeader();
+                            break;
                     }
                     $scope.parsing = true
                 });
@@ -585,6 +589,9 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
                     break;
                 case "engines":
                     response = CsvVerification.checkEngines($scope.rooms, elements)
+                    break;
+                case "scripts":
+                    response = CsvVerification.checkScripts(elements)
                     break;
             }
             if (response.length>0) {
@@ -1038,111 +1045,6 @@ app.controller('productsCtrl', function($scope, $http, ErrorHandler, $uibModal, 
 
 });
 
-app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
-
-  Users.get({}, function(res){
-    $scope.users = res.data;
-  }, function(error){
-    ErrorHandler.alert(error);
-  });
-
-  $scope.displayUser = function(userId) {
-    var found = $filter('filter')($scope.users, {id: userId}, true);
-    if (found.length) {
-       $scope.user = found[0];
-    }
-  }
-
-});
-
-app.controller('usersCreateCtrl', function($scope, ErrorHandler, Users) {
-
-  $scope.submiting = false;
-
-  $scope.submited = false;
-  $scope.success = false;
-
-  $scope.user = new Users({});
-
-  $scope.submit = function() {
-    $scope.submiting = true;
-    $scope.submited = false;
-    $scope.success = false;
-
-    $scope.user.$save({}, function(res) {
-      $scope.submited = true;
-      $scope.submiting = false;
-      $scope.success = true;
-    }, function(error) {
-      $scope.submiting = false;
-      $scope.submited = true;
-      $scope.success = false;
-
-      if(error.status == 422) {
-        $scope.inputErrors = ErrorHandler.parse(error);
-      }
-      else if(error.status == 409) {
-        $scope.messageError = "Cet utilisateur existe déjà";
-      }
-
-    });
-  };
-
-
-});
-
-app.controller('usersEditCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
-
-  $scope.submiting = false;
-
-  $scope.submited = false;
-  $scope.success = false;
-
-  Users.get({ id : $routeParams.id }, function(res) {
-    $scope.user = res.data;
-  }, function(error) {
-    ErrorHandler.alert(error);
-  });
-
-  $scope.submit = function() {
-    $scope.submiting = true;
-    $scope.submited = false;
-    $scope.success = false;
-    $scope.inputErrors = false;
-    $scope.messageError = false;
-
-    Users.update({id:$routeParams.id}, $scope.user, function(res) {
-      $scope.submited = true;
-      $scope.submiting = false;
-      $scope.success = true;
-    }, function(error) {
-      $scope.submiting = false;
-      $scope.submited = true;
-      $scope.success = false;
-
-      if(error.status == 422) {
-        $scope.inputErrors = ErrorHandler.parse(error);
-      }
-      else if(error.status == 409) {
-        $scope.messageError = "cet utilisateur existe déjà";
-      }
-
-    });
-  };
-
-
-});
-
-app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
-
-  Users.get({ id : $routeParams.id }, function(res) {
-    $scope.user = res.data;
-  }, function(error) {
-    ErrorHandler.alert(error);
-  });
-
-});
-
 app.controller('searchCtrl', function($scope, $routeParams, Expendables, Tools, Products, Engines, $uibModal) {
 
     $scope.filterWord = $routeParams.q;
@@ -1275,6 +1177,111 @@ app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandl
             init()
         })
     }
+});
+
+app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
+
+  Users.get({}, function(res){
+    $scope.users = res.data;
+  }, function(error){
+    ErrorHandler.alert(error);
+  });
+
+  $scope.displayUser = function(userId) {
+    var found = $filter('filter')($scope.users, {id: userId}, true);
+    if (found.length) {
+       $scope.user = found[0];
+    }
+  }
+
+});
+
+app.controller('usersCreateCtrl', function($scope, ErrorHandler, Users) {
+
+  $scope.submiting = false;
+
+  $scope.submited = false;
+  $scope.success = false;
+
+  $scope.user = new Users({});
+
+  $scope.submit = function() {
+    $scope.submiting = true;
+    $scope.submited = false;
+    $scope.success = false;
+
+    $scope.user.$save({}, function(res) {
+      $scope.submited = true;
+      $scope.submiting = false;
+      $scope.success = true;
+    }, function(error) {
+      $scope.submiting = false;
+      $scope.submited = true;
+      $scope.success = false;
+
+      if(error.status == 422) {
+        $scope.inputErrors = ErrorHandler.parse(error);
+      }
+      else if(error.status == 409) {
+        $scope.messageError = "Cet utilisateur existe déjà";
+      }
+
+    });
+  };
+
+
+});
+
+app.controller('usersEditCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
+
+  $scope.submiting = false;
+
+  $scope.submited = false;
+  $scope.success = false;
+
+  Users.get({ id : $routeParams.id }, function(res) {
+    $scope.user = res.data;
+  }, function(error) {
+    ErrorHandler.alert(error);
+  });
+
+  $scope.submit = function() {
+    $scope.submiting = true;
+    $scope.submited = false;
+    $scope.success = false;
+    $scope.inputErrors = false;
+    $scope.messageError = false;
+
+    Users.update({id:$routeParams.id}, $scope.user, function(res) {
+      $scope.submited = true;
+      $scope.submiting = false;
+      $scope.success = true;
+    }, function(error) {
+      $scope.submiting = false;
+      $scope.submited = true;
+      $scope.success = false;
+
+      if(error.status == 422) {
+        $scope.inputErrors = ErrorHandler.parse(error);
+      }
+      else if(error.status == 409) {
+        $scope.messageError = "cet utilisateur existe déjà";
+      }
+
+    });
+  };
+
+
+});
+
+app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
+
+  Users.get({ id : $routeParams.id }, function(res) {
+    $scope.user = res.data;
+  }, function(error) {
+    ErrorHandler.alert(error);
+  });
+
 });
 
 app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, type, Addresses, ErrorHandler) {
@@ -1490,88 +1497,6 @@ app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, R
 
 })
 
-app.controller('editServiceCtrl', function($scope, $uibModalInstance, service, type, Scripts, Services, Engines, ErrorHandler) {
-
-	if(service){
-		$scope.service = service;  
-	} else {
-		$scope.service = {}
-	}
-
-		$scope.type = type
-	$scope.errors  = false;
-	$scope.saving  = false;
-	$scope.scripts = [];
-
-	Scripts.get({}, function(data){
-		$scope.scripts = data.data;
-	}, function(error) {
-		ErrorHandler.alert(error);
-	});
-
-	Engines.get({}, function(data){
-		$scope.engines = data.data;
-		if ($scope.service.engine_id) {
-			$scope.service.engine = data.data.filter((r)=>r.id == $scope.service.engine_id)[0]
-		}
-	}, function(error) {
-		ErrorHandler.alert(error);
-	});
-
-	$scope.save = function() {
-		$scope.errors   = false;
-		$scope.saving   = true;
-
-		$scope.service.script_id = $scope.service.script.id
-		if($scope.service.engine)
-			$scope.service.engine_id = $scope.service.engine.id
-		else 
-			$scope.service.engine_id = null
-
-		console.log($scope.service)
-
-				if ($scope.type == "create"){
-			Services.save($scope.service, function(data){
-				$uibModalInstance.close();
-				$scope.saving = false;
-			}, function(error){
-				$scope.errors = ErrorHandler.parse(error);
-				$scope.saving = false;
-			});
-		} else if ($scope.type == "edit"){
-			Services.update({id : $scope.service.id}, $scope.service, function(data){
-				$uibModalInstance.close();
-				$scope.saving = false;
-			}, function(error){
-				$scope.errors = ErrorHandler.parse(error);
-				$scope.saving = false;
-			});
-		}
-	};
-
-	$scope.deleteModal = function() {
-		Services.delete({id : $scope.service.id}, $scope.service, function(data){
-			$uibModalInstance.close();
-			$scope.saving = false;
-		}, function(error){
-			ErrorHandler.alert(error);
-			$scope.saving = false;
-		});
-	};
-
-	$scope.setScript = function(script) {
-		$scope.service.script = script;
-	};
-
-	$scope.setEngine = function(engine) {
-		$scope.service.engine = engine;
-	};
-
-	$scope.cancel = function() {
-	$uibModalInstance.dismiss('cancel');
-	};
-});
-
 app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandler, Scripts, Esprima, $rootScope, type, script){
 
   $scope.type = type
@@ -1719,6 +1644,88 @@ app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandle
             ErrorHandler.alert(error);
         });
     };
+});
+
+app.controller('editServiceCtrl', function($scope, $uibModalInstance, service, type, Scripts, Services, Engines, ErrorHandler) {
+
+	if(service){
+		$scope.service = service;  
+	} else {
+		$scope.service = {}
+	}
+
+		$scope.type = type
+	$scope.errors  = false;
+	$scope.saving  = false;
+	$scope.scripts = [];
+
+	Scripts.get({}, function(data){
+		$scope.scripts = data.data;
+	}, function(error) {
+		ErrorHandler.alert(error);
+	});
+
+	Engines.get({}, function(data){
+		$scope.engines = data.data;
+		if ($scope.service.engine_id) {
+			$scope.service.engine = data.data.filter((r)=>r.id == $scope.service.engine_id)[0]
+		}
+	}, function(error) {
+		ErrorHandler.alert(error);
+	});
+
+	$scope.save = function() {
+		$scope.errors   = false;
+		$scope.saving   = true;
+
+		$scope.service.script_id = $scope.service.script.id
+		if($scope.service.engine)
+			$scope.service.engine_id = $scope.service.engine.id
+		else 
+			$scope.service.engine_id = null
+
+		console.log($scope.service)
+
+				if ($scope.type == "create"){
+			Services.save($scope.service, function(data){
+				$uibModalInstance.close();
+				$scope.saving = false;
+			}, function(error){
+				$scope.errors = ErrorHandler.parse(error);
+				$scope.saving = false;
+			});
+		} else if ($scope.type == "edit"){
+			Services.update({id : $scope.service.id}, $scope.service, function(data){
+				$uibModalInstance.close();
+				$scope.saving = false;
+			}, function(error){
+				$scope.errors = ErrorHandler.parse(error);
+				$scope.saving = false;
+			});
+		}
+	};
+
+	$scope.deleteModal = function() {
+		Services.delete({id : $scope.service.id}, $scope.service, function(data){
+			$uibModalInstance.close();
+			$scope.saving = false;
+		}, function(error){
+			ErrorHandler.alert(error);
+			$scope.saving = false;
+		});
+	};
+
+	$scope.setScript = function(script) {
+		$scope.service.script = script;
+	};
+
+	$scope.setEngine = function(engine) {
+		$scope.service.engine = engine;
+	};
+
+	$scope.cancel = function() {
+	$uibModalInstance.dismiss('cancel');
+	};
 });
 
 app.controller('editUserCtrl', function($scope, $uibModalInstance, scopeParent, type, object, Users, ErrorHandler, Roles, $rootScope, UTCAuth, $location) {

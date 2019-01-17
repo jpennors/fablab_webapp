@@ -90,6 +90,10 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
                             $scope.items.data = Csv.expendables($scope.csvLines)
                             $scope.headers.data = Csv.expendablesHeader();
                             break;
+                        case 'scripts' :
+                            $scope.items.data = Csv.scripts($scope.csvLines)
+                            $scope.headers.data = Csv.scriptsHeader();
+                            break;
                     }
                     $scope.parsing = true
                 });
@@ -144,6 +148,9 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
                     break;
                 case "engines":
                     response = CsvVerification.checkEngines($scope.rooms, elements)
+                    break;
+                case "scripts":
+                    response = CsvVerification.checkScripts(elements)
                     break;
             }
             if (response.length>0) {

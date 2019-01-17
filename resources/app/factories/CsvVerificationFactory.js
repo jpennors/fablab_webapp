@@ -283,6 +283,38 @@ app.factory('CsvVerification', function(){
         },
 
 
+        checkScripts : function(elements){
+            // Initialisation de la variable d'erreurs
+            var errors = []
+
+            // Itération pour tous les éléments
+            for (var i = 0; i < elements.length; i++) {
+
+                // Vérification des propriétés "Required"
+                if (response = this.checkRequirement("Nom", elements[i].name, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Description", elements[i].description, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Script", elements[i].script, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Args", elements[i].args, i, elements[i].name)) {
+                    errors.push(response)
+                }
+
+                // Vérification de l'unicité de chaque nom de produits
+                for (var j = i+1; j < elements.length; j++) {
+                    if (i!=j && elements[i].name == elements[j].name){
+                        errors.push("Noms similaires : Les items numero" + (i+1) + " et " + (j+1) + " ont le même nom " + elements[i].name )
+                    }
+                }
+            }
+            return errors
+        },
+
+
         /*  VERIFICATION DE PROPRIETES  */
 
         // Vérifier l'existence d'une catégorie

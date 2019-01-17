@@ -110,17 +110,6 @@ app.directive('search', function() {
     }
 });
 
-app.directive('showErrors', function() {
-    return {
-        restrict: 'EA',
-        transclude: true,
-        scope: {
-            errors : '=errorsData'
-        },
-        templateUrl: 'app/directives/showErrors/errors_show.html',
-    };
-});
-
 app.controller('alertsCtrl', function($http, $scope, ErrorHandler, Products, Expendables, Tools, $uibModal){
     $scope.alerts = {
         expendables:[],
@@ -190,6 +179,17 @@ app.directive('showAlerts', function() {
   };
 });
 
+app.directive('showErrors', function() {
+    return {
+        restrict: 'EA',
+        transclude: true,
+        scope: {
+            errors : '=errorsData'
+        },
+        templateUrl: 'app/directives/showErrors/errors_show.html',
+    };
+});
+
 app.directive('showProducts', function() {
   return {
     restrict: 'EA',
@@ -237,16 +237,6 @@ app.directive('showPurchaseAlerts', function() {
         templateUrl: 'app/directives/showPurchaseAlerts/purchase_alerts_show.html',
         controller: 'alertsPurchaseCtrl',
     };
-});
-
-app.directive('showUser', function() {
-  return {
-    restrict: 'E',
-    scope: {
-      user : '=user'
-    },
-    templateUrl: 'app/directives/showUser/user_show.html'
-  };
 });
 
 app.directive('showTasks', function() {
@@ -475,6 +465,16 @@ app.component('modalComponent', {
     }
 });
 
+app.directive('showUser', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      user : '=user'
+    },
+    templateUrl: 'app/directives/showUser/user_show.html'
+  };
+});
+
 app.directive('showUsers', function(Roles, ErrorHandler) {
   return {
     restrict: 'EA',
@@ -569,6 +569,19 @@ app.directive('csvProducts', function($rootScope) {
     	headers : '='
     },
     templateUrl: 'app/directives/csv/csvProducts/csv_products.html',
+  };
+});
+
+
+app.directive('csvScripts', function($rootScope) {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {
+    	items : '=',
+    	headers : '='
+    },
+    templateUrl: 'app/directives/csv/csvScripts/csv_scripts.html',
   };
 });
 

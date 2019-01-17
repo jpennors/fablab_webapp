@@ -244,6 +244,29 @@ app.factory('Csv', function(){
             ];
             return headers;
         },
+
+        scripts : function(csvLines){
+
+            var scripts = [];
+            for (var i = 1; i < csvLines.length - 1 ; i++) {
+                scripts[i-1]={}
+                scripts[i-1].name = csvLines[i][0]
+                scripts[i-1].description = csvLines[i][1]
+                scripts[i-1].script = csvLines[i][2]
+                scripts[i-1].args = csvLines[i][3];
+            }
+            return scripts;
+        },
+
+        scriptsHeader : function(){
+            var headers = [
+                'Nom', 
+                'Description', 
+                'Script',
+                'Args'
+            ];
+            return headers;
+        },
     }
 });
 
@@ -482,6 +505,34 @@ app.factory('CsvVerification', function(){
                     if (response = this.checkDate("Date d'achat", elements[i].dateOfPurchase, i, elements[i].name)) {
                         errors.push(response)
                     }
+                }
+
+                for (var j = i+1; j < elements.length; j++) {
+                    if (i!=j && elements[i].name == elements[j].name){
+                        errors.push("Noms similaires : Les items numero" + (i+1) + " et " + (j+1) + " ont le même nom " + elements[i].name )
+                    }
+                }
+            }
+            return errors
+        },
+
+
+        checkScripts : function(elements){
+            var errors = []
+
+            for (var i = 0; i < elements.length; i++) {
+
+                if (response = this.checkRequirement("Nom", elements[i].name, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Description", elements[i].description, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Script", elements[i].script, i, elements[i].name)) {
+                    errors.push(response)
+                }
+                if (response = this.checkRequirement("Args", elements[i].args, i, elements[i].name)) {
+                    errors.push(response)
                 }
 
                 for (var j = i+1; j < elements.length; j++) {
