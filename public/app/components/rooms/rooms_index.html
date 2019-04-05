@@ -1,0 +1,46 @@
+<in-wrapper>
+    <div ng-controller="roomsCtrl">
+        <div class="row" ng-if="can('list-room')">
+            <div class="col-lg-12">
+                <h1 class="page-header"><img src="assets/img/room.png" class="img-title">
+                    SALLES 
+                </h1>
+            </div>
+
+
+
+            <div class="row">
+                <div class="col-md-11 item-page">
+                    <div>
+                        <table ng-show="rooms.length" class="table table-hover table-striped col-md-12">
+
+                            <div class="panel-heading row">
+                                <a class="pull-right item-new" role="button" ng-click="open(room.id, 'create')" ng-if="can('add-room')"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+                                <div class="col-lg-5 col-md-4 col-sm-12">
+                                    <h2><img src="assets/img/barre.png" class="img-table">Liste des salles</h2>
+                                </div>
+                                <div class="form-group col-lg-3 col-md-4">
+                                    <input ng-model="roomSearch" type="text" class="form-control search-list" placeholder="Rechercher un consommable...">
+                                </div>
+                            </div>
+                            <thead>
+                                <tr>
+                                    <th>Nom<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <th>Description<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="room in rooms | filter:roomSearch | filter:(alertFilterOn ? alertFilter : '')">
+                                    <td ng-click="open(room.id, 'view')" class="col-md-1 td-list">{{ room.name }}</td>
+                                    <td ng-click="open(room.id, 'view')" class="col-md-1 td-list">{{ room.description }}</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</in-wrapper>

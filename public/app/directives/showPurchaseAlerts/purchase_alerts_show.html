@@ -1,7 +1,7 @@
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        <h2 style="text-align: center"> <img src="assets/img/alerte_gris.png" class="img-dashboard">Serices urgents</h2>
+        <h2 style="text-align: center"> <img src="assets/img/alerte_gris.png" class="img-dashboard">Services urgents</h2>
 
         <div class="list-group scrollable-dashboard-list">
             <a ng-repeat="pe in pes | filter: filter.statusFilter() | orderBy : '+deadline'"class="list-group-item list-dash elmt-task" ng-click="redirect(pe.purchase_id)">
@@ -10,7 +10,10 @@
                 </div>
                 <div class="dash elmt-task">
                     <h4 class="list-group-item-heading">{{ pe.purchasable.name }}</h4>
-                    <p class="list-group-item-text">Deadline : {{pe.deadline | date :  'dd/MM/yyyy' }}</p>
+                    <p class="list-group-item-text">
+                        Deadline : {{pe.deadline | date :  'dd/MM/yyyy' }}
+                        &emsp; Statut : <strong>{{ pe.statusName }}</strong>
+                    </p>
                 </div>
             </a>
 
