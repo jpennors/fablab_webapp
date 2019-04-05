@@ -1,0 +1,56 @@
+<in-wrapper>
+    <div ng-controller="enginePartsCtrl">
+        <div class="row" ng-if="can('list-engine-part')"> 
+            <div class="col-lg-12">
+                <h1 class="page-header"><img src="assets/img/maintenance.png" class="img-title">
+                    PIECES DE MACHINES
+                </h1>
+            </div>
+
+            <div class="row">
+                <div class="col-md-11 item-page">
+                    <div class="table-responsive">
+                        <table ng-show="engineparts.length" class="table table-hover table-striped col-md-12">
+                            <div class="panel-heading">
+                              <a class="pull-right item-new" role="button" ng-click="open(engineparts.id, 'create')" ng-if="can('add-engine-part')"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+                              <div class="col-md-5">
+                                    <h2><img src="assets/img/barre.png" class="img-table">Liste des pièces</h2>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <input ng-model="enginepartsSearch" type="text" class="form-control search-list" placeholder="Rechercher un consommable...">
+                                </div>
+                            </div>
+
+                            <thead>
+                                <tr>
+                                    <th>Nom<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <th>Appartient à<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <th>Salle<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <th>Temps avant la prochaine maintenance<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <th>Temps entre deux maintenance<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                    <!-- <th>Statut<br><img src="assets/img/fleche.png" class="img-th"></th> -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="enginepart in engineparts | filter:enginepartsSearch">
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1">{{ enginepart.name }}</td>                                   
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1 td-list">{{ enginepart.engine.name }}</td>
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1 td-list">{{ enginepart.engine.room.description }}</td>
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1 td-list">{{ enginepart.next_maintenance }}</td>
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1 td-list">{{ enginepart.time_to_maintenance }}</td>
+                                    <!-- 
+                                    <td ng-click="open(enginepart.id, 'view')" class="col-md-1 td-list">
+                                        <div class="col-md-offset-3 col-md-7">{{ engineparts.status }} </div>
+                                        <div><span class="col-md-2 status-icon" ng-style="iconColor(engineparts)"></span></div>
+                                    </td>
+
+                                    -->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</in-wrapper>
