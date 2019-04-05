@@ -5,7 +5,8 @@ namespace App\Http\Middleware;
 use Auth;
 use Closure;
 use Gate;
-use Log;
+use JWTFactory;
+use JWTAuth;
 
 /**
  * This class try to check permission for requiring ressource based
@@ -23,34 +24,34 @@ class FablabAdmin
      */
     public function handle($request, Closure $next)
     {
-          if(!($member = Auth::user())) {
+  
+        if(!($member = Auth::user())) {
             return response()->error("401, unauthorized, user must be present in session.", 401);
-          }
-          if(!Gate::check('login')) {
-              return response()->error("401, unauthorized, user doesn't have the 'login' permission.", 401);
-          }
+        }
+        if(!Gate::check('login')) {
+            return response()->error("401, unauthorized, user doesn't have the 'login' permission.", 401);
+        }
 
 
-          $action = $request->route()->getAction();
-          $action = explode('@', $action['controller']);
+        $action = $request->route()->getAction();
+        $action = explode('@', $action['controller']);
 
-          // Check for const $rightName in class $action[0]
-          if (isset($action[0]::$rightName)) {
-              try {
-                  $permission = $this::mapRouteToPermission($action[0]::$rightName, $action[1]);
+        // Check for const $rightName in class $action[0]
+        if (isset($action[0]::$rightName)) {
+            try {
+                $permission = $this::mapRouteToPermission($action[0]::$rightName, $action[1]);
 
-                  if (Gate::check($permission)) {
-                      return $next($request);
-                  } else {
-                      return response()->error("Vous n'êtes pas autorisé à accéder à cette ressource.", 403);
-                  }
-              } catch (\InvalidArgumentException $e) {
-                  Log::warning($e->getMessage());
-              }
-          }
-          // otherwise, we skip checking for permissions
-          return $next($request);
-      }
+                if (Gate::check($permission)) {
+                    return $next($request);
+                } else {
+                    return response()->error("Vous n'êtes pas autorisé à accéder à cette ressource.", 403);
+                }
+            } catch (\InvalidArgumentException $e) {
+            }
+        }
+        // otherwise, we skip checking for permissions
+        return $next($request);
+    }
 
     /**
      * Map route names to permission names

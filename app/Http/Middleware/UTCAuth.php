@@ -6,10 +6,13 @@ use Gate;
 use Payutc;
 use Auth;
 use Closure;
-use App\Log;
+use App\User;
+use JWTFactory;
+use JWTAuth;
 
 class UTCAuth
 {
+
     /**
      * Handle an incoming request.
      *
@@ -20,46 +23,49 @@ class UTCAuth
     public function handle($request, Closure $next)
     {
 
-      if($request->header("Authorization-fablab")) {
+        try {
 
-        // Récupère l'User associé au token
-        $token = $request->header("Authorization-fablab");
-        $log = Log::where('token', $token)->get();
+            // Get token and decode it
+            $payload = JWTAuth::parseToken()->getPayload();
+            $user_id = $payload->get('user_id');
+            $session_id = $payload->get('session_id');
 
-        if($log->first()) {
+            // Retrieve User from token
+            $user = User::find($user_id);
 
-          // Le token existe dans la table
-          $log = $log->first();
+            if ($user) {
+            
+                $request->attributes->add(['token' => JWTAuth::getToken()]);
+                Auth::login($user);
+                Payutc::setSessionId($session_id);
 
-          // Vérifie que le token n'est pas désactivé ou expiré
-          // Le token expire au bout de 'dt' heures.
-          $dt = 10;
+                return $next($request);
+            
+            } else {
 
-          if((time() - $log->created_at->timestamp < $dt*60*60) && !$log->disabled) {
-            $request->attributes->add(['token' => $token]);
-            Auth::login($log->member);
-            Payutc::setSessionId($log['payutc_sessionid']);
+                \Log::info("401, unauthorized, token not recognized");
+                return response()->json(array("error" => "401, unauthorized, token not recognized"), 401);
+            
+            }
+        
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
 
-            return $next($request);
-          }
-          else {
             // Le token est expiré
             \Log::info("401, unauthorized, token expired");
             return response()->json(array("error" => "401, unauthorized, token expired"), 401);
-          }
 
-        }
-        else {
-          // Le token n'existe pas dans la table
-          \Log::info("401, unauthorized, token not recognized");
-          return response()->json(array("error" => "401, unauthorized, token not recognized"), 401);
-        }
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
 
-      }
-      else {
-        // Absence du header Authorization
-        \Log::info("401, unauthorized, token not provided");
-        return response()->json(array("error" => "401, unauthorized, token not provided"), 401);
-      }
+            // Le token n'est pas reconnu
+              \Log::info("401, unauthorized, token not recognized");
+              return response()->json(array("error" => "401, unauthorized, token not recognized"), 401);
+
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+
+            // Absence du header Authorization
+            \Log::info("401, unauthorized, token not provided");
+            return response()->json(array("error" => "401, unauthorized, token not provided"), 401);
+        
+        }
     }
 }
