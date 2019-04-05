@@ -1,8 +1,9 @@
 var elixir = require('laravel-elixir');
 var gulp = require('gulp'),
-  	notify = require('gulp-notify'),
-  	del = require('del'),
-  	concat = require('gulp-concat');
+  sass = require('gulp-sass'),
+  notify = require('gulp-notify'),
+  del = require('del'),
+  concat = require('gulp-concat');
 var strip = require('gulp-strip-comments');
 
 /*
@@ -30,8 +31,9 @@ gulp.task('clean', function() {
 });
 
 gulp.task('default', ['clean'], function() {
-    gulp.start('vendor', 'html', 'css', 'scripts', 'img');
+  gulp.start('vendor', 'html', 'scripts', 'img','scss');
 });
+
 
 gulp.task('watch', function() {
 
@@ -42,7 +44,7 @@ gulp.task('watch', function() {
   gulp.watch('resources/app/**/*.js', { interval: 750 }, ['scripts']);
 	gulp.watch('resources/app/**/*.html', { interval: 750 }, ['scripts']);
 
-  gulp.watch('resources/assets/css/**/*.css', { interval: 750 }, ['css']);
+  gulp.watch('resources/assets/scss/**/*.scss', { interval: 750 }, ['scss']);
 
   gulp.watch('src/**/*.html', { interval: 750 }, ['html']);
 
@@ -111,16 +113,14 @@ gulp.task('scripts', function() {
 
 });
 
-gulp.task('css', function() {
+gulp.task('scss', function(){
+  gulp.src('resources/assets/scss/fonts/*')
+  .pipe(gulp.dest(dist+'/assets/css/fonts'))
 
-  gulp.src('resources/assets/css/*.css')
-  .pipe(concat('main.css'))
+  return gulp.src('resources/assets/scss/main.scss')
+  .pipe(sass())
   .pipe(gulp.dest(dist + '/assets/css'))
-
-  gulp.src('resources/assets/css/*.*')
-  .pipe(gulp.dest(dist + '/assets/css'))
-
-});
+})
 
 gulp.task('img', function() {
 
