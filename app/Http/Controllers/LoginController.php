@@ -12,7 +12,8 @@ use Request;
 use App\Http\Requests;
 use App\User;
 use App\Member;
-use App\Log;
+use JWTFactory;
+use JWTAuth;
 
 class LoginController extends Controller
 {
@@ -51,9 +52,7 @@ class LoginController extends Controller
     public function fetchPayutcSessionId($service, $ticket) {
         
         $payutc = Payutc::loginCas2($ticket, $service);
-        
-        \Log::info($payutc->sessionid);
-        
+                
         return [
             'username'  => $payutc->username,
             'sessionid' => $payutc->sessionid,
@@ -76,176 +75,132 @@ class LoginController extends Controller
 
 
     /**
-     *  Retourne le Log associé à un token
-     *
-     *  @param  $token  string
-     */
-    private function getLog($token) {
-        return Log::where('token', $token)->get()->first();
-    }
-
-    /**
-     *  Retourne un token
-     *
-     */
-    private function getToken() {
-      return bin2hex(random_bytes(78));
-    }
-
-
-
-    /**
      *  Processus de login: connexion par CAS et génération de token
      *
      */
-    public function login() {
+    public function login(Request $request) {
 
         // Adresse vers laquelle on redirige
         $webapp = Request::input('webapp');
 
-        // Ticket CAS
+        // Récupération ticket CAS
         $ticket = Request::input('ticket');
 
-        // URL transmise au CAS pour la connexion et pour la vérification du ticket
+        // Récupération du service (URL de Redirection)
         $service = route('login', ['webapp' => $webapp]);
 
-        // Si l'URL de la webapp n'est pas donnée, on abandonne
-        if(!$webapp) {
-            return response()->json(array("error" => "400, bad request, webapp URL required"), 400);
-        }
+        if (!$ticket) {
 
-        // Si on a pas besoin de se connecter au CAS, on génère un token et un utilisateur provisoire
-        if(!env('APP_AUTH', 'true')) {
-
-            // Génération d'un token
-            $token = $this->getToken();
-
-            // Fake utilisateur
-            $member = new Member(['login' => 'test_'.$token ]);
-            $member->role()->associate(Role::where('name', '=', 'Super admin')->firstOrFail());
-            $member->save();
-
-            // Log associé
-            $log = new Log(['token' => $token, 'CAS' => '']);
-            $log->member()->associate($member);
-            $log->save();
-
-            $data = array('url' => $webapp.'?token='.$token);
-            return response()->json($data);
-        
-        }
-
-        if(!$ticket) {
             // Si le ticket n'est pas transmis, on donne l'URL vers le CAS
-            $url = 'https://cas.utc.fr/cas/login?service='.urlencode($service);
+            $url = config('auth.services.cas.url').'login?service='.urlencode($service);
+            
             $data = array('url' => $url);
             return response()->json($data);
-        }
-        else {
+        
+        } else {
             try {
 
+                // Récupération username + session_id
                 $payutc = $this->fetchPayutcSessionId($service, $ticket);
-                // On vérifie que le ticket est valide
-                #$data = $this->serviceValidate($service, $ticket);
 
-
-                // Succès de la récupération d'informations du CAS, on récupère les infos qui nous intéressent (=login)
+                // Succès de la récupération d'informations du CAS, on récupère les infos qui nous intéressent (login & sessionid payutc)
                 $login = $payutc['username'];
-
-
+                $sessionid = $payutc['sessionid'];
 
                 $member = $this->getMember($login);
 
                 if(!$member || !$member->hasAccess(['login'])) {
 
-                  /******* A DECOMMENTER POUR EMPECHER LES MEMBRES DU CAS SE CONNECTER *******/
-                  $error = array("error" => "401, unauthorized, the CAS user is not an authorized member");
-                  return redirect($webapp.'?error=401');
+                      /******* A DECOMMENTER POUR EMPECHER LES MEMBRES DU CAS SE CONNECTER *******/
+                      // $error = array("error" => "401, unauthorized, the CAS user is not an authorized member");
+                      // return redirect($webapp.'?error=401');
 
-              
-                /******* A DECOMMENTER POUR LAISSER LES MEMBRES DU CAS SE CONNECTER *******/
+                  
+                    /******* CONNECTION MEMBRE CAS *******/
 
-                // On vérifie que l'User n'existe pas déjà
-                /*if(User::where('login', $login)->get()->first()) {
-                return response()->error("The User already exists, conflict", 409);
-                }
+                    if (env('APP_ENV') == 'production'){
 
-                $user = new User();
-                $user->login = $login;
-                $user->terms     = 0;
-                $user->role_id   = 8;
+                        // On vérifie que l'User n'existe pas déjà
+                        if(User::where('login', $login)->get()->first()) {
+                            return response()->error("The User already exists, conflict", 409);
+                        }
 
-                try {
-                $user->save();
-                } catch(\Exception $e) {
-                return response()->inputError("Can't save the resource", 500);
-                }
-                $member = $this->getMember($login);*/
-            } 
+                        $user = new User();
+                        $user->login = $login;
+                        $user->terms     = 0;
+                        $user->role_id   = 3;
 
-            // L'utilisateur est autorisé. On lui génère un token dans la table Logs
-            $token = $this->getToken();
+                        try {
+                            $user->save();
+                        } catch(\Exception $e) {
+
+                            \Log::error("Connexion -> Création MembreCAS, message : ".$e->getMessage());
+                            return response()->inputError("Can't save the resource", 500);
+                        
+                        }
+                        $member = $this->getMember($login);
+
+                        \log::info("Connexion -> Création MembreCAS : ".$member->firstName.' '.$member->lastName);
+                    }
+                } 
+                
+                \log::info("Connexion -> ".$member->firstName.' '.$member->lastName.', session_id : '.$payutc['sessionid']);
+
+                // Create a token
+                $payload = JWTFactory::user_id($member->id)->session_id($sessionid)->make();
+                $token = JWTAuth::encode($payload);
+
+                // Puis on le redirige vers sa webapp, avec le token
+                return redirect('/#/login?token='.$token);
+                //return redirect($webapp.'?token='.$token);
+
+            } catch (AuthenticationException $e) {
+               
+                \Log::error("Connexion -> Erreur AuthenticationException, message : ".$e->getMessage());
+
+                return response()->json(array("error" => "401, ".$e->getMessage()), 401);
             
-            \log::info("sess : ".$payutc['sessionid']);
-            
-            $log = new Log([
-                'token'            =>   $token,
-                'CAS'              =>   Request::input('ticket'),
-                'payutc_sessionid' =>   $payutc['sessionid'],
-            ]);
-            $log->member()->associate($member);
-            $log->save();
+            } catch (PayutcException $e) {
 
-            // Puis on le redirige vers sa webapp, avec le token
-            return redirect('/#/login?token='.$token);
-            //suite aux nouvelles mesures de Google (CORS)
-            //return redirect($webapp.'?token='.$token);
-
-        } catch (AuthenticationException $e) {
-           
-            return response()->json(array("error" => "401, ".$e->getMessage()), 401);
-        
-        } catch (PayutcException $e) {
+                \Log::error("Connexion -> Erreur PayutcException, message : ".$e->getMessage());
+                
+                return response()->json(array(
+                    "error" => "Impossible de s'authentifier avec Payutc. (".$e->getMessage().")",
+                ), 400);
             
-            return response()->json(array(
-                "error" => "Impossible de s'authentifier avec Payutc. (".$e->getMessage().")",
-            ), 400);
-        
+            }
         }
-      }
+
+
+        
     }
 
-    /**
-     *  Un logout a pour effet de désactiver tous les tokens encore actifs du Member
-     *
-     */
+
+    // /**
+    //  *  Un logout a pour effet de désactiver tous les tokens encore actifs du Member
+    //  *
+    //  */
     public function logout() {
 
-        $member = Auth::user();
-
-        // Désactive tous les token liés à cet user
-        $logs = Log::where('user_id', $member->id);
-        $logs->update(['disabled' => true]);
-
         // On donne l'URL du logout CAS
-        return response()->json(array("url" => "https://cas.utc.fr/cas/logout"));
+        return response()->json(array("url" => config('auth.services.cas.url').'logout'));
    
     }
 
 
 
-    /**
-     *  Retourne des informations sur l'état de la connexion avec l'API.
-     *  Permet de vérifier que le token est toujours valide.
-     *
-     */
+    // /**
+    //  *  Retourne des informations sur l'état de la connexion avec l'API.
+    //  *  Permet de vérifier que le token est toujours valide.
+    //  *
+    //  */
     public function client() {
 
         // Puisque que cette méthode est sous le couvert du middleware UTCAuth,
         // si on l'atteint c'est que le token est encore valide. On se contente
         // de renvoyer un status 200.
-
-        return response()->success(Auth::user());
+        $data = Auth::user();
+        return response()->success($data);
     }
 
 
