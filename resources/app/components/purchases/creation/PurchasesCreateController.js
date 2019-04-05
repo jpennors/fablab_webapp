@@ -93,6 +93,25 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
         }
 
 
+        /**
+        * Suggestion login
+        */
+        $scope.autocomplete = function () {
+            if ($scope.purchase.login.length >= 3) {
+                Users.gingerSearch({'query': $scope.purchase.login}, function (data) {
+                    $scope.suggestedUsers = data.data;
+                });
+            } else {
+                $scope.suggestedUsers = [];
+            }
+        }
+
+        $scope.selectUser = function(login){
+            $scope.purchase.login = login;
+            this.setUserFromLogin();
+        }
+
+
         // ETAPE 2 : ENTITE
 
         /**
@@ -144,6 +163,12 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
                     },
                     type: function() {
                         return type
+                    },
+                    email: function(){
+                        return $scope.purchase.user.email
+                    },
+                    num_commande: function(){
+                        return null
                     }
                 },
                 controller: 'configureServiceCtrl'
@@ -221,7 +246,8 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
 
             // On sauvegarde la commande
             purchaseToSave.$save(function(resP){
-                var idPurchase = resP.data.newId;
+                var idPurchase = resP.data.id;
+                var num_commande = resP.data.number
                 var pe;
 
                 // Enregistrement des produits
@@ -230,22 +256,7 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
                     // Enregistrement des services
                     $scope.saveServicesElements(idPurchase).then(function(res){
                         
-                        //Envoi de l'email de confirmation
-                        var dataMail = {
-                            "subject" : "Fablab: Confirmation commande",
-                            "content" :"Votre commande a bien été enregistrée. Vous recevrez très prochainement un mail pour vous indiquer les démarches à réaliser. Vous pouvez consulter votre demande sur le site de gestion : gestion.fablabutc.fr dans la rubrique \"Commandes\" / \"Mes commandes\".",
-                            "receiver" : $rootScope.auth.member.email,
-                        }
-
-                        Mail.send(dataMail);
-
-                        var dataMailFablab = {
-                            "subject" : "Nouvelle commande",
-                            "content" :"Une nouvelle commande a été réalisée.",
-                            "receiver" : "fablab@assos.utc.fr",
-                        }
-
-                        Mail.send(dataMailFablab);
+                        Mail.demande_envoyée($scope.purchase.user.email, num_commande)
 
                         // Redirection
                         if($scope.membreCAS){
@@ -303,7 +314,6 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
                     var idPE = res.data.newId;
 
                     // Sauvegarde des fichiers
-                    console.log(service.files, "Files")
                     if(service.files != undefined) {
                         Array.prototype.forEach.call(service.files, function(file) {
                             if(file instanceof File){

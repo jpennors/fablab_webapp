@@ -6,13 +6,17 @@ app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $
         /**
         *  Initialisation de la page
         */
+
         $scope.user = $rootScope.auth.member;
         $scope.membreCAS = $rootScope.isExtern();
+        $scope.apiUrl = __ENV.apiUrl;
 
         $scope.selectedTab = 'commandes';
 
         $scope.filter = {}
         $scope.filter.type = "3"
+
+        $scope.loading = true;
 
         $scope.filter.statusFilter = function(){
             return function(purchase){
@@ -29,19 +33,63 @@ app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $
             }
             
         }
+
+        $scope.filter.unpaidFilter = function(){
+            return function(purchase){
+                if (purchase.status == 3 && !purchase.paid) {
+                    return true;
+                } else {
+                    return false
+                }
+            }
+            
+        }
+
+        $scope.filter.enCours = function(){
+            return function(purchase){
+                if (purchase.status < 3) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
         $scope.triStatus = 3;
 
 
         /**
         *  Chargement des Purchases
         */
-        Purchases.get({}, function(res){
-            $scope.purchases = res.data;
-            $scope.apiUrl = __ENV.apiUrl;
-            console.log($scope.purchases)
-        }, function(error){
-            ErrorHandler.alert(error);
-        });
+        switch ($location.path()){
+            case '/mypurchases':
+                Purchases.getMyPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases':
+                Purchases.get({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases/history':
+                Purchases.getHistoryPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+        }
 
 
         /**

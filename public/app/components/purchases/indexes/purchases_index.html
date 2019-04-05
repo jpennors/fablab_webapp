@@ -6,21 +6,30 @@
             </h1>
         </div>
 
-        <div class="col-md-11 item-page" style="padding:0px;">
+        <div ng-if="loading" class="text-center" style="margin-top: 100px">
+            <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+
+        <div class="col-md-11 item-page" style="padding:0px;" ng-if="!loading">
                 <ul class="nav nav-tabs nav-justified">
                     <li class="active">
                         <a data-toggle="tab" ng-click="selectedTab='commandes'">
-                            <h3><img src="assets/img/barre.png" class="img-table">Commandes en cours</h3>
+                            <h3><img src="assets/img/barre.png" class="img-table">En cours</h3>
+                        </a>
+                    </li>
+                    <li>
+                        <a data-toggle="tab" ng-click="selectedTab='unpaid'">
+                            <h3><img src="assets/img/money.png" class="img-table">Non payés</h3>
                         </a>
                     </li>
                     <li>
                         <a data-toggle="tab" ng-click="selectedTab='elements'">
-                            <h3><img src="assets/img/barre.png" class="img-table">Services à réaliser</h3>
+                            <h3><img src="assets/img/commande_en_cours.png" class="img-table">Services à réaliser</h3>
                         </a>
                     </li>
                 </ul>
             <div class="tab-content clearfix">
-                <div class="table-responsive" ng-show="selectedTab=='commandes'">
+                <div class="table-responsive" ng-if="selectedTab=='commandes'">
                     <table ng-show="purchases.length" class="table table-hover table-striped col-md-12">
                         <div class="panel-heading col-md-4 col-md-offset-4">
                             <input ng-model="purchaseSearch" type="text" class="form-control search-list" style="width:100%" placeholder="Rechercher une commande">
@@ -36,7 +45,36 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="purchase in purchases | filter:{isCompleted:false} | filter:purchaseSearch | orderBy : '+deadline'" ng-click="open(purchase.id)">
+                            <tr ng-repeat="purchase in purchases | filter: filter.enCours() | filter:purchaseSearch | orderBy : '+deadline'" ng-click="open(purchase.id)">
+                                <td class="col-md-1 td-list">{{ purchase.number }}</td>
+                                <td class="col-md-1 td-list">{{ purchase.created_at|date : 'dd/MM/yyyy à HH:mm:ss' }}</td>
+                                <td class="col-md-1 td-list">{{ purchase.login }}</td>
+                                <td class="col-md-1 td-list">{{ purchase.statusName }}</td>
+                                <td class="col-md-1 td-list">{{ purchase.totalPrice }}</td>
+                                <td class="col-md-1 td-list">{{ purchase.paid ? 'Oui' : 'Non' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <div class="table-responsive" ng-if="selectedTab=='unpaid'">
+                    <table ng-show="purchases.length" class="table table-hover table-striped col-md-12">
+                        <div class="panel-heading col-md-4 col-md-offset-4">
+                            <input ng-model="purchaseSearch" type="text" class="form-control search-list" style="width:100%" placeholder="Rechercher une commande">
+                        </div>
+                        <thead>
+                            <tr>
+                                <th>#<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Date<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Login<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Statut<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Montant<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th>Payée ?<br><img src="assets/img/fleche.png" class="img-th"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="purchase in purchases | filter: filter.unpaidFilter() | filter:purchaseSearch | orderBy : '+deadline'" ng-click="open(purchase.id)">
                                 <td class="col-md-1 td-list">{{ purchase.number }}</td>
                                 <td class="col-md-1 td-list">{{ purchase.created_at|date : 'dd/MM/yyyy à HH:mm:ss' }}</td>
                                 <td class="col-md-1 td-list">{{ purchase.login }}</td>

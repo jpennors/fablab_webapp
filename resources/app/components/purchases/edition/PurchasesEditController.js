@@ -1,4 +1,4 @@
-app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $scope, $http, $routeParams, $location, $uibModal, ErrorHandler, PurchasedElements, Purchases, Entities, UTCAuth) {
+app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $scope, $http, $routeParams, $location, $uibModal, ErrorHandler, PurchasedElements, Purchases, Entities, UTCAuth, Mail) {
 
     if (!$rootScope.can('order-CAS-member')) {
         $location.path('/error/404')
@@ -23,7 +23,6 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         */
         Purchases.get({ id : $routeParams.id }, function(res) {
             $scope.purchase = res.data;
-            console.log($scope.purchase)
 
             // Récupération des infos du l'uilisateur lié à la commande
             $http({
@@ -284,12 +283,10 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         $scope.externalPaid = function() {
 
             var newPurchase = angular.copy($scope.purchase);
-            console.log(newPurchase)
             newPurchase.paid = true;
             newPurchase.externalPaid = true;
 
-            Purchases.update({ id : $scope.purchase.id }, newPurchase, function(data){
-
+            Purchases.externalPaid({ id : $scope.purchase.id }, newPurchase, function(data){
                 // Rechargement des données
                 Purchases.get({ id : $scope.purchase.id }, function(data){
                     $scope.purchase = data.data;
@@ -347,7 +344,13 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
                 $scope.purchase.lastVersionElements[i].purchasable_id = $scope.purchase.lastVersionElements[i].purchasable.id
                 $scope.purchase.lastVersionElements[i].version = $scope.purchase.lastVersionElements[i].version+1
 
-                PurchasedElements.save({idE: $scope.purchase.lastVersionElements[i].id}, $scope.purchase.lastVersionElements[i], function(res){
+                PurchasedElements.updateElement($scope.purchase.lastVersionElements[i], function(res){
+                    var pe = res.data
+                    if ($scope.membreCAS)
+                        Mail.annulation_client($scope.purchase.user.email, pe.purchasable, $scope.purchase.number)
+                    else 
+                        Mail.annulation_fablab($scope.purchase.user.email, pe.purchasable, $scope.purchase.number)
+                   
                     Purchases.get({ id : $routeParams.id }, function(res) {
                         $scope.purchase = res.data;
                         updateElements()
@@ -375,7 +378,6 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         
                     //On constuit un objet avec l'id qui aura toutes les versions
                     var tabElements = $scope.purchase.elements.filter((e)=>e.id==selected.id)
-                    console.log(tabElements)
                     var modalInstance = $uibModal.open({
                         backdrop: true,
                         keyboard: true,
@@ -388,6 +390,12 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
                             },
                             type: function() {
                                 return type;
+                            },
+                            email: function(){
+                                return $scope.purchase.user.email
+                            },
+                            num_commande: function(){
+                                return $scope.purchase.number
                             }
                         },
                         controller: 'configureServiceCtrl'
@@ -437,5 +445,6 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
             }
             return {'background-color':color};
         };
+
     }
 });

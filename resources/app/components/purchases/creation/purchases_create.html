@@ -17,7 +17,94 @@
         </div>
 
         <div ng-hide="saving" class="row">
-            <div class="col-sm-12 col-md-7 col-md-push-5">
+            <div class="col-sm-12 col-md-5">
+            <div ng-hide="purchase.user" ng-show="can('order-for-someone')">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Étape 1 : Client</h3>
+                            <p>Qui souhaite effectuer une commande ?</p>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <input type="text" class="form-control" ng-model="purchase.login" ng-change="autocomplete()" ng-enter="setUserFromLogin()" placeholder="Entrez le login">
+                                <i ng-show="loading" class="glyphicon glyphicon-refresh form-control-feedback"></i>
+                                <div class="list-group" style="position: absolute; width: 95%; z-index: 100;">
+                                    <button class="list-group-item" ng-click="selectUser(user.login)" ng-repeat="user in suggestedUsers"><b>{{ user.prenom + " " + user.nom }}</b> <i>({{user.login}})</i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div ng-show="!purchase.entity && purchase.user && !saving" ng-if="can('change-purchase-entity')">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Choix de l'entité</h3>
+                            <p>A quelle entitée la commande est-elle effectuée?</p>
+                        </div>
+                        <div class="panel-body">
+                            <div ng-show="entities">
+                                <div class="form-group">
+                                    <input ng-model="entitiesSearch" type="text" class="form-control" placeholder="Rechercher une entité">
+                                </div>
+                                <div class="list-group">
+                                    <button ng-repeat="entity in entities | filter:entitiesSearch" type="button" class="list-group-item" ng-click="selectEntity(entity)">
+                                        <div class="list-group-item-text">
+                                            <b>{{ entity.name }}</b>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+            <div ng-show="purchase.user && (purchase.entity || !can('change-purchase-entity')) && !saving">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Faites votre panier</h3>
+                            <p>Sélectionner un ou plusieurs <span ng-show="!membreCAS">produits / </span>services</p>
+                        </div>
+                        <div class="panel-body">
+
+                            <!-- Services -->
+                            <div>
+                                <h4>Services</h4>
+                                <div class="form-group">
+                                    <input ng-model="serviceSearch" type="text" class="form-control" placeholder="Rechercher un service">
+                                </div>
+                                <div class="list-group" style="height: 250px; overflow-y:scroll;">
+                                    <button ng-repeat="service in services | filter:serviceSearch"
+                                            ng-click="openModalServices(service, 'create')"
+                                            type="button" class="list-group-item">
+                                        <h5>{{ service.name }}</h5>
+                                        {{ service.description }}
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Product -->
+                            <div ng-show="!membreCAS">
+                                <h4>Produits</h4>
+                                <div class="form-group">
+                                    <input ng-show="products" ng-model="productSearch" type="text" class="form-control" placeholder="Rechercher un produit">
+                                </div>
+                                <div class="list-group" style="height: 250px; overflow-y:scroll;">
+                                    <button ng-repeat="product in products | filter:productSearch"
+                                            ng-click="product.remainingQuantity > 0 && addProduct(product)"
+                                            ng-class="{'disabled': product.remainingQuantity <= 0}"
+                                            type="button" class="list-group-item">
+                                        <h5>{{ product.name }}</h5>
+                                        {{ product.description }}
+                                        <span class="badge badge-pill">{{ product.remainingQuantity }}</span>
+                                    </button>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+            <div class="col-sm-12 col-md-7 col-offset-md-5">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3>Résumé de la commande</h3>
@@ -34,7 +121,7 @@
                                     </div>
                                 </div>
                                 <div ng-show="purchase.user && !membreCAS" class="panel-footer text-center">
-                                    <button ng-click="purchase.user = null" type="button" class="btn btn-adaptable-yellow titre">Modifier le client</button>
+                                    <button ng-click="purchase.user = null; purchase.login = null; suggestedUsers = null" type="button" class="btn btn-adaptable-yellow titre">Modifier le client</button>
                                 </div>
                                 <div ng-show="purchase.user" class="panel-footer">
                                     <h4 ng-if="!asso">Je commande pour une association : </h4>
@@ -149,93 +236,7 @@
                 </div>
             </div>
 
-            <div ng-hide="purchase.user" ng-show="can('order-for-someone')">
-                <div class="col-sm-12 col-md-5 col-md-pull-7">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3>Étape 1 : Client</h3>
-                            <p>Qui souhaite effectuer une commande ?</p>
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <input type="text" class="form-control" ng-model="purchase.login" ng-enter="setUserFromLogin()" placeholder="Entrez le login">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div ng-show="!purchase.entity && purchase.user && !saving" ng-if="can('change-purchase-entity')">
-                <div class="col-sm-12 col-md-5 col-md-pull-7">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3>Choix de l'entité</h3>
-                            <p>A quelle entitée la commande est-elle effectuée?</p>
-                        </div>
-                        <div class="panel-body">
-                            <div ng-show="entities">
-                                <div class="form-group">
-                                    <input ng-model="entitiesSearch" type="text" class="form-control" placeholder="Rechercher une entité">
-                                </div>
-                                <div class="list-group">
-                                    <button ng-repeat="entity in entities | filter:entitiesSearch" type="button" class="list-group-item" ng-click="selectEntity(entity)">
-                                        <div class="list-group-item-text">
-                                            <b>{{ entity.name }}</b>
-                                        </div>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div ng-show="purchase.user && (purchase.entity || !can('change-purchase-entity')) && !saving">
-                <div class="col-sm-12 col-md-5 col-md-pull-7">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3>Faites votre panier</h3>
-                            <p>Sélectionner un ou plusieurs <span ng-show="!membreCAS">produits / </span>services</p>
-                        </div>
-                        <div class="panel-body">
-
-                            <!-- Product -->
-                            <div ng-show="!membreCAS">
-                                <h4>Produits</h4>
-                                <div class="form-group">
-                                    <input ng-show="products" ng-model="productSearch" type="text" class="form-control" placeholder="Rechercher un produit">
-                                </div>
-                                <div class="list-group" style="height: 250px; overflow-y:scroll;">
-                                    <button ng-repeat="product in products | filter:productSearch"
-                                            ng-click="product.remainingQuantity > 0 && addProduct(product)"
-                                            ng-class="{'disabled': product.remainingQuantity <= 0}"
-                                            type="button" class="list-group-item">
-                                        <h5>{{ product.name }}</h5>
-                                        {{ product.description }}
-                                        <span class="badge badge-pill">{{ product.remainingQuantity }}</span>
-                                    </button>
-                                </div>
-                                <br>
-                            </div>
-                            <!-- Services -->
-                            <div>
-                                <h4>Services</h4>
-                                <div class="form-group">
-                                    <input ng-model="serviceSearch" type="text" class="form-control" placeholder="Rechercher un service">
-                                </div>
-                                <div class="list-group" style="height: 250px; overflow-y:scroll;">
-                                    <button ng-repeat="service in services | filter:serviceSearch"
-                                            ng-click="openModalServices(service, 'create')"
-                                            type="button" class="list-group-item">
-                                        <h5>{{ service.name }}</h5>
-                                        {{ service.description }}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 
         </div>
 

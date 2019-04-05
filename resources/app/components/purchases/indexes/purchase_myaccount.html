@@ -6,7 +6,11 @@
             </h1>
     </div>
 
-    <div class="row">
+    <div ng-if="loading" class="text-center" style="margin-top: 100px">
+        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+    </div>
+
+    <div class="row" ng-if="!loading">
       <div class="col-md-11 item-page">
         <div class="table-responsive">
           <table ng-show="purchases.length" class="table table-hover table-striped col-md-12">
@@ -22,7 +26,7 @@
               <tr>
                   <th>#<br><img src="assets/img/fleche.png" class="img-th"></th>
                   <th>Date<br><img src="assets/img/fleche.png" class="img-th"></th>
-                  <th>Status<br><img src="assets/img/fleche.png" class="img-th"></th>
+                  <th>Statut<br><img src="assets/img/fleche.png" class="img-th"></th>
                   <th>Montant<br><img src="assets/img/fleche.png" class="img-th"></th>
                   <th>Payée ?<br><img src="assets/img/fleche.png" class="img-th"></th>
               </tr>

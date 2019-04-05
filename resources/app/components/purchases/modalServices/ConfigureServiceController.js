@@ -1,4 +1,4 @@
-app.controller('configureServiceCtrl', function($window, $scope, $http, $q, object, type, $uibModalInstance, $filter, ScriptFactory, $rootScope, PurchasedElements, Mail) {
+app.controller('configureServiceCtrl', function($window, Engines, $scope, $http, $q, object, type, email, num_commande, $uibModalInstance, $filter, ScriptFactory, $rootScope, PurchasedElements, Mail) {
 
     /**
     *   Initialisation
@@ -8,6 +8,7 @@ app.controller('configureServiceCtrl', function($window, $scope, $http, $q, obje
     // Utilisateur
     $scope.user = $rootScope.auth.member
     $scope.membreCAS = $rootScope.isExtern()
+    $scope.num_commande = num_commande
 
     // Fonction de prix 
     $scope.fonctionPrix = {}
@@ -178,16 +179,17 @@ app.controller('configureServiceCtrl', function($window, $scope, $http, $q, obje
 
     // Appel API pour un fichier
     var getFile = function(id, fileName){
-        PurchasedElements.getFile({id, fileName: fileName}, function(data){
-            // Création du fichier
-            var file = new Blob([data])
-            // Création objet fichier ( Nom + Fichier )
-            var fileObject = {
-                name: fileName,
-                file: file
-            }
-            $scope.element.files.push(fileObject)
-        })
+
+            // Obtention du fichier
+            $http.get(__ENV.apiUrl + '/file/purchasedelement/' + id + '/' + fileName, {responseType : "blob"}).then(function(data){
+
+                // // Création objet fichier ( Nom + Fichier )
+                var fileObject = {
+                    name: fileName,
+                    file: data.data
+                }
+                $scope.element.files.push(fileObject)
+            })
     }
 
 
@@ -330,65 +332,40 @@ app.controller('configureServiceCtrl', function($window, $scope, $http, $q, obje
         }
 
         PurchasedElements.updateElement(pe, function(res){
-            console.log("cc")
             $scope.saveFiles().then(function(res){
-
-                //Envoie d'email
-                var dataMail = {}
 
                 switch(status){
                     case 0 :
-                    dataMail = {
-                        "subject" : "Fablab : Confirmation modification service",
-                        "content" : "Votre demande de service \"" + $scope.service.name + "\" a bien été modifiée.",
-                        "receiver" : "fablab@assos.utc.fr",
-                    }
+                    Mail.demande_modifiée(email, $scope.element.purchasable, $scope.num_commande)
 
-                    // Plus envoie d'un email au Fablab
-                    dataMailFablab = {
-                        "subject" : "Modification d'un service",
-                        "content" : "Une demande de service \"" + $scope.service.name + "\" a été modifiée par le client et demande une nouvelle validation.",
-                        "receiver" : "fablab@assos.utc.fr",
-                    }
-                    Mail.send(dataMailFablab)
                     break;
                     case 1 :
-                    dataMail = {
-                        "subject" : "Fablab : Validation de votre commande",
-                        "content" : "Le service \"" +  $scope.service.name +"\" a été complété et validé par le Fablab. Vous pouvez aller dès à présent le confirmer pour qu'il soit mis en production. Pour le confirmer, vous devez tout d'abord vous rendre sur le site de gestion: gestion.fablabutc.fr. Dans la rubrique, \"Commandes\" / \"Mes commandes\", vous trouverez votre commande. Il vous faudra vous rendre dans la commande et cliquer sur le service correspondant. Une modale s'ouvrira alors et vous pourrez indiquer \"Valider\" si cela vous convient. Vous avez également la possibilité d'éditer le service. Toute modification entraînera une nouvelle validation du Fablab.",
-                        "receiver" : $scope.versions[0].login_edit,
-                    }
+                    Mail.validation_fablab(email, $scope.element.purchasable, $scope.num_commande)
+
                     break;
                     case 2 :
-                    dataMail = {
-                        "subject" : "Fablab : Validation d'un service",
-                        "content" : "Une demande de service \"" + $scope.service.name + "\" a été validée par un client et peut être mise en production.",
-                        "receiver" : "fablab@assos.utc.fr",
-                    }
+                    Mail.validation_client(email, $scope.element.purchasable, $scope.num_commande)
+
                     break;
                     case 3 :
-                    dataMail = {
-                        "subject" : "Fablab : Service réalisé",
-                        "content" : "Votre service \"" + $scope.service.name + "\" est prêt. Vous pouvez dès à présent venir le récupérer au Fablab.",
-                        "receiver" : $scope.versions[0].login_edit,
+                    Mail.realisation(email, $scope.element.purchasable, $scope.num_commande)
+                    // Check if there is a value t => time
+                    if ("t" in $scope.element.args){
+                        Engines.usedEngine({id : $scope.service.engine_id, time: $scope.element.args["t"]}, function(res){
+                        })
                     }
+
                     break;
                     case 4 :
-                    dataMail = {
-                        "subject" : "Fablab : Annulation de votre service",
-                        "content" : "Le service \"" + $scope.service.name + "\" que vous avez demandé a été annulé par le Fablab.",
-                        "receiver" : $scope.versions[0].login_edit,
-                    }
+                    Mail.annulation_fablab(email, $scope.element.purchasable, $scope.num_commande)
+
                     break;
                     case 5 :
-                    dataMail = {
-                        "subject" : "Fablab : Annulation d'un service",
-                        "content" : "Une demande de service \"" + $scope.service.name + "\" a été annulée.",
-                        "receiver" : "fablab@assos.utc.fr",
-                    }
+                    Mail.annulation_client(email, $scope.element.purchasable, $scope.num_commande)
+
                     break;
                 }
-                Mail.send(dataMail);
+
                 $scope.element.status = status;
                 $uibModalInstance.close({changedElement : $scope.element});
 

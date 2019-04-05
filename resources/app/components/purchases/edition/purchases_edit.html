@@ -1,7 +1,7 @@
 <in-wrapper>
 <div ng-controller="purchasesEditCtrl" class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">Commande n°{{ purchase.number }}</h1>
+        <h1 class="page-header">Commande n°{{ purchase.number }} <span class="badge" ng-style="iconColor(purchase)" style="color: #707070">{{purchase.statusName}}</span></h1>
     </div>
 
     <div ng-if="loading" class="text-center" style="margin-top: 100px">
@@ -12,7 +12,7 @@
       <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4>Client</h4>
+                <h4>Client <span class="badge" ng-if="purchase.association" style="background-color: #707070">Association {{ (purchase.association )}}</b></h4>
             </div>
             <div class="panel-body">
                 <show-user user="purchase.user"></show-user>
@@ -99,14 +99,14 @@
                         Cette commande a été payée le <b>{{ purchase.datePaid |date : 'dd/MM/yyyy à HH:mm:ss' }}</b> avec <b>{{ purchase.externalPaid ? 'un moyen extérieur de paiement' : 'Payutc' }}</b>
                     </p>
                   </div>
-                  <div ng-show="!purchase.paid" class="text-center">
+                  <div ng-show="!purchase.paid && purchase.status < 4" class="text-center">
                     <p><i class="fa fa-bell fa-2x text-danger" aria-hidden="true"></i>
                       Cette commande n'a pas été payée</p>
                     <p>
                       <i ng-show="!purchase.isTotalPriceDefined">Le prix total n'a pas encore été fixée par le Fablab.</i>
                       <div>
                         <a ng-href="{{ payurl }}" ng-if="can('pay-someone-payutc')" class="btn btn-adaptable-yellow" ng-disabled="!purchase.isTotalPriceDefined">Paiement badgeuse</a>
-                        <button class="btn btn-adaptable-yellow" ng-if="purchase.isServicePurchase" data-toggle="tooltip" data-placement="top" title="Vous pouvez marquer cette commande comme payée si le paiement a été fait par un moyen extérieur."
+                        <button class="btn btn-adaptable-yellow" ng-if="purchase.isServicePurchase"
                                 ng-click="payCard()" ng-disabled="externalPaidSaving || !purchase.isTotalPriceDefined">
                           Paiement
                         </button>
@@ -145,7 +145,7 @@
                       <div class="panel-heading">
                           <h5 class="panel-title">{{ element.purchasableName }}</h5>
                       </div>
-                      <div id="collapseOne" class="panel-collapse collapse in">
+                      <div id="collapseOne" class="panel-collapse collapse in pointer">
                           <div class="panel-body">
                             <div><span class="col-md-2 status-icon" ng-style="iconColor(element)"></span></div>
                             <div><span class="col-md-2">{{ element.statusName }}</span></div>
