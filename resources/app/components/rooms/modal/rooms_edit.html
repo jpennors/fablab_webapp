@@ -1,0 +1,113 @@
+<div class="modal-print">
+    <div class="modal-header">
+        <h2 ng-if="type=='show'" class="pull-left">
+            <i class="fa fa-exclamation-triangle fa-2x" aria-hidden="true"></i> ALERTE STOCK
+        </h2>
+        <h2 ng-if="type=='view'" class="pull-left">
+            <img src="assets/img/oeil.png" class="img-view">
+            Salle  {{room.name}}
+        </h2>
+        <h2 ng-if="type=='edit'" class="pull-left">
+            <i class="fa fa-pencil-square-o img-edit" aria-hidden="true"></i>
+            Modifier Salle {{room.name}}
+        </h2>
+        <h2 ng-if="type=='create'" class="pull-left">
+            <i class="fa fa-plus fa-3x img-edit" aria-hidden="true"></i>
+            NOUVELLE SALLE 
+
+        </h2>
+        <a class="pull-right btn-edit" role="button" ng-show="can('edit-room') && canChange" ng-click="type = 'edit'">
+            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+        </a>
+        <a confirm="Êtes-vous sûr de supprimer cette salle ?" ng-if="can('delete-room') && canDelete" ng-click="delete()" class="pull-right btn-delete" role="button">
+            <i class="fa fa-trash-o" aria-hidden="true"></i>
+        </a>
+    </div>
+
+    <div class="modal-body row">
+      
+        <div class="col-md-8">
+            <div class="form-group row">
+                <label class="col-sm-4 control-label print_item">Nom de la salle :</label>
+                <div class="col-sm-8">
+                    <input ng-disabled="!(type == 'create')" ng-model="room.name" type="text" class="form-control print_item">
+                </div>
+            </div>
+            <div class="form-group row">
+            <label class="col-sm-4 control-label print_item">Salle numéro : {{room_id}}  </label>
+            </div>
+            <div class="form-group">
+                <label class="control-label print_item form-view">Description:</label>
+                <textarea ng-disabled="!edit" ng-model="room.description" type="text" class="form-control print_item"></textarea>
+
+
+            </div>
+
+<!-- --> 
+
+  
+<!-- -->
+             <form class="form-horizontal" name="formx">
+                 
+            <div class="row">
+
+                <div ng-show="loading" class="text-center"><i class="fa fa-spinner fa-2x fa-pulse fa-fw"></i></div>
+
+                <!--ajouter une option pour ajouter des étagères -->
+                    <a class="pull-right item-new" role="button" ng-click="moreInputs()" ng-show="edit">
+                     <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+        <!-- fin du bouton plus  doit ajoute un champ input text qui sera sauvegardé-->
+                                                
+                <div class="list-group col-sm-12" style="height: 311px; overflow-y:scroll;" ng-hide="loading" >
+
+                   <div  class="list-group col-sm-12"> Liste des caisses présentes dans la salle : </div> 
+                  
+                    <!-- wardrobes qui seront crées-->
+                    <div ng-repeat="input in inputs track by $index"> <!-- Input added when add is called -->
+                    <input type="text" ng-model="wardrobe.name" ng-disabled="!edit" class="list-group-item" name="new_wardrobes_to_create" placeholder="Insérer nouvelle caisse">
+                    
+                    </div>
+
+                    <!-- delete-->
+                    <div ng-repeat="wardrobe in wardrobes_associate_to_room"> 
+
+                    <input ng-model="wardrobe.name" type="text" ng-disabled="!edit" class="list-group-item">  </input>
+                    <a ng-show="edit" role="button" ng-click="Delete_button(wardrobe.id);"> Supprimer ? : {{text_button[wardrobe.id]}}</a>   
+                   <!-- non nactif <a ng-show="edit" role="button" ng-click="Modify_button(wardrobe.id);"> Modifier ? : {{text_button_2[wardrobe.id]}}</a>-->
+
+                     </div>
+                    
+
+                </div>
+            </div>
+        </form>
+
+         <div ng-show="edit">Attention une caisse doit obligatoirement commencer par un a ou un c suivi d'un numéro, d'un n et d'un autre numéro  </div>
+
+
+        </div>
+
+
+
+
+        <div ng-show="inputErrors" class="col-md-12">
+            <div class="alert alert-danger top10">
+                <ul>
+                    <li ng-repeat="(input, errors) in inputErrors">
+                        <b>{{ input }} : <span ng-repeat="error in errors">{{ error }} </span></b>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div ng-show="messageError" class="col-md-12">
+                <div class="alert alert-danger top10"> {{messageError}}</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-show="show" class="btn btn-yellow" type="button" ng-click="cancel()">Fermer</button>
+            <button ng-show="edit" class="btn btn-grey" type="button" ng-click="cancel()">Annuler</button>
+            <button ng-show="edit"class="btn btn-yellow" type="button" ng-click="save()">Enregistrer</button>
+
+        </div>
+    </div>
+</div>
