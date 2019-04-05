@@ -14,7 +14,6 @@ app.controller('paymentConfirmationCtrl', function($scope, $http, ErrorHandler, 
 
 	    }, function(error){
 	    	$scope.loading = false
-	    	console.log(error)
             ErrorHandler.alert(error.data.meta);
             $location.path("/")
 	    });

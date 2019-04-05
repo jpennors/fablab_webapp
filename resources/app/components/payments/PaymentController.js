@@ -53,7 +53,6 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
         }
 
         // L'id du badge envoyé par le WS
-        console.log("JCappuccino: cardInserted: " + badge_id);
         $scope.$apply(function(){
           $scope.badge_id = badge_id;
           $scope.badgeuse.ok = true;
@@ -61,7 +60,6 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
           $scope.payutc.status = "Communication avec Payutc...";
         });
 
-        //console.log($scope.purchase.id);
         // Initialisation du paiement
         Payments.payBadge(UTCAuth.token, badge_id, $scope.purchase.id)
         .then(function(data){
@@ -96,13 +94,13 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
        *  évènement: échec pour trouver la badgeuse
        */
       JCappuccinoFactory.subscribe("badgeuseNotFound", function(message) {
-        console.log("JCappuccino: badgeuse introuvable");
+
         $scope.$apply(function(){
           $scope.badgeuse.ok = false;
           $scope.badgeuse.status = "Impossible de trouver la badgeuse.";
         });
         // Tentative de reconnexion au bout de 2sec
-        console.log("JCappuccino: Tentative de reconnexion...");
+
         $timeout(JCappuccinoFactory.connect, 2000);
       });
 
@@ -110,7 +108,6 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
        *  évènement: ouverture du ws avec JCappuccino
        */
       JCappuccinoFactory.subscribe("onopen", function(message) {
-        console.log("JCappuccino: Ouverture du ws");
         $scope.$apply(function(){
           $scope.badgeuse.ok = true;
           $scope.badgeuse.status = "Connecté à la badgeuse. En attente.";
@@ -121,7 +118,6 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
        *  évènement: perte du ws avec JCappuccino
        */
       JCappuccinoFactory.subscribe("onerror", function(message) {
-        console.log("JCappuccino: Erreur du ws");
         $scope.$apply(function(){
           $scope.badgeuse.ok = false;
           $scope.badgeuse.status = "Erreur de la badgeuse... En attente.";
@@ -132,13 +128,11 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
        *  évènement: fermeture du ws avec JCappuccino
        */
       JCappuccinoFactory.subscribe("onclose", function(message) {
-        console.log("JCappuccino: Perte du ws");
         $scope.$apply(function(){
           $scope.badgeuse.ok = false;
           $scope.badgeuse.status = "Perte de la badgeuse... En attente.";
         });
         // Tentative de reconnexion au bout de 2sec
-        console.log("JCappuccino: Tentative de reconnexion...");
         $timeout(JCappuccinoFactory.connect, 2000);
       });
     }
