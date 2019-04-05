@@ -39,17 +39,6 @@ app.directive('inWrapper', function($rootScope) {
     };
 });
 
-app.directive('outWrapper', function($rootScope) {
-  return {
-    restrict: 'EA',
-    transclude: true,
-    scope: {},
-    controller: function($rootScope, $scope, $element, $attrs) {
-    },
-    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
-  };
-});
-
 app.directive('confirm', function(ConfirmFactory) {
     return {
         restrict: 'A',
@@ -93,6 +82,17 @@ app.directive('modalConfirm', function() {
   };
 });
 
+app.directive('outWrapper', function($rootScope) {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    scope: {},
+    controller: function($rootScope, $scope, $element, $attrs) {
+    },
+    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
+  };
+});
+
 app.directive('search', function() {
     return {
         restrict: 'EA',
@@ -113,7 +113,8 @@ app.directive('search', function() {
 app.controller('alertsCtrl', function($http, $scope, ErrorHandler, Products, Expendables, Tools, $uibModal){
     $scope.alerts = {
         expendables:[],
-        products:[]
+        products:[],
+        tools:[]
     };
     Products.get({}, function(res){
         $scope.alerts.products = res.data.filter(p => p.remainingQuantity <= p.minQuantity);
@@ -179,6 +180,41 @@ app.directive('showAlerts', function() {
   };
 });
 
+app.controller('enginePartAlertsCtrl', function($http, $scope, $window, ErrorHandler, EngineParts){
+
+    init = function(){
+        EngineParts.get({}, function(res) {
+            console.log("pourlet", res)
+            $scope.ep = res.data
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
+    }
+    init()
+
+    $scope.filter = {}
+    $scope.filter.statusFilter = function(){
+        return function(pe){
+            return (pe.need_maintenance == true)
+        }
+    }
+
+    $scope.resetMaintenance = function($id){
+        console.log($id)
+        EngineParts.resetMaintenance({id: $id}, function(res){
+            init()
+        })
+    }
+});
+
+app.directive('showEnginePartAlerts', function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/directives/showEnginePartAlerts/engine_part_alerts_show.html',
+        controller: 'enginePartAlertsCtrl',
+    };
+});
+
 app.directive('showErrors', function() {
     return {
         restrict: 'EA',
@@ -205,19 +241,20 @@ app.directive('showProducts', function() {
   };
 });
 
-app.controller('alertsPurchaseCtrl', function($http, $scope, $window, ErrorHandler, PurchasedElements){
+app.controller('alertsPurchaseCtrl', function($http, $scope, $window, ErrorHandler, PurchasedElements, $rootScope){
 
 
-    PurchasedElements.get({}, function(res) {
-        console.log(res)
-        $scope.pes = res.data
-        for (var i = $scope.pes.length - 1; i >= 0; i--) {
-            var deadline = $scope.pes[i].deadline
-            $scope.pes[i].deadline = new Date(moment(deadline).get('year'), moment(deadline).get('month'), moment(deadline).get('date'))
-        }
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
+    if($rootScope.can('view-all-entity-purchase')){
+        PurchasedElements.get({}, function(res) {
+            $scope.pes = res.data        
+            for (var i = $scope.pes.length - 1; i >= 0; i--) {
+                var deadline = $scope.pes[i].deadline
+                $scope.pes[i].deadline = new Date(moment(deadline).get('year'), moment(deadline).get('month'), moment(deadline).get('date'))
+            }
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
+    }   
 
     $scope.redirect = function(id) {
         $window.location.href = "#/purchases/" + id + "/edit"
@@ -226,7 +263,7 @@ app.controller('alertsPurchaseCtrl', function($http, $scope, $window, ErrorHandl
     $scope.filter = {}
     $scope.filter.statusFilter = function(){
         return function(pe){
-            return (pe.status == 0)
+            return (pe.status == 2 || pe.status == 0)
         }
     }
 });
@@ -248,15 +285,17 @@ app.directive('showTasks', function() {
 });
 
 app.controller('tasksCtrl', function($http, $rootScope, $scope, Tasks, $uibModal, ErrorHandler, uibDateParser, $filter, Users, $timeout){
-    Tasks.get({}, function(res){
-        $scope.tasks = res.data;
-        console.log(res);
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
 
 
     $scope.user = $rootScope.auth.member
+
+    if($rootScope.can('list-task')){
+        Tasks.get({}, function(res){
+            $scope.tasks = res.data;
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
+    }
 
     $scope.dynamicPopover = {
         content: 'Hello, World!',
@@ -388,7 +427,6 @@ app.controller('tasksCtrl', function($http, $rootScope, $scope, Tasks, $uibModal
                 res.deadline = $filter('date')(res.deadline_date, 'yyyy-MM-dd');
                 if($filter('date')(res.deadline_time, 'HH:mm:ss'))
                 res.deadline += ' ' + $filter('date')(res.deadline_time, 'HH:mm:ss');
-                console.log(res.name + ' ' + res.deadline + ' ' + res.progress + ' ' + res.description);
 
                 task.name = res.name;
                 task.description = res.description;

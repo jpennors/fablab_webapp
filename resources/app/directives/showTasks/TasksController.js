@@ -1,13 +1,15 @@
 app.controller('tasksCtrl', function($http, $rootScope, $scope, Tasks, $uibModal, ErrorHandler, uibDateParser, $filter, Users, $timeout){
-    Tasks.get({}, function(res){
-        $scope.tasks = res.data;
-        console.log(res);
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
 
 
     $scope.user = $rootScope.auth.member
+
+    if($rootScope.can('list-task')){
+        Tasks.get({}, function(res){
+            $scope.tasks = res.data;
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
+    }
 
     $scope.dynamicPopover = {
         content: 'Hello, World!',
@@ -141,7 +143,6 @@ app.controller('tasksCtrl', function($http, $rootScope, $scope, Tasks, $uibModal
                 res.deadline = $filter('date')(res.deadline_date, 'yyyy-MM-dd');
                 if($filter('date')(res.deadline_time, 'HH:mm:ss'))
                 res.deadline += ' ' + $filter('date')(res.deadline_time, 'HH:mm:ss');
-                console.log(res.name + ' ' + res.deadline + ' ' + res.progress + ' ' + res.description);
 
                 task.name = res.name;
                 task.description = res.description;

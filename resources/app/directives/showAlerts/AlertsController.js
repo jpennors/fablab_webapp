@@ -1,7 +1,8 @@
 app.controller('alertsCtrl', function($http, $scope, ErrorHandler, Products, Expendables, Tools, $uibModal){
     $scope.alerts = {
         expendables:[],
-        products:[]
+        products:[],
+        tools:[]
     };
     Products.get({}, function(res){
         $scope.alerts.products = res.data.filter(p => p.remainingQuantity <= p.minQuantity);

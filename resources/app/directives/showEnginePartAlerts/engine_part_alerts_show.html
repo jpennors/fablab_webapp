@@ -1,0 +1,28 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h2 style="text-align: center"> <img src="assets/img/alerte_gris.png" class="img-dashboard">Maintenances urgentes</h2>
+
+        <div class="list-group scrollable-dashboard-list">
+            <div ng-repeat="p in ep | filter: filter.statusFilter() | orderBy : '+deadline'"class="list-group-item list-dash elmt-task">
+                <table class="task-list-table">
+                    <tr>
+                        <td class="task-list-img">
+                            <i class="fa fa-exclamation-triangle fa-2x img-alert" aria-hidden="true"></i>
+                        </td>
+                        <td class="task-list-info">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h4 class="list-group-item-heading">{{ p.name }}</h4>
+                                    <p class="list-group-item-text">Machine : <strong>{{ p.engine.name }}</strong></p>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-adaptable-yellow" ng-click="resetMaintenance(p.id)">Réalisé</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
