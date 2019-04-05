@@ -6,7 +6,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Ginger;
-use App\Events\UserRetrieved;
 
 /**
  * @property \Carbon\Carbon $deleted_at
@@ -84,7 +83,6 @@ class User extends Model implements Authenticatable
             throw new \Exception("Login should be filled");
         }
         if (\Cache::has("ginger_".$this->login)) {
-            \Log::info("Retrived from cache");
             $this->ginger = \Cache::get("ginger_".$this->login);
         } else {
             $this->ginger = Ginger::getUser($this->login);
@@ -94,29 +92,24 @@ class User extends Model implements Authenticatable
 
     public function getFirstNameAttribute()
     {
-        //return "Thomas";
         $this->loadFromGinger();
         return $this->ginger->prenom;
     }
 
     public function getLastNameAttribute()
     {
-        //return "Le Gluher";
         $this->loadFromGinger();
         return $this->ginger->nom;
     }
 
     public function getEmailAttribute()
     {
-        //return "thomas@mail.fr";
         $this->loadFromGinger();
-        //dd($this->ginger->mail);
         return $this->ginger->mail;
     }
 
     public function getStatusAttribute()
     {
-        //return "étudiant";
         $this->loadFromGinger();
         switch ($this->ginger->type) {
             case 'etu':
@@ -141,14 +134,12 @@ class User extends Model implements Authenticatable
 
     public function getIsCotisantAttribute()
     {
-        //return true;
         $this->loadFromGinger();
         return $this->ginger->is_cotisant;
     }
 
     public function getIsAdulteAttribute()
     {
-        //return true;
         $this->loadFromGinger();
         return $this->ginger->is_adulte;
     }
