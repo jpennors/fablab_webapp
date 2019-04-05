@@ -2,6 +2,49 @@
 
 return [
 
+    'services'  => [
+
+        'cas'   => [
+            'name'          =>  'CAS-UTC',
+            'description'   =>  'Connexion CAS réservée aux étudiants utcéens',
+            'active'        =>  env('APP_AUTH', ''),
+            'url'           =>  env('CAS_URL', '')
+        ],
+
+        'payutc' => [
+            'name'          =>  'PayUTC',
+            'description'   =>  'Service de paiement Nemopay pour les étudiants utcéens',
+            'active'        =>  env('NEMOPAY_ACTIVATE'),
+            'url'           =>  env('NEMOPAY_API_URL'),
+            'fundation'     =>  env('NEMOPAY_FUN_ID'),
+            'app_key'       =>  env('NEMOPAY_APP_KEY'),
+            'categories'    =>  [
+                'category_obj_id'       =>  env('NEMOPAY_CATEGORY_OBJ_ID'),
+                'category_service_id'   =>  env('NEMOPAY_CATEGORY_SERVICE_ID')
+            ],
+            'price'         =>  [
+                'service_price_0001_id' =>  env('NEMOPAY_SERVICE_PRICE_0001_ID'),
+                'service_price_0010_id' =>  env('NEMOPAY_SERVICE_PRICE_0010_ID'),
+                'service_price_0100_id' =>  env('NEMOPAY_SERVICE_PRICE_0100_ID'),
+                'service_price_1000_id' =>  env('NEMOPAY_SERVICE_PRICE_1000_ID')
+            ]
+        ],
+
+        'portail' => [
+            'name'          =>  'Portail UTC',
+            'description'   =>  'Portail des associations UTC',
+            'url'           =>  env('PORTAIL_URL')
+        ],
+
+        'ginger' => [
+            'name'          =>  'Ginger',
+            'description'   =>  'API pour la gestion des cotisants BDE-UTC',
+            'url'           =>  env('GINGER_URL'),
+            'app_key'       =>  env('GINGER_APP_KEY')
+        ]
+
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Authentication Defaults

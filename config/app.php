@@ -52,7 +52,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Europe/Paris',
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +108,8 @@ return [
     |
     */
 
-    'log' => env('APP_LOG', 'single'),
+    'log' => env('APP_LOG', 'daily'),
+    'log_max_files' => 10,
 
     /*
     |--------------------------------------------------------------------------
@@ -119,7 +120,8 @@ return [
     |
     */
 
-    'mail_dev' => env('MAIL_DEV'),
+    'mail_dev'  =>  env('MAIL_DEV'),
+    'proxy'     =>  env('PROXY_UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -171,6 +173,8 @@ return [
         App\Providers\RulesServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
         Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
     ],
 
     /*
@@ -224,6 +228,11 @@ return [
         'Payutc' => App\Facade\Payutc::class,
         'Ginger' => App\Facade\Ginger::class,
         'Excel' =>  Maatwebsite\Excel\Facades\Excel::class,
+
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class, 
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
     ],
+
+
 
 ];
