@@ -21,7 +21,7 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
             var type = $scope.data.type;
             $http.get(__ENV.apiUrl + '/export/'+type, {responseType : "blob"}).then(
             function(data){
-                console.log(data);
+
                 saveAs(data.data, 'inventaire_'+type+'.xlsx');
             });
         }
@@ -104,7 +104,6 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
         $scope.saveCsv=function(){
             var validity = checkCsvContent($scope.items.data)
             if (validity == true) {
-                console.log("la")
                 $http.post(__ENV.apiUrl + '/import/'+ $scope.data.type, $scope.items, gererErreur).then(function(){
                     $scope.parsing = false;
                     $scope.import = false;
