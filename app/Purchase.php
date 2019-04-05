@@ -7,9 +7,15 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use App\User;
 use App\PurchasedElement;
+use Ginger;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Purchase extends Model
 {
+
+  use SoftDeletes;
+
+
   /**
    * The table associated with the model.
    *
@@ -39,7 +45,8 @@ class Purchase extends Model
   protected $dates = [
       'datePaid',
       'externalPaid',
-      'created_at'
+      'created_at',
+      'deleted_at'
   ];
 
   /**
@@ -60,6 +67,28 @@ class Purchase extends Model
   protected $appends = ['number', 'user', 'paid', 'datePaid', 'address', 'elements', 'lastVersionElements', 'isCompleted', 'status', 'statusName', 'statusMax', 'totalPrice', 'totalPriceInt', 'isTotalPriceDefined', 'isServicePurchase'];
 
 
+  /**
+  *   Mise à jour de la commande si terminée
+  */
+  static public function softDeletePurchase($id)
+  {
+      $p = Purchase::findOrFail($id);
+      if ($p->isCompleted) {
+          $p->delete();
+      }   
+  }
+
+
+  /**
+  *   Sort tous les commandes de l'historique
+  */
+  static public function getHistoryIndex()
+  {
+      
+      $data = Purchase::onlyTrashed()->get();
+
+      return $data;  
+  }
 
   /**
    * On crée un attribut pour le numéro de facture: FA-18SA0007 par ex.
@@ -88,8 +117,9 @@ class Purchase extends Model
    * On crée un attribut pour l'acheteur
    *
    */
-  public function getUserAttribute() {
-    return User::where('login', $this->login)->get()->first();
+  public function getUserAttribute() 
+  {
+    return Ginger::getUser($this->login);
   }
 
   /**
@@ -164,7 +194,7 @@ class Purchase extends Model
    *
    */
   public function getElementsAttribute() {
-    return $this->elements()->get();
+    return $this->elements()->withTrashed()->get();
   }
 
   /**
@@ -339,8 +369,8 @@ class Purchase extends Model
         $totalPriceInt += $elementValue["finalPrice"];
       }
     }
-    
-    return intval($totalPriceInt);
+
+    return (number_format($totalPriceInt, 2));
   }
 
   /**

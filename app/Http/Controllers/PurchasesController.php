@@ -39,6 +39,31 @@ class PurchasesController extends Controller
         return response()->success($data);
     }
 
+    /**
+    *   Sort tous les commandes en cours
+    */
+    public function getPersonalIndex()
+    {
+
+        $data = Purchase::withTrashed()->where('login', Auth::user()->login)->get();
+
+        return response()->success($data);
+
+    }
+
+
+    /**
+    *   Sort tous les commandes dans l'historique
+    */
+    public function getHistoryIndex()
+    {
+        if (Gate::check('view-all-entity-purchase')) {   
+            $data = Purchase::getHistoryIndex();
+            return response()->success($data);
+        }   
+    }
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -72,7 +97,7 @@ class PurchasesController extends Controller
             } catch(\Exception $e) {
                 return response()->error("Can't save the resource", 500);
             }
-            return response()->success(array("newId" => $purchase->id), 201);
+            return response()->success($purchase, 201);
         } else {
             return response()->json(array("error" => "401, Unauthorized action"), 401);
         }
@@ -87,7 +112,7 @@ class PurchasesController extends Controller
      */
     public function show($id)
     {
-        $data = Purchase::findOrFail($id);
+        $data = Purchase::withTrashed()->where('id', $id)->get()->first();
      
         if(Gate::check('view-all-entity-purchase') || $data->login == Auth::user()->login){
             return response()->success($data);
@@ -111,7 +136,7 @@ class PurchasesController extends Controller
     {
         $this->authorize('generate-invoice');
         /** @var Purchase $purchase */
-        $purchase = Purchase::findOrFail($id);
+        $purchase = Purchase::withTrashed()->where('id', $id)->get()->first();
 
         if(!$purchase->address_id) {
             return response()->error("Aucune addresse n'a été fournie pour la facture.", 422);
@@ -147,7 +172,7 @@ class PurchasesController extends Controller
     {
         $this->authorize('generate-quotation');
         /** @var Purchase $purchase */
-        $purchase = Purchase::findOrFail($id);
+        $purchase = Purchase::withTrashed()->where('id', $id)->get()->first();
 
         // Permanencier
         $user = Auth::user();
@@ -158,8 +183,6 @@ class PurchasesController extends Controller
             ->setOption('zoom', '0.8')
             ->setOption('footer-center', '[page]/[topage]')
             ->setOption('footer-font-size', '9');
-
-        //dd($pdf);
 
         if($request->input('dl') && $request->input('dl') == 1)
             return $pdf->download('Devis_Fablab.pdf');
@@ -228,7 +251,7 @@ class PurchasesController extends Controller
      */
     public function address(Request $request, $id)
     {
-        $p = Purchase::findOrFail($id);
+        $p = Purchase::withTrashed()->where('id', $id)->get()->first();
 
         if(Gate::check('edit-order') || $p->login == Auth::user()->login){
 
@@ -273,7 +296,7 @@ class PurchasesController extends Controller
 
     public function removeAddress(Request $request, $id){
 
-        $p = Purchase::findOrFail($id);
+        $p = Purchase::withTrashed()->where('id', $id)->get()->first();
 
         if(Gate::check('edit-order') || $p->login == Auth::user()->login){
 
@@ -301,7 +324,7 @@ class PurchasesController extends Controller
         $this->authorize('change-purchase-entity');
 
         /** @var Purchase $purchase */
-        $purchase = Purchase::findOrFail($id);
+        $purchase = Purchase::withTrashed()->where('id', $id)->get()->first();
 
         try {
             $purchase->entity()->associate($request->input('entity_id'));
@@ -310,6 +333,35 @@ class PurchasesController extends Controller
         }
 
         return response()->success();
+    }
+
+
+    /** 
+    *   Marque une commande comme payée
+    */
+    public function externalPaid(Request $request, $id)
+    {
+
+        $this->authorize('mark-as-paid');
+
+        $purchase = Purchase::findOrFail($id);
+
+        if($purchase->paid)
+            return response()->error("La facture a déjà été payée", 400);
+        else if (!$purchase->externalPaid) {
+            try {
+                $purchase->externalPaid = \Carbon\Carbon::now();
+                $purchase->save();
+            } catch (\Exception $e) {
+                return response()->inputError("Impossible de mettre à jour le paiement de cette commande", 500);
+            }
+        }
+
+        //Mise à jour de la commande si terminée
+        Purchase::softDeletePurchase($id);
+
+        return response()->success();
+
     }
 
 }

@@ -3,10 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 
 class PurchasedElement extends Model
 {
+
+  use SoftDeletes;
+
+
+  protected $dates = [
+    'deleted_at'
+  ];
+
   /**
    * The table associated with the model.
    *
@@ -31,6 +40,22 @@ class PurchasedElement extends Model
   protected $casts = [
       'args' => 'array',
   ];
+
+  /**
+  *   Mise à jour d'un élément s'il a été réalisé
+  */
+  static public function softDeletePurchasedElement($id, $status)
+  {
+    if ($status >= 3) {
+      $pe = PurchasedElement::where('id', $id)->get();
+      // On supprime chaque version de l'élément
+      foreach ($pe as $e) {
+          $e->delete();
+      }
+    }
+        
+      
+  }
 
   /**
    * Retourne le Product ou Service associé

@@ -25,6 +25,7 @@ class CreateTablePurchases extends Migration
           $table->integer('entity_id')->unsigned()->nullable(true);
           $table->foreign('entity_id')->references('id')->on('Entity')->onDelete('set null');
 
+          $table->softDeletes();
           $table->timestamps();
         });
 
@@ -44,7 +45,9 @@ class CreateTablePurchases extends Migration
           $table->text('comment'); 
           $table->integer('purchase_id')->unsigned();                   // facture mère
           $table->foreign('purchase_id')->references('id')->on('Purchases')->onDelete('cascade');     
+          $table->softDeletes();
           $table->timestamps();
+
         });
     }
 
@@ -55,7 +58,8 @@ class CreateTablePurchases extends Migration
      */
     public function down()
     {
-        Schema::drop('Purchases');
         Schema::drop('PurchasedElements');
+        Schema::drop('Purchases');
+        
     }
 }

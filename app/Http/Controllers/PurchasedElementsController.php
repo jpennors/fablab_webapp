@@ -17,6 +17,7 @@ use File;
 use Illuminate\Support\Facades\Storage;
 use Response;
 use Gate;
+use Auth;
 
 
 class PurchasedElementsController extends Controller
@@ -95,7 +96,7 @@ class PurchasedElementsController extends Controller
 
             // Ajout des infos supplémentaires
             // On utilise pas l'auto incrémentation car la clé d'un purchasedElement est (id, version)
-            $pe->id = PurchasedElement::all()->max('id')+1;
+            $pe->id = PurchasedElement::withTrashed()->max('id')+1;
 
             $pe->purchasedQuantity = $request->input('purchasedQuantity');
             $pe->suggestedPrice = $request->input('suggestedPrice');
@@ -108,6 +109,10 @@ class PurchasedElementsController extends Controller
             } catch(\Exception $e) {
                 return response()->error("Can't save the purchased element", 500);
             }
+
+            //Mise à jour de l'élément si statut >= 3
+            PurchasedElement::softDeletePurchasedElement($pe->id, $request->status);
+
             return response()->success(array("newId" => $pe->id), 201);
             
         } else {
@@ -163,6 +168,12 @@ class PurchasedElementsController extends Controller
             if($pe->status == 4 || $pe->status == 5 || $pe->status == 3){
                 $this->deleteDirectory($pe->id);
             }
+
+            //Mise à jour de l'élément si statut >= 3
+            PurchasedElement::softDeletePurchasedElement($pe->id, $request->status);
+
+            //Mise à jour de la commande si terminée
+            Purchase::softDeletePurchase($request->purchase_id);
             
             return response()->success($pe);
         } else {
@@ -177,9 +188,9 @@ class PurchasedElementsController extends Controller
 
     public function saveFile(Request $request, $id) {
 
-        $p = Purchase::findOrFail($id);
+        $p = PurchasedElement::findOrFail($id);
 
-        if(Gate::check('edit-order') || Gate::check('order-for-someone') || $p->login == Auth::user()->login){
+        if(Gate::check('edit-order') || Gate::check('order-for-someone') || Purchase::where('id', $p->purchase_id)->get()->first()->login == Auth::user()->login){
 
             try {
 
@@ -244,9 +255,9 @@ class PurchasedElementsController extends Controller
 
     public function getFileList(Request $request, $id) {
 
-        $p = Purchase::findOrFail($id);
+        $p = PurchasedElement::withTrashed()->where('id', $id)->get()->first();
 
-        if(Gate::check('view-all-entity-purchase') || $p->login == Auth::user()->login){
+        if(Gate::check('view-all-entity-purchase') || Purchase::where('id', $p->purchase_id)->get()->first()->login == Auth::user()->login){
 
             $files = PurchaseFile::where('purchased_id', $id)->pluck('nom');
 
@@ -259,9 +270,9 @@ class PurchasedElementsController extends Controller
 
     public function getFile(Request $request, $id, $fileName) {
 
-        $p = Purchase::findOrFail($id);
+        $p = PurchasedElement::withTrashed()->where('id', $id)->get()->first();
 
-        if(Gate::check('view-all-entity-purchase') || $p->login == Auth::user()->login){
+        if(Gate::check('view-all-entity-purchase') || Purchase::where('id', $p->purchase_id)->get()->first()->login == Auth::user()->login){
         
             $path = 'public/purchased/'.$id.'/'.$fileName;
             try {
