@@ -28,8 +28,7 @@ app.controller('searchCtrl', function($scope, $routeParams, Expendables, Tools, 
     });
 
     $scope.$watch('filterWord', function(newv){
-        // console.log(newv);
-        // console.log($scope.expendables);
+
     });
 
     $scope.open = function(element, type) {
