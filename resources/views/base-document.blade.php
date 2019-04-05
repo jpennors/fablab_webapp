@@ -165,6 +165,17 @@
         </div>
     </div>
 
+    @if ($purchase->getLastActiveVersionServices() && $documentName == "Devis")
+        <div>
+            <br>
+            <p>
+                <strong>
+                    Le prix des services est susceptible d'être légérement modifié, le temps de leur réalisation étant estimé.
+                </strong>
+            </p>
+        </div>
+    @endif
+
     <!-- Détails de la facture -->
     <section>
         <div class="row">

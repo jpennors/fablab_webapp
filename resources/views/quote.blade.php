@@ -68,6 +68,10 @@
     </div>
   </div>
 
+  <div>
+    <p>Le prix des services est susceptible d'être légérement modifié, le temps de leur réalisation étant estimé.</p>
+  </div>
+
   <!-- Détails du devis -->
   <section>
     <div class="row">
