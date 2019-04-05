@@ -86,6 +86,9 @@ class PayutcController extends Controller
         $transaction->purchase()->associate($p);
         $transaction->save();
 
+        //Mise à jour de la commande si terminée
+        Purchase::softDeletePurchase($id);
+
         return response()->success("Paiement effectué");
     }
 

@@ -5,6 +5,7 @@ use Curl;
 use Exception;
 use App\Exceptions\PayutcException;
 use App\Transaction;
+use App\Purchase;
 use Log;
 use Illuminate\Support\Facades\Mail;
 use Auth;
@@ -44,6 +45,7 @@ class Payutc
         if(!$this->activate) {
             return new Transaction([
                 'name' => "Fake $name",
+                'paid'  => true,
             ]);
         }
 
@@ -98,6 +100,7 @@ class Payutc
     // Obtenir un tableau des ids des services (0.01€, 0.10€, 1.00€ et 10.00€) avec les quantités en fonction du prix
     public function getServicesElement($purchase)
     {
+        //dd($purchase);
         // Récupération des différents ids des prix des services
         // 10€
         $service_1000_id = env('NEMOPAY_SERVICE_PRICE_1000_ID');
@@ -110,18 +113,22 @@ class Payutc
 
         // On récupère le prix en centimes
         $price = $purchase->totalPriceInt * 100;
-
+        
         // Division par 1000 ppur obtenir le nombre de fois 10€
         $service_1000_qt = floor($price/1000);
+        
         // Division par 100 après avoir retiré $service_1000_qt * 10€ pour obtenir le nombre de fois 1€
         $service_0100_qt = floor(($price-$service_1000_qt*1000)/100);
-        // Division par 100 après avoir retiré $service_1000_qt * 10€ + $service_0100_qt * 1€
-        // pour obtenir le nombre de fois 0.1€
-        $service_0010_qt = floor(($price-($service_1000_qt*1000+$service_0100_qt*100))/100);
-        // Division par 100 après avoir retiré $service_1000_qt * 10€ + $service_0100_qt * 1€ + $service_0010_qt * 0.1€
-        //pour obtenir le nombre de fois 0.01€
-        $service_0001_qt = floor(($price-($service_1000_qt*1000+$service_0100_qt*100+$service_0010_qt*10))/100);
 
+        // Division par 10 après avoir retiré $service_1000_qt * 10€ + $service_0100_qt * 1€
+        // pour obtenir le nombre de fois 0.1€
+        $service_0010_qt = floor(($price-($service_1000_qt*1000+$service_0100_qt*100))/10);
+
+        // Division par 1 après avoir retiré $service_1000_qt * 10€ + $service_0100_qt * 1€ + $service_0010_qt * 0.1€
+        //pour obtenir le nombre de fois 0.01€
+        $service_0001_qt = floor(($price-($service_1000_qt*1000+$service_0100_qt*100+$service_0010_qt*10)));
+        //dd(floor($price/10), $service_1000_qt, $service_0010_qt, $service_0010_qt,$service_0001_qt);
+        
         //Création à envoyer pour la création de la transaction
         $items = "[[".$service_1000_id.",".$service_1000_qt."],[".$service_0100_id.",".$service_0100_qt."],[".$service_0010_id.",".$service_0010_qt."],[".$service_0001_id.",".$service_0001_qt."]]";
 
@@ -161,6 +168,9 @@ class Payutc
             $transaction->paid = true;
             $transaction->save();
         }
+
+        //Mise à jour de la commande si terminée
+        Purchase::softDeletePurchase($transaction->purchase_id);
 
         return $info;
 
@@ -211,7 +221,8 @@ class Payutc
      * @throws PayutcException
      */
     public function loginCas2($ticket, $service) {
-        $response = $this->request('TRESO', 'loginCas2', [
+        $response = $this->request('SELFPOS', 'loginCas2', [
+        // $response = $this->request('TRESO', 'loginCas2', [
             'ticket' => $ticket,
             'service' => $service,
         ], false);
@@ -364,7 +375,6 @@ class Payutc
         Log::useFiles(storage_path() . '/logs/payutc.log');
         Log::info("Requets to : ".$url." with params : ".print_r($data, true));
         
-        // dd($response);
         if(!$response || $response && $response->status != 200) {
 
             // Erreur 403 liée à l'expiration du sessionid récupéré lors de l'authentification à la webapp
