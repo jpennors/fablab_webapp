@@ -20,7 +20,7 @@ class Transaction extends PayutcLinkable
     *
     * @var array
     */
-    protected $fillable = ['name', 'amount', 'purchase_id', 'session_id'];
+    protected $fillable = ['name', 'amount', 'purchase_id', 'session_id', 'paid'];
 
 
     /**
