@@ -6,32 +6,32 @@
             </h1>
         </div>
 
-        <div ng-show="tools" class="row">
+        <div ng-if="tools" class="row">
 
             <div class="col-md-11 item-page">
                 <div class="table-responsive">
-                    <table ng-show="tools.length" class="table table-hover table-striped col-md-12">
-                        <div class="panel-heading">
-                            <a class="pull-right item-new" role="button" ng-click="open(tool.id, 'create')" ng-if="can('add-tool')"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
-                            <div class="col-md-5">
-                                <h2><img src="assets/img/barre.png" class="img-table">Liste des outils</h2>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <input ng-model="toolSearch" type="text" class="form-control search-list" placeholder="Rechercher un consommable...">
-                            </div>
-                            <div class="col-md-3">
-                                    <a ng-click="alertFilterOn = !alertFilterOn" class="btn btn-sm btn-critics">
-                                        <span ng-show="!alertFilterOn">Montrer les outils critiques</span>
-                                        <span ng-show="alertFilterOn">Montrer tous les outils</span>
-                                    </a>
-                            </div>
+                    <div class="panel-heading">
+                        <a class="pull-right item-new" role="button" ng-click="open(tool.id, 'create')" ng-if="can('add-tool')"> <i class="fa fa-plus fa-3x" aria-hidden="true"></i></a>
+                        <div class="col-md-5">
+                            <h2><img src="assets/img/barre.png" class="img-table">Liste des outils</h2>
                         </div>
+                        <div class="form-group col-md-3">
+                            <input ng-model="toolSearch" type="text" class="form-control search-list" placeholder="Rechercher un consommable...">
+                        </div>
+                        <div class="col-md-3">
+                                <a ng-click="alertFilterOn = !alertFilterOn" class="btn btn-sm btn-critics">
+                                    <span ng-show="!alertFilterOn">Montrer les outils critiques</span>
+                                    <span ng-show="alertFilterOn">Montrer tous les outils</span>
+                                </a>
+                        </div>
+                    </div>
+                    <table ng-if="tools.length && !loading" class="table table-hover table-striped col-md-12">
                         <thead>
                             <tr>
                                 <th>Nom de l'outil<br><img src="assets/img/fleche.png" class="img-th"></th>
                                 <th>Toxicité<br><img src="assets/img/fleche.png" class="img-th"></th>
                                 <th>Fournisseur<br><img src="assets/img/fleche.png" class="img-th"></th>
-                                <th ng-show="can('edit-tool')">Localisation<br><img src="assets/img/fleche.png" class="img-th"></th>
+                                <th ng-if="can('edit-tool')">Localisation<br><img src="assets/img/fleche.png" class="img-th"></th>
                                 <th>Stock disponible<br><img src="assets/img/fleche.png" class="img-th"></th>
                                 <th>Seuil d'alerte<br><img src="assets/img/fleche.png" class="img-th"></th>
                             </tr>
@@ -41,7 +41,7 @@
                                 <td class="col-md-1">{{ tool.name }}</td>
                                 <td class="col-md-1 text-center">{{ tool.toxicity || '-' }}</td>
                                 <td class="col-md-1 text-center">{{ tool.supplier || '-' }}</td>
-                                <td class="col-md-1 text-center" ng-show="can('edit-tool')">{{ tool.room.name || '-' }}{{ tool.wardrobe.name || '-' }}</td>
+                                <td class="col-md-1 text-center" ng-if="can('edit-tool')">{{ tool.room.name || '-' }}{{ tool.wardrobe.name || '-' }}</td>
                                 <td class="col-md-1 text-center">{{ tool.remainingQuantity || '-' }}</td>
                                 <td class="col-md-1 text-center">{{ tool.minQuantity || '-' }}</td>
                             </tr>
@@ -50,6 +50,12 @@
                 </div>
             </div>
         </div>
-
+        <div ng-show="loading" class="text-center">
+                <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+        </div>
+        <div ng-if="tools.length == 0 && !loading" class="text-center">
+            <br>
+            <h4>A venir ...</h4>
+        </div>
     </div>
 </in-wrapper>

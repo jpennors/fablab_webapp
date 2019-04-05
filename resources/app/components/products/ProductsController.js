@@ -10,11 +10,14 @@ app.controller('productsCtrl', function($scope, $http, ErrorHandler, $uibModal, 
     $scope.products = [];
 
     function init() {
+        $scope.loading = true
         $scope.alertFilterOn = false;
         Elements.productsResource.get({}, function(data){
             $scope.products = data.data;
+            $scope.loading = false
         }, function(error){
             ErrorHandler.alert(error);
+            $scope.loading = false
         });
     }
     init();
@@ -41,7 +44,7 @@ app.controller('productsCtrl', function($scope, $http, ErrorHandler, $uibModal, 
 
     //Ouvre la modale avec les détails d'un objet
     $scope.open = function(id, type) {
-        console.log(id)
+
         var selected = $scope.products.filter((e)=>e.id==id)[0];
         if(selected === undefined) selected = {
             minQuantity: 0,

@@ -1,10 +1,15 @@
 app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandler) {
 
     init = function(){
+
+        $scope.loading = true
+
         Tools.get({}, function(res){
             $scope.tools = res.data;
+            $scope.loading = false
         }, function(error){
             ErrorHandler.alert(error);
+            $scope.loading = false
         });
     }
     init()

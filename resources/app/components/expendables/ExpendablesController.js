@@ -6,12 +6,14 @@ app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal
 
     else{
         function init() {
+            $scope.loading = true
             $scope.alertFilterOn = false;
             Expendables.get({}, function(res){
                 $scope.expendables = res.data;
-                console.log(res.data)
+                $scope.loading = false
             }, function(error){
                 ErrorHandler.alert(error);
+                $scope.loading = false
             });
         }
 

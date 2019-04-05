@@ -5,10 +5,15 @@ app.controller('enginesCtrl', function($scope, $http, ErrorHandler, Engines, $ui
       $location.path("/error/404");
 
     else{
+
+        $scope.loading = true
+
         Engines.get({}, function(res){
             $scope.engines = res.data;
+            $scope.loading = false
         }, function(error){
             ErrorHandler.alert(error);
+            $scope.loading = false
         });
 
         $scope.iconColor = function(engine) {

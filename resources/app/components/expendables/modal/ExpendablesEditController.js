@@ -7,6 +7,7 @@ app.controller('expendablesEditCtrl', function($scope, object, type, $uibModalIn
     $scope.errors = null;
     Rooms.get({}, function(res){
         $scope.rooms = res.data;
+        console.log(res.data);
         $scope.selectedRoom = res.data.filter((r)=>r.id == $scope.expendable.room_id)[0];
     }, function(error){
         ErrorHandler.alert(error);
