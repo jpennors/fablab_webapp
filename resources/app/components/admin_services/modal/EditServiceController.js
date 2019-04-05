@@ -48,8 +48,6 @@ app.controller('editServiceCtrl', function($scope, $uibModalInstance, service, t
 			$scope.service.engine_id = $scope.service.engine.id
 		else 
 			$scope.service.engine_id = null
-
-		console.log($scope.service)
 		
 		if ($scope.type == "create"){
 			Services.save($scope.service, function(data){

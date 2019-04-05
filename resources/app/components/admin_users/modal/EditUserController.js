@@ -116,13 +116,13 @@ app.controller('editUserCtrl', function($scope, $uibModalInstance, scopeParent, 
    */
   $scope.deleteModal = function () {
         var  membreCAS = $scope.roles.filter((r)=>r.name == "Membre CAS")[0];
-        console.log(membreCAS)
+
         if (membreCAS) {
             $scope.user.role_id = membreCAS.id
             if($scope.user.entity_id == null){
                 delete $scope.user.entity_id
             }
-            console.log($scope.user)
+
             Users.update({id : $scope.user.id}, $scope.user, function(data){
               $uibModalInstance.close();
             }, function(error){

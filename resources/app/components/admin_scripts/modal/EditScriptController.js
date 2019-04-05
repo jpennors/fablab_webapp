@@ -135,7 +135,7 @@ app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandle
             delete $scope.script.args[i].listChoices
         }
     }
-    console.log($scope.script)
+
     if($scope.script.id){
 
 

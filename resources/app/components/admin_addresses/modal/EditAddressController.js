@@ -3,8 +3,6 @@ app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, t
      *  Initialisation de la vue
      */
     $scope.address = address; 
-    console.log($scope.address)
-    console.log("cc")
     $scope.errors  = false;
     $scope.saving  = false;
     $scope.type = type
@@ -46,7 +44,6 @@ app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, t
      *  Supprime le adresse
      */
     $scope.deleteModal = function() {
-    	console.log("cc")
     	$scope.saving = true
 	    Addresses.delete({id : $scope.address.id}, function(data){
 			$uibModalInstance.close();

@@ -116,7 +116,6 @@ app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, R
 
         // On vérifie que le rôle membre CAS n'est pas en train d'être supprimé
 
-        console.log($scope.role.name)
         if ($scope.role.name == "Membre CAS") {
             var error = {}          
             error.message = "Erreur 403 : Impossible de supprimer le rôle Membre CAS"

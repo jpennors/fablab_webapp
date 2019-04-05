@@ -41,6 +41,7 @@ app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorH
             }, function(error){
                 ErrorHandler.alert(error);
             });
+            console.log($scope.roles)
         };
         $scope.update();
 
