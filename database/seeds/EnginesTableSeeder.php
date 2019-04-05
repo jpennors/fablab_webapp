@@ -12,7 +12,7 @@ class EnginesTableSeeder extends Seeder
      */
       public function run()
       {
-            // if (env('APP_ENV') != 'production') {
+            if (env('APP_ENV') != 'production') {
                   
                   $e = new Engine();
                   $e->name = "Imprimante XcFV4000";
@@ -104,7 +104,7 @@ class EnginesTableSeeder extends Seeder
                   $e->dataSheet = "Constituendi autem sunt qui sint in amicitia fines et quasi termini diligendi. De quibus tres video sententias ferri, quarum nullam probo, unam, ut eodem modo erga amicum adfecti simus, quo erga nosmet ipsos, alteram, ut nostra in amicos benevolentia illorum erga nos benevolentiae pariter aequaliterque respondeat, tertiam, ut, quanti quisque se ipse facit, tanti fiat ab amicis.";
                   $e->save();
 
-            // }
+            }
 
     }
 }

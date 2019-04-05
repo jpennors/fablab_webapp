@@ -15,7 +15,7 @@ class ServicesTableSeeder extends Seeder
     public function run()
     {
 
-        // if (env('APP_ENV') != 'production') {
+        if (env('APP_ENV') != 'production') {
 
             $s = new Service();
             $s->name = "Découpe laser FT567";
@@ -32,6 +32,6 @@ class ServicesTableSeeder extends Seeder
             $s->engine()->associate(Engine::findOrFail(1));
             $s->type = "printing";
             $s->save();
-        // }
+        }
     }
 }

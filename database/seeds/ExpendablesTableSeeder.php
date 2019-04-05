@@ -14,7 +14,7 @@ class ExpendablesTableSeeder extends Seeder
       {
 
 
-            // if (env('APP_ENV') != 'production') {
+            if (env('APP_ENV') != 'production') {
 
                   
                   $e = new Expendable();
@@ -185,7 +185,7 @@ class ExpendablesTableSeeder extends Seeder
                   $e->wardrobe_id = 1;
                   $e->save();
 
-            // }
+            }
                   
     }
 }

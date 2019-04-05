@@ -13,7 +13,7 @@ class TasksTableSeeder extends Seeder
     public function run()
     {
 
-        // if (env('APP_ENV') != 'production') {
+        if (env('APP_ENV') != 'production') {
 
             $r = new Task();
             $r->name = "Une première tâche";
@@ -39,6 +39,6 @@ class TasksTableSeeder extends Seeder
             $r->percents_realized = NULL;
             $r->save();
 
-        // }
+        }
     }
 }

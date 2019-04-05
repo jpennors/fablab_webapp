@@ -17,6 +17,10 @@ class CategoriesTableSeeder extends Seeder
       $c->save();
 
       $c = new Categorie();
+      $c->name = "Ecocup";
+      $c->save();
+
+      $c = new Categorie();
       $c->name = "Formation";
       $c->save();
 
@@ -25,23 +29,11 @@ class CategoriesTableSeeder extends Seeder
       $c->save();
 
       $c = new Categorie();
-      $c->name = "Payement Team Skate";
-      $c->save();
-
-      $c = new Categorie();
       $c->name = "Autre";
       $c->save();
 
       $c = new Categorie();
       $c->name = "Stickers";
-      $c->save();
-
-      $c = new Categorie();
-      $c->name = "Sebastien-webapp";
-      $c->save();
-
-      $c = new Categorie();
-      $c->name = "hjgiygu";
       $c->save();
     }
 }

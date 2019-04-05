@@ -51,18 +51,6 @@ class UsersTableSeeder extends Seeder
               'admin' => true,
               'role_id' => 1,
           ],
-                    [
-              'type' => 'member',
-              'firstName' => 'Loic',
-              'lastName' => 'Yvinec',
-              'email' => 'loic.yvinec@etu.utc.fr',
-              'login' => 'yvineclo',
-              'status' => 'étudiant',
-              'terms' => false,
-              'active' => true,
-              'admin' => true,
-              'role_id' => 1,
-          ],
 
         );
 
@@ -75,10 +63,6 @@ class UsersTableSeeder extends Seeder
         $u->save();
 
         $u = new Member($users[2]);
-        //$u->role()->associate(Role::where('name', '=', 'Super admin')->firstOrFail());
-        $u->save();
-
-        $u = new Member($users[3]);
         //$u->role()->associate(Role::where('name', '=', 'Super admin')->firstOrFail());
         $u->save();
 

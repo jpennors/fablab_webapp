@@ -15,7 +15,7 @@ class ProductsTableSeeder extends Seeder
       public function run()
       {
       
-            // if (env('APP_ENV') != 'production'){
+            if (env('APP_ENV') != 'production'){
 
                   $p = new Product();
                   $p->name = "Carte mère Arduino EX455";
@@ -30,7 +30,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -51,7 +51,7 @@ class ProductsTableSeeder extends Seeder
                   Temps de séchage : 9min
                   Entretien: Ne laissez pas cette colle geler
                   Remarque: Taches";
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -69,7 +69,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -87,7 +87,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -105,7 +105,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -126,7 +126,7 @@ class ProductsTableSeeder extends Seeder
                   Temps de séchage : 9min
                   Entretien: Ne laissez pas cette colle geler
                   Remarque: Taches";
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -144,7 +144,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -162,7 +162,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -180,7 +180,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -201,7 +201,7 @@ class ProductsTableSeeder extends Seeder
                   Temps de séchage : 9min
                   Entretien: Ne laissez pas cette colle geler
                   Remarque: Taches";
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -219,7 +219,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -237,7 +237,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -255,7 +255,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -276,7 +276,7 @@ class ProductsTableSeeder extends Seeder
                   Temps de séchage : 9min
                   Entretien: Ne laissez pas cette colle geler
                   Remarque: Taches";
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -294,7 +294,7 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
@@ -312,11 +312,11 @@ class ProductsTableSeeder extends Seeder
                   $p->supplierLink = NULL;
                   $p->documentation = NULL;
                   $p->dataSheet = NULL;
-                  $p->categorie_id = 8;
+                  $p->categorie_id = 4;
                   $p->room_id = 1;
                   $p->wardrobe_id = 1;
                   $p->save();
-            // }
+            }
 
             
     }

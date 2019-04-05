@@ -13,7 +13,7 @@ class ServiceScriptsTableSeeder extends Seeder
     public function run()
     {
 
-        // if (env('APP_ENV') != 'production') {
+        if (env('APP_ENV') != 'production') {
 
             $s = new ServiceScript();
             $s->name = "Calcul imprimante 3D XFERT";
@@ -29,7 +29,7 @@ class ServiceScriptsTableSeeder extends Seeder
             $s->args = "[{\"name\" : \"t\", \"desc\" : \"Temps estimé\", \"type\" : \"string\", \"permission\" : false}]";
             $s->save();
     
-        // }
+        }
 
     }
 }

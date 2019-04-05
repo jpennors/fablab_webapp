@@ -143,6 +143,14 @@ class PermissionsSeeder extends Seeder
             'add-student_badge'    => 'Ajouter un badgeage étudiant',
             'delete-student_badge' => 'Supprimer un badgeage étudiant',
 
+            //Engine Parts
+            'edit-engine-part'   => 'Modifier une machine',
+            'list-engine-part'   => 'Lister les machines',
+            'add-engine-part'    => 'Ajouter une machine',
+            'delete-engine-part' => 'Supprimer une machine',
+            'edit-engine-part-permission' => "Modifier les permissions d'une machine",
+
+
         ];
 
         foreach ($permissions as $slug => $description) {

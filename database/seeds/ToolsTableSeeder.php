@@ -14,7 +14,7 @@ class ToolsTableSeeder extends Seeder
     public function run()
     {
 
-        // if (env('APP_ENV') != 'production') {
+        if (env('APP_ENV') != 'production') {
 
             $h = new Tool();
             $h->type = 'tool';
@@ -55,6 +55,6 @@ class ToolsTableSeeder extends Seeder
             $h->quantityUnit = "unité";
             $h->save();
 
-        // }
+        }
     }
 }
