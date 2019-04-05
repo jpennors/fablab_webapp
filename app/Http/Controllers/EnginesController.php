@@ -243,4 +243,18 @@ class EnginesController extends Controller
 
     }
 
+
+    /** 
+    *   Utilisation d'une machine, appelle des engine parts pour décrémentation
+    *
+    */
+
+    public function usedEngine($id, $time){
+        
+        $engine = Engine::findOrFail($id);
+        return $engine->usedEnginePart($time);
+
+    }
+
+
 }

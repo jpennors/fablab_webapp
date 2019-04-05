@@ -48,6 +48,16 @@ class Engine extends Model
 
 
     /**
+    *       Retourn les EngineParts liées à l'Engine
+    *
+    */
+    public function engineParts(){
+
+        return $this->hasMany('App\EnginePart');
+    }
+
+
+    /**
     * Retourne la Room de l'Engine actuel
     *
     */
@@ -187,6 +197,22 @@ class Engine extends Model
             Storage::delete($path);
         
             $this->setPictureNull();
+
+        }
+    }
+
+
+     /**
+    *       Décrémente le temps restant avant maintenance pour les EngineParts
+    *
+    */
+    public function usedEnginePart($time){
+
+        $engineParts = $this->engineParts()->get();
+        // dd($engineParts);
+        foreach ($engineParts as $enginePart) {
+        
+            $enginePart->usedEnginePart($time);
 
         }
     }
