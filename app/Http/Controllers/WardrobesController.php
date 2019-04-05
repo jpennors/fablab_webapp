@@ -44,6 +44,10 @@ class WardrobesController extends Controller
             return response()->inputError($validator->errors(), 422);
         }
 
+      // On vérifie que la Wardrobe n'existe pas déjà
+      //if(Wardrobe::where('name', $request->input('name'))->get()->first()) {
+        //return response()->error("The Wardrobe already exists, conflict", 409);
+      //}
         //Création de l'instance
         $wardrobe = new Wardrobe();
         $wardrobe->name = $request->name;
