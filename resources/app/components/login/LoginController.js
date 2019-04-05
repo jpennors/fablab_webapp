@@ -39,7 +39,7 @@ app.controller('loginCtrl', function($scope, $location, $rootScope, $routeParams
     $rootScope.auth.goLogin();
 
     if($routeParams.token){
-      console.log("aaaaaa");
+
     }
 
   }
