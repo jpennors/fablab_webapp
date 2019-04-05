@@ -97,6 +97,7 @@ app.run(function($rootScope, UTCAuth) {
          templateUrl : "app/components/tools/tools_edit.html"
      })
 
+
      .when("/admin/settings", {
          templateUrl : "app/components/admin_settings/settings_index.html"
      })
@@ -139,6 +140,7 @@ app.run(function($rootScope, UTCAuth) {
      .when("/payment/confirmation/:id", {
         templateUrl : "app/components/payments/confirmation/payment_confirmation.html"
      })
+
      .otherwise({redirectTo : "/error/404"});
  });
 
@@ -171,7 +173,7 @@ app.config(['$httpProvider', function($httpProvider) {
 
         if ($rootScope.auth.auth) { 
 
-          config.headers['Authorization-fablab'] = $rootScope.auth.token;
+          config.headers['Authorization'] = 'Bearer ' + $rootScope.auth.token;
 
         }
 

@@ -134,6 +134,11 @@ app.run(function($rootScope, UTCAuth) {
          templateUrl : "app/components/tools/tools_edit.html"
      })
 
+     // Salles
+     // .when("/rooms", {
+     //     templateUrl : "app/components/rooms/rooms_index.html"
+     // })
+
      // Admin
      .when("/admin/settings", {
          templateUrl : "app/components/admin_settings/settings_index.html"
@@ -177,6 +182,11 @@ app.run(function($rootScope, UTCAuth) {
      .when("/payment/confirmation/:id", {
         templateUrl : "app/components/payments/confirmation/payment_confirmation.html"
      })
+     // Pièces de machine
+    // .when("/engineparts", {
+    //     templateUrl : "app/components/engine_parts/engine_parts_index.html"
+    // })
+
      // Vers la page 404 dans les autres cas
      .otherwise({redirectTo : "/error/404"});
  });
@@ -218,7 +228,7 @@ app.config(['$httpProvider', function($httpProvider) {
         if ($rootScope.auth.auth) { // On vérifie que l'utilisateur est authentifié grâce à la factory
 
           // S'il est authentifié, on ajoute le header Authorization avec son token
-          config.headers['Authorization-fablab'] = $rootScope.auth.token;
+          config.headers['Authorization'] = 'Bearer ' + $rootScope.auth.token;
 
         }
 
