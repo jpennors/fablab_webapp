@@ -130,6 +130,22 @@ Route::group(['prefix' => 'api/v1'], function(){
 
         Route::post('import/engines','EnginesController@importSave');
 
+        Route::get('/engineparts/{id}/time/{time}', 'EnginesController@usedEngine');
+
+
+
+        /**
+        *     ENGINE PARTS
+        *
+        */
+
+        Route::resource('/engineparts', 'EnginePartsController');
+
+        // Route::post('/engineparts/{id}/time/{time}', 'EnginePartsController@usedEnginePart');
+
+        Route::get('/engineparts/reset/{id}', 'EnginePartsController@resetMaint');
+
+
 
 
         /**
@@ -155,6 +171,14 @@ Route::group(['prefix' => 'api/v1'], function(){
         Route::post('import/expendables','ExpendablesController@importSave');
 
 
+        /**
+        *       LOG
+        *
+        */
+
+        // Route::get('/log', 'LogController@getLog');
+
+
 
         /**
         *       MAIL
@@ -162,6 +186,15 @@ Route::group(['prefix' => 'api/v1'], function(){
         */
 
         Route::post('/send', 'MailController@send');
+
+
+
+        /**
+         * MAINTENANCE
+         * 
+         */
+
+        Route::resource('/maintenances', 'MaintenancesController');
 
 
 
@@ -237,6 +270,10 @@ Route::group(['prefix' => 'api/v1'], function(){
             'index', 'show', 'store', 'update'
         ]]);
 
+        Route::get('/mypurchases', 'PurchasesController@getPersonalIndex');
+
+        Route::get('/history/purchases', 'PurchasesController@getHistoryIndex');
+
         Route::put('/purchases/{id}/address', 'PurchasesController@address');
 
         Route::put('/purchases/{id}/address/remove', 'PurchasesController@removeAddress');
@@ -248,6 +285,8 @@ Route::group(['prefix' => 'api/v1'], function(){
         Route::get('/purchases/{id}/quote', 'PurchasesController@quoteFromId');
 
         Route::post('/quote', 'PurchasesController@quote');
+
+        Route::post('/purchases/{id}/externalPaid', 'PurchasesController@externalPaid');
 
 
 
@@ -307,6 +346,10 @@ Route::group(['prefix' => 'api/v1'], function(){
         Route::resource('/tasks', 'TasksController');
 
 
+
+    Route::resource('/wardrobes', 'WardrobesController', ['only' => [
+      'index', 'show', 'store', 'update'
+    ]]);
 
         /**
         *       TOOLS
