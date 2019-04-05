@@ -16,9 +16,10 @@ app.factory('PurchasedElements', function($resource){
             method: 'GET',
             url : __ENV.apiUrl + '/filelist/:id'
         },
-        'getFile' : {
-            method : 'GET',
-            url : __ENV.apiUrl + '/file/purchasedelement/:id/:fileName',
-        }
+        // 'getFile' : {
+        //     responseType : "blob",
+        //     method : 'GET',
+        //     url : __ENV.apiUrl + '/file/purchasedelement/:id/:fileName',
+        // }
     });
 });

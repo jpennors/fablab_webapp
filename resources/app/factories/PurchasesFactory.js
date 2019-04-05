@@ -51,5 +51,17 @@ app.factory('Purchases', function($resource){
           method:'PUT',
           params: { 'verb' : 'entity'}
         },
+        'externalPaid': {
+            method: 'POST',
+            params: { 'verb' : 'externalPaid' },
+        },
+        'getMyPurchases': {
+            method: 'GET',
+            url : __ENV.apiUrl + "/mypurchases",
+        },
+        'getHistoryPurchases': {
+            method: 'GET',
+            url : __ENV.apiUrl + "/history/purchases",
+        },
     });
 });

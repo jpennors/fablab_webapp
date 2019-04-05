@@ -31,6 +31,12 @@ app.factory('Engines', function($resource){
         },
         'update': {
           method:'PUT',
+        },
+        
+        'usedEngine' : {
+          method: 'GET',
+          url : __ENV.apiUrl + "/engineparts/:id/time/:time",
         }
+
     });
 });
