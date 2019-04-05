@@ -1,0 +1,97 @@
+.btn-critics{
+  color: white;
+  background-color: $yellow;
+  border-color: $yellow;
+  margin-top: 18px;
+  font-size: 13px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-critics:hover{
+  color: $yellow;
+  background-color: $light-grey;
+  border-color: $light-grey;
+}
+
+.btn-yellow {
+  color: $light-grey;
+  background-color: $yellow;
+  border-color: $yellow;
+  width: 170px;
+  font-size: 17px;
+}
+
+.btn-adaptable-yellow {
+  color: $light-grey;
+  background-color: $yellow;
+  border-color: $yellow;
+}
+
+.btn-adaptable-yellow:hover {
+  color: $yellow;
+  background-color: $light-grey;
+  border-color: $light-grey;
+}
+
+.btn-yellow:hover {
+  color: $yellow;
+  background-color: $light-grey;
+  border-color: $light-grey;
+}
+
+.btn-grey {
+  color: white;
+  background-color: $light-grey;
+  border-color: $light-grey;
+  width: 170px;
+  font-size: 17px;
+}
+
+.btn-grey:hover {
+  color: $light-grey;
+  background-color: white;
+  border-color: white;
+}
+
+.btn-edit{
+  margin-top:10px;
+  font-size: 35px;
+  margin-left:17px
+}
+
+.btn-delete{
+  margin-top:7px;
+  font-size: 35px
+}
+
+.btn-upload {
+    padding-top: 5px;
+    width:100%;
+    max-width:300px;
+    /* position:relative;
+    bottom:40px; */
+    height:40px;
+    font-size:22px;
+    text-align: center;
+    background: rgb(200, 200, 200);
+    background: rgba(200, 200, 200, .7);
+}
+
+/* PURCHASES  */
+
+.btn-arrow{
+  margin-bottom: 5px;
+  background-color: $yellow;
+  color: white;
+}
+
+.btn-download {
+  display: block;
+  overflow: hidden;
+  font-size: 1.2em;
+  width: 100%;
+  text-overflow: ellipsis;
+  margin: 10px;
+}

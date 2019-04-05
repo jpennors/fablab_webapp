@@ -1,0 +1,139 @@
+
+.fab-checkbox {
+    display:flex;
+  }
+  
+  .fab-checkbox:hover {
+    cursor:pointer;
+  }
+
+/*  LISTING DES ELEMENTS  */
+
+
+.img-title{
+    height:80px;
+    margin-right: 20px;
+    }
+    
+    .img-table{
+    margin-right: 10px;
+    width: 50px;
+    }
+    
+    .item-new{
+    margin-top:18px;
+    }
+    
+    .item-page{
+    background-color: #EBEBEB;
+    margin-left: 50px;
+    margin-bottom: 20px;
+    }
+    
+    thead{
+    background-color: #FFDB93;
+    }
+    
+    th{
+    text-align: center;
+    }
+    
+    .table-responsive{
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-bottom: 20px;
+    }
+    
+    
+    .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #FFFCF2;
+    }
+    
+    .table-striped tbody tr:nth-of-type(even) {
+    background-color: #FFF8E0;
+    }
+    
+    .table-hover tbody tr:hover {
+    background-color: $light-grey;
+    color: white;
+    }
+    
+    .td-list{
+    text-align: center;
+    }
+    
+    .img-th{
+    padding-top: 0px;
+    width: 12px;
+    
+    }
+    
+    .popover-content {
+    color: $light-grey;
+      background-color: #FFFDF4;
+    }
+    
+    .status-icon {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      border-radius: 4px;
+      border-style: solid;
+      border-color: $light-grey;
+      border-width: 2px;
+      margin:auto;
+    }
+    
+
+/*  AFFICHAGE ET EDITION D'UN ELEMENT */
+
+.form-control[disabled] {
+    border: 0px;
+    font-size: 14px;
+    background-color: transparent;
+    box-shadow:none;
+    cursor: auto;
+    -moz-appearance: none;
+    -webkit-appearance:none;
+  }
+  
+  .modal-print{
+  background-color: #EBEBEB;
+  border-radius: 5px;
+  }
+  
+  .form-view{
+  font-weight: bold;
+  margin-left: 13px;
+  }
+  
+  .img-fluid {
+    max-width:300px;
+    width:100%;
+    min-height:200px;
+    border-radius: 5px;
+    border:1px solid;
+    border-color: $light-grey;
+    background-color: #f0e0af;
+  }
+  
+  .print_item{
+  height: 25px;
+  margin: 0px;
+  }
+  
+  .print_item-localisation{
+  height: 25px;
+  margin-top: 5px;
+  }
+  
+  .img-edit{
+  font-size: 30px;
+  color: $yellow;
+  }
+  
+  .img-view{
+  margin-right: 20px;
+  width: 40px;
+  }
+  

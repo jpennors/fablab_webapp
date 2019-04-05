@@ -1,0 +1,25 @@
+/* SHOW USER
+ * ============================================================ */
+
+.user-horizontal.dl-horizontal dt {
+  padding-right: 20px;
+
+}
+.user-horizontal.dl-horizontal dt,
+.user-horizontal.dl-horizontal dd {
+  padding-top: 8px;
+}
+
+.user-horizontal.dl-horizontal dd {
+  margin-left: 61%;
+  word-break: break-all;
+}
+.user-horizontal.dl-horizontal dt {
+  width: 61%;
+}
+
+.user-picture {
+  max-width: 100%;
+  border-radius: 4px;
+  max-height: 150px;
+}
