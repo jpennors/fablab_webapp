@@ -106,6 +106,55 @@ app.controller('adminEntitiesCtrl', function($scope, $http, ErrorHandler, $uibMo
   }
 });
 
+app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
+
+  if(!$rootScope.can('list-price'))
+      $location.path("/error/404");
+
+  else{
+
+    $scope.scripts = [];
+
+    $scope.update = function(){
+      Scripts.get({}, function(data){
+        $scope.scripts = data.data;
+      }, function(error) {
+        ErrorHandler.alert(error);
+      });
+    }
+
+    $scope.update();
+
+    $scope.open = function(script, type) {
+      var modalInstance = $uibModal.open({
+          backdrop: true,
+          keyboard: true,
+          size:'lg',
+          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
+
+          resolve: {
+              script: function() {
+                return script;
+              },
+              type: function(){
+                return type
+              }
+          },
+          controller: 'editScriptCtrl'
+      });
+      modalInstance.result.then(function() {
+        $scope.update();
+      })
+
+    };
+
+    $scope.goEdit = function(script) {
+      $location.path("/admin/scripts/" + script.id + "/edit");
+    }
+  }
+
+});
+
 
 app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorHandler, Roles, Permissions, $rootScope, $location){
 
@@ -168,55 +217,6 @@ app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorH
     }
 });
 
-app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
-
-  if(!$rootScope.can('list-price'))
-      $location.path("/error/404");
-
-  else{
-
-    $scope.scripts = [];
-
-    $scope.update = function(){
-      Scripts.get({}, function(data){
-        $scope.scripts = data.data;
-      }, function(error) {
-        ErrorHandler.alert(error);
-      });
-    }
-
-    $scope.update();
-
-    $scope.open = function(script, type) {
-      var modalInstance = $uibModal.open({
-          backdrop: true,
-          keyboard: true,
-          size:'lg',
-          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
-
-          resolve: {
-              script: function() {
-                return script;
-              },
-              type: function(){
-                return type
-              }
-          },
-          controller: 'editScriptCtrl'
-      });
-      modalInstance.result.then(function() {
-        $scope.update();
-      })
-
-    };
-
-    $scope.goEdit = function(script) {
-      $location.path("/admin/scripts/" + script.id + "/edit");
-    }
-  }
-
-});
-
 app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Services, $location, $rootScope){
 
 	if(!$rootScope.can('edit-service'))
@@ -277,49 +277,6 @@ app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Se
 	        })
 		};
 	}
-
-});
-
-app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
-
-  if(!$rootScope.can('super-admin'))
-    $location.path("/error/404");
-
-  else{
-    $scope.saving   = false;
-    $scope.error    = false;
-    $scope.success  = false;
-
-    Administratives.get({}, function(data){
-      $scope.admins = data.data;
-    }, function(error) {
-      ErrorHandler.alert(error);
-    });
-
-    $scope.update = function() {
-      $scope.saving   = true;
-      $scope.success  = false;
-      $scope.error    = false;
-
-      var done = 0;
-
-      for(var i=0; i<$scope.admins.length; i++) {
-        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
-          done++;
-          if(done == $scope.admins.length) {
-            $scope.saving   = false;
-            $scope.success  = true;
-          }
-        }, function(error) {
-          $scope.saving   = false;
-          $scope.success  = false;
-          $scope.errors    = error.data.meta;
-          return false;
-        });
-      }
-
-    };
-  }
 
 });
 
@@ -445,6 +402,49 @@ app.controller('adminUsersCtrl', function($scope, $http, $log, $uibModal, ErrorH
         })  
       };
   }
+});
+
+app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
+
+  if(!$rootScope.can('super-admin'))
+    $location.path("/error/404");
+
+  else{
+    $scope.saving   = false;
+    $scope.error    = false;
+    $scope.success  = false;
+
+    Administratives.get({}, function(data){
+      $scope.admins = data.data;
+    }, function(error) {
+      ErrorHandler.alert(error);
+    });
+
+    $scope.update = function() {
+      $scope.saving   = true;
+      $scope.success  = false;
+      $scope.error    = false;
+
+      var done = 0;
+
+      for(var i=0; i<$scope.admins.length; i++) {
+        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
+          done++;
+          if(done == $scope.admins.length) {
+            $scope.saving   = false;
+            $scope.success  = true;
+          }
+        }, function(error) {
+          $scope.saving   = false;
+          $scope.success  = false;
+          $scope.errors    = error.data.meta;
+          return false;
+        });
+      }
+
+    };
+  }
+
 });
 
 app.controller('mainCtrl', function($http, $scope){
@@ -628,6 +628,153 @@ app.controller('dataCtrl', function($scope, $http, ErrorHandler, $uibModal, Csv,
     }
 });
 
+app.controller('enginePartsCtrl', function($scope, $http, ErrorHandler, Engines, EngineParts, $uibModal, $location, $rootScope) {
+
+
+        EngineParts.get({}, function(res){
+            $scope.engineparts = res.data;
+
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
+
+
+        $scope.delete = function(id) {
+            var aSupprimer = $scope.engineparts.filter((e)=>e.id==id)[0];
+            var index = $scope.engineparts.indexOf(aSupprimer);
+
+            EngineParts.remove({id:id}, function() {
+                $scope.engineparts.splice(index, 1);
+            })
+        }
+
+        $scope.open = function(id, type) {
+            var selected = $scope.engineparts.filter((e)=>e.id==id)[0];
+            if(selected === undefined) selected = {
+            };
+
+            var modalInstance = $uibModal.open({
+                backdrop: true,
+                keyboard: true,
+                templateUrl: 'app/components/engine_parts/modal/engine_parts_edit.html',
+
+                resolve:{
+                    object: function() {
+                        return angular.copy(selected);
+                    },
+                    type: function() {
+                        return type;
+                    }
+                },
+                controller: 'enginePartsEditCtrl'
+            });
+
+            modalInstance.result.then(function(res) {
+                if(res.type == "create") {
+                    $scope.engineparts.push(angular.copy(res.changedEnginePart));
+                }else if(res.type=="edit") {
+                    $scope.engineparts[$scope.engineparts.indexOf(selected)] = angular.copy(res.changedEnginePart);
+                }
+                else if(res.type=="delete"){
+                    $scope.delete(res.id);
+                }
+            })
+        }
+});
+
+app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal, ErrorHandler, $location, $rootScope) {
+
+    if(!$rootScope.can('list-expendable'))
+      $location.path("/error/404");
+
+    else{
+        function init() {
+            $scope.loading = true
+            $scope.alertFilterOn = false;
+            Expendables.get({}, function(res){
+                $scope.expendables = res.data;
+                $scope.loading = false
+            }, function(error){
+                ErrorHandler.alert(error);
+                $scope.loading = false
+            });
+        }
+
+        $scope.alertFilter = function(e) {
+            return e.remainingQuantity <= e.minQuantity;
+        }
+
+        $scope.delete = function(id) {
+            var aSupprimer = $scope.expendables.filter((e)=>e.id==id)[0];
+            var index = $scope.expendables.indexOf(aSupprimer);
+
+            Expendables.remove({id:id}, function() {
+                $scope.expendables.splice(index, 1);
+            })
+        }
+
+        $scope.open = function(id, type) {
+            var selected = $scope.expendables.filter((e)=>e.id==id)[0];
+            if(selected === undefined) selected = {
+                minQuantity: 0,
+                remainingQuantity: 0
+            };
+
+            var modalInstance = $uibModal.open({
+                backdrop: true,
+                keyboard: true,
+                size:'lg',
+                templateUrl: 'app/components/expendables/modal/expendables_edit.html',
+
+                resolve:{
+                    object: function() {
+                        return angular.copy(selected);
+                    },
+                    type: function() {
+                        return type;
+                    }
+                },
+                controller: 'expendablesEditCtrl'
+            });
+
+            modalInstance.result.then(function(res) {
+                init()
+                if(res.type == "delete"){
+                    $scope.delete(res.id);
+                }
+            })
+        }
+
+        init();
+    }
+});
+
+app.controller('errorCtrl', function($scope, $routeParams, $location) {
+
+  if ($routeParams.code && $routeParams.code == 401) { 
+
+    $scope.errorCode = 401;
+    $scope.errorDesc = "Vous n'êtes pas autorisé à accéder à cette webapp.";
+
+  }
+  else if ($routeParams.code && $routeParams.code == 404) {
+
+    $scope.errorCode = 404;
+    $scope.errorDesc = "Page demandée introuvable";
+
+  }
+  else if ($routeParams.code && $routeParams.code == 500) {
+
+    $scope.errorCode = 500;
+    $scope.errorDesc = "Erreur interne, veuillez contacter un administrateur.";
+
+  }
+  else {
+    $location.path("/");
+  }
+
+});
+
 app.controller('enginesCtrl', function($scope, $http, ErrorHandler, Engines, $uibModal, $location, $rootScope) {
 
     if(!$rootScope.can('list-engine'))
@@ -709,218 +856,6 @@ app.controller('enginesCtrl', function($scope, $http, ErrorHandler, Engines, $ui
             })
         }
     }
-});
-
-app.controller('enginePartsCtrl', function($scope, $http, ErrorHandler, Engines, EngineParts, $uibModal, $location, $rootScope) {
-
-
-        EngineParts.get({}, function(res){
-            $scope.engineparts = res.data;
-
-        }, function(error){
-            ErrorHandler.alert(error);
-        });
-
-
-        $scope.delete = function(id) {
-            var aSupprimer = $scope.engineparts.filter((e)=>e.id==id)[0];
-            var index = $scope.engineparts.indexOf(aSupprimer);
-
-            EngineParts.remove({id:id}, function() {
-                $scope.engineparts.splice(index, 1);
-            })
-        }
-
-        $scope.open = function(id, type) {
-            var selected = $scope.engineparts.filter((e)=>e.id==id)[0];
-            if(selected === undefined) selected = {
-            };
-
-            var modalInstance = $uibModal.open({
-                backdrop: true,
-                keyboard: true,
-                templateUrl: 'app/components/engine_parts/modal/engine_parts_edit.html',
-
-                resolve:{
-                    object: function() {
-                        return angular.copy(selected);
-                    },
-                    type: function() {
-                        return type;
-                    }
-                },
-                controller: 'enginePartsEditCtrl'
-            });
-
-            modalInstance.result.then(function(res) {
-                if(res.type == "create") {
-                    $scope.engineparts.push(angular.copy(res.changedEnginePart));
-                }else if(res.type=="edit") {
-                    $scope.engineparts[$scope.engineparts.indexOf(selected)] = angular.copy(res.changedEnginePart);
-                }
-                else if(res.type=="delete"){
-                    $scope.delete(res.id);
-                }
-            })
-        }
-});
-
-app.controller('errorCtrl', function($scope, $routeParams, $location) {
-
-  if ($routeParams.code && $routeParams.code == 401) { 
-
-    $scope.errorCode = 401;
-    $scope.errorDesc = "Vous n'êtes pas autorisé à accéder à cette webapp.";
-
-  }
-  else if ($routeParams.code && $routeParams.code == 404) {
-
-    $scope.errorCode = 404;
-    $scope.errorDesc = "Page demandée introuvable";
-
-  }
-  else if ($routeParams.code && $routeParams.code == 500) {
-
-    $scope.errorCode = 500;
-    $scope.errorDesc = "Erreur interne, veuillez contacter un administrateur.";
-
-  }
-  else {
-    $location.path("/");
-  }
-
-});
-
-app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal, ErrorHandler, $location, $rootScope) {
-
-    if(!$rootScope.can('list-expendable'))
-      $location.path("/error/404");
-
-    else{
-        function init() {
-            $scope.loading = true
-            $scope.alertFilterOn = false;
-            Expendables.get({}, function(res){
-                $scope.expendables = res.data;
-                $scope.loading = false
-            }, function(error){
-                ErrorHandler.alert(error);
-                $scope.loading = false
-            });
-        }
-
-        $scope.alertFilter = function(e) {
-            return e.remainingQuantity <= e.minQuantity;
-        }
-
-        $scope.delete = function(id) {
-            var aSupprimer = $scope.expendables.filter((e)=>e.id==id)[0];
-            var index = $scope.expendables.indexOf(aSupprimer);
-
-            Expendables.remove({id:id}, function() {
-                $scope.expendables.splice(index, 1);
-            })
-        }
-
-        $scope.open = function(id, type) {
-            var selected = $scope.expendables.filter((e)=>e.id==id)[0];
-            if(selected === undefined) selected = {
-                minQuantity: 0,
-                remainingQuantity: 0
-            };
-
-            var modalInstance = $uibModal.open({
-                backdrop: true,
-                keyboard: true,
-                size:'lg',
-                templateUrl: 'app/components/expendables/modal/expendables_edit.html',
-
-                resolve:{
-                    object: function() {
-                        return angular.copy(selected);
-                    },
-                    type: function() {
-                        return type;
-                    }
-                },
-                controller: 'expendablesEditCtrl'
-            });
-
-            modalInstance.result.then(function(res) {
-                init()
-                if(res.type == "delete"){
-                    $scope.delete(res.id);
-                }
-            })
-        }
-
-        init();
-    }
-});
-
-app.controller('helpCtrl', function($scope, $location, $rootScope) {
-
-    if ($rootScope.isExtern()) {
-        $location.path("/error/404")
-    }
-
-});
-
-app.controller('loginCtrl', function($scope, $location, $rootScope, $routeParams, Users) {
-
-  $scope.message = "Connexion";
-
-  if($routeParams.token) { 
-
-    $rootScope.auth.login($routeParams.token)
-    .then(function(data){
-
-      $location.path("/");
-      $location.url($location.path());  
-
-    }, function(error){
-
-      $location.path("/error/500");
-      $location.url($location.path()); 
-
-    });
-
-  }
-  else if ($routeParams.error && $routeParams.error == 401) { 
-
-    $scope.message = "Erreur de connexion";
-
-    $location.path("/error/401");
-    $location.url($location.path());  
-
-  }
-  else {
-
-    $scope.message = "Redirection vers le CAS";
-
-    $rootScope.auth.goLogin();
-
-    if($routeParams.token){
-
-    }
-
-  }
-
-});
-
-app.controller('logoutCtrl', function($location, $rootScope) {
-
-  if($rootScope.auth) { 
-
-    $rootScope.auth.goLogout();
-
-  }
-  else {
-
-    $location.path("/login");
-
-  }
-
 });
 
 app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location, JCappuccinoFactory, ErrorHandler, Purchases, Payments, Alert, UTCAuth, $rootScope) {
@@ -1031,6 +966,136 @@ app.controller('paymentCtrl', function($scope, $timeout, $routeParams, $location
 
 });
 
+app.controller('helpCtrl', function($scope, $location, $rootScope) {
+
+    if ($rootScope.isExtern()) {
+        $location.path("/error/404")
+    }
+
+});
+
+app.controller('loginCtrl', function($scope, $location, $rootScope, $routeParams, Users) {
+
+  $scope.message = "Connexion";
+
+  if($routeParams.token) { 
+
+    $rootScope.auth.login($routeParams.token)
+    .then(function(data){
+
+      $location.path("/");
+      $location.url($location.path());  
+
+    }, function(error){
+
+      $location.path("/error/500");
+      $location.url($location.path()); 
+
+    });
+
+  }
+  else if ($routeParams.error && $routeParams.error == 401) { 
+
+    $scope.message = "Erreur de connexion";
+
+    $location.path("/error/401");
+    $location.url($location.path());  
+
+  }
+  else {
+
+    $scope.message = "Redirection vers le CAS";
+
+    $rootScope.auth.goLogin();
+
+    if($routeParams.token){
+
+    }
+
+  }
+
+});
+
+app.controller('logoutCtrl', function($location, $rootScope) {
+
+  if($rootScope.auth) { 
+
+    $rootScope.auth.goLogout();
+
+  }
+  else {
+
+    $location.path("/login");
+
+  }
+
+});
+
+app.controller('roomsCtrl', function($scope, $http, Rooms, $uibModal, ErrorHandler, $location, $rootScope) {
+
+    if(!$rootScope.can('list-room'))
+      $location.path("/error/404");
+
+    else{
+        function init() {
+            $scope.alertFilterOn = false;
+            Rooms.get({}, function(res){
+                $scope.rooms = res.data;
+                console.log(res.data);
+            }, function(error){
+                ErrorHandler.alert(error);
+            });
+        }
+
+        $scope.alertFilter = function(e) {
+            return e.remainingQuantity <= e.minQuantity;
+        }
+
+        $scope.delete = function(id) {
+            var aSupprimer = $scope.rooms.filter((e)=>e.id==id)[0];
+            var index = $scope.rooms.indexOf(aSupprimer);
+
+            Rooms.remove({id:id}, function() {
+                $scope.rooms.splice(index, 1);
+            })
+        }
+
+        $scope.open = function(id, type) {
+            var selected = $scope.rooms.filter((e)=>e.id==id)[0];
+
+            var modalInstance = $uibModal.open({
+                backdrop: true,
+                keyboard: true,
+                size:'lg',
+                templateUrl: 'app/components/rooms/modal/rooms_edit.html',
+
+                resolve:{
+                    object: function() {
+                        return angular.copy(selected);
+                    },
+                    type: function() {
+                        return type;
+                    }
+                },
+                controller: 'roomsEditCtrl'
+            });
+
+            modalInstance.result.then(function(res) {
+                console.log(res.changedRoom);
+                if(res.type == "delete"){
+                    $scope.delete(res.id);
+                }
+                if(res.type == "create") {
+                    $scope.rooms.push(angular.copy(res.changedRoom));
+                }else if(res.type=="edit") {
+                    $scope.rooms[$scope.rooms.indexOf(selected)] = angular.copy(res.changedRoom);
+                }
+            })
+        }
+        init();
+    }
+});
+
 app.controller('productsCtrl', function($scope, $http, ErrorHandler, $uibModal, Elements, $rootScope, $location){
 
     if(!$rootScope.can('list-product'))
@@ -1104,69 +1169,109 @@ app.controller('productsCtrl', function($scope, $http, ErrorHandler, $uibModal, 
 
 });
 
-app.controller('roomsCtrl', function($scope, $http, Rooms, $uibModal, ErrorHandler, $location, $rootScope) {
+app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
 
-    if(!$rootScope.can('list-room'))
-      $location.path("/error/404");
+  Users.get({}, function(res){
+    $scope.users = res.data;
+  }, function(error){
+    ErrorHandler.alert(error);
+  });
 
-    else{
-        function init() {
-            $scope.alertFilterOn = false;
-            Rooms.get({}, function(res){
-                $scope.rooms = res.data;
-                console.log(res.data);
-            }, function(error){
-                ErrorHandler.alert(error);
-            });
-        }
-
-        $scope.alertFilter = function(e) {
-            return e.remainingQuantity <= e.minQuantity;
-        }
-
-        $scope.delete = function(id) {
-            var aSupprimer = $scope.rooms.filter((e)=>e.id==id)[0];
-            var index = $scope.rooms.indexOf(aSupprimer);
-
-            Rooms.remove({id:id}, function() {
-                $scope.rooms.splice(index, 1);
-            })
-        }
-
-        $scope.open = function(id, type) {
-            var selected = $scope.rooms.filter((e)=>e.id==id)[0];
-
-            var modalInstance = $uibModal.open({
-                backdrop: true,
-                keyboard: true,
-                size:'lg',
-                templateUrl: 'app/components/rooms/modal/rooms_edit.html',
-
-                resolve:{
-                    object: function() {
-                        return angular.copy(selected);
-                    },
-                    type: function() {
-                        return type;
-                    }
-                },
-                controller: 'roomsEditCtrl'
-            });
-
-            modalInstance.result.then(function(res) {
-                console.log(res.changedRoom);
-                if(res.type == "delete"){
-                    $scope.delete(res.id);
-                }
-                if(res.type == "create") {
-                    $scope.rooms.push(angular.copy(res.changedRoom));
-                }else if(res.type=="edit") {
-                    $scope.rooms[$scope.rooms.indexOf(selected)] = angular.copy(res.changedRoom);
-                }
-            })
-        }
-        init();
+  $scope.displayUser = function(userId) {
+    var found = $filter('filter')($scope.users, {id: userId}, true);
+    if (found.length) {
+       $scope.user = found[0];
     }
+  }
+
+});
+
+app.controller('usersCreateCtrl', function($scope, ErrorHandler, Users) {
+
+  $scope.submiting = false;
+
+  $scope.submited = false;
+  $scope.success = false;
+
+  $scope.user = new Users({});
+
+  $scope.submit = function() {
+    $scope.submiting = true;
+    $scope.submited = false;
+    $scope.success = false;
+
+    $scope.user.$save({}, function(res) {
+      $scope.submited = true;
+      $scope.submiting = false;
+      $scope.success = true;
+    }, function(error) {
+      $scope.submiting = false;
+      $scope.submited = true;
+      $scope.success = false;
+
+      if(error.status == 422) {
+        $scope.inputErrors = ErrorHandler.parse(error);
+      }
+      else if(error.status == 409) {
+        $scope.messageError = "Cet utilisateur existe déjà";
+      }
+
+    });
+  };
+
+
+});
+
+app.controller('usersEditCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
+
+  $scope.submiting = false;
+
+  $scope.submited = false;
+  $scope.success = false;
+
+  Users.get({ id : $routeParams.id }, function(res) {
+    $scope.user = res.data;
+  }, function(error) {
+    ErrorHandler.alert(error);
+  });
+
+  $scope.submit = function() {
+    $scope.submiting = true;
+    $scope.submited = false;
+    $scope.success = false;
+    $scope.inputErrors = false;
+    $scope.messageError = false;
+
+    Users.update({id:$routeParams.id}, $scope.user, function(res) {
+      $scope.submited = true;
+      $scope.submiting = false;
+      $scope.success = true;
+    }, function(error) {
+      $scope.submiting = false;
+      $scope.submited = true;
+      $scope.success = false;
+
+      if(error.status == 422) {
+        $scope.inputErrors = ErrorHandler.parse(error);
+      }
+      else if(error.status == 409) {
+        $scope.messageError = "cet utilisateur existe déjà";
+      }
+
+    });
+  };
+
+
+});
+
+app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
+
+  Users.get({ id : $routeParams.id }, function(res) {
+    $scope.user = res.data;
+  }, function(error) {
+    ErrorHandler.alert(error);
+  });
+
 });
 
 app.controller('searchCtrl', function($scope, $routeParams, Expendables, Tools, Products, Engines, $uibModal) {
@@ -1309,111 +1414,6 @@ app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandl
     }
 });
 
-app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
-
-  Users.get({}, function(res){
-    $scope.users = res.data;
-  }, function(error){
-    ErrorHandler.alert(error);
-  });
-
-  $scope.displayUser = function(userId) {
-    var found = $filter('filter')($scope.users, {id: userId}, true);
-    if (found.length) {
-       $scope.user = found[0];
-    }
-  }
-
-});
-
-app.controller('usersCreateCtrl', function($scope, ErrorHandler, Users) {
-
-  $scope.submiting = false;
-
-  $scope.submited = false;
-  $scope.success = false;
-
-  $scope.user = new Users({});
-
-  $scope.submit = function() {
-    $scope.submiting = true;
-    $scope.submited = false;
-    $scope.success = false;
-
-    $scope.user.$save({}, function(res) {
-      $scope.submited = true;
-      $scope.submiting = false;
-      $scope.success = true;
-    }, function(error) {
-      $scope.submiting = false;
-      $scope.submited = true;
-      $scope.success = false;
-
-      if(error.status == 422) {
-        $scope.inputErrors = ErrorHandler.parse(error);
-      }
-      else if(error.status == 409) {
-        $scope.messageError = "Cet utilisateur existe déjà";
-      }
-
-    });
-  };
-
-
-});
-
-app.controller('usersEditCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
-
-  $scope.submiting = false;
-
-  $scope.submited = false;
-  $scope.success = false;
-
-  Users.get({ id : $routeParams.id }, function(res) {
-    $scope.user = res.data;
-  }, function(error) {
-    ErrorHandler.alert(error);
-  });
-
-  $scope.submit = function() {
-    $scope.submiting = true;
-    $scope.submited = false;
-    $scope.success = false;
-    $scope.inputErrors = false;
-    $scope.messageError = false;
-
-    Users.update({id:$routeParams.id}, $scope.user, function(res) {
-      $scope.submited = true;
-      $scope.submiting = false;
-      $scope.success = true;
-    }, function(error) {
-      $scope.submiting = false;
-      $scope.submited = true;
-      $scope.success = false;
-
-      if(error.status == 422) {
-        $scope.inputErrors = ErrorHandler.parse(error);
-      }
-      else if(error.status == 409) {
-        $scope.messageError = "cet utilisateur existe déjà";
-      }
-
-    });
-  };
-
-
-});
-
-app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, ErrorHandler, Users) {
-
-  Users.get({ id : $routeParams.id }, function(res) {
-    $scope.user = res.data;
-  }, function(error) {
-    ErrorHandler.alert(error);
-  });
-
-});
-
 app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, type, Addresses, ErrorHandler) {
     $scope.address = address; 
     $scope.errors  = false;
@@ -1501,126 +1501,6 @@ app.controller('editEntityCtrl', function($scope, $uibModalInstance, entity, typ
             ErrorHandler.alert(newError);
         });
     };
-})
-app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, Roles, ErrorHandler, Permissions, UTCAuth) {
-
-    $scope.errors  = false;
-    $scope.loading = true;
-    $scope.saving  = false;
-    $scope.type = type
-    $scope.role = role;
-
-
-        var mapPermissions = function(role) {
-        var permissions = [];
-        role.permissions.forEach(function (permission) {
-            if (permission.selected === true) {
-                permissions.push(permission.id);
-            }
-        });
-
-        return permissions;
-    };
-
-    var hasPermission = function(role, permission) {
-        var res = false;
-        role.permissions.forEach(function (userPerm) {
-            if (userPerm.slug == permission) {
-                res = true
-            }
-        });
-        return res;
-    };
-
-    var getPermissions = function() {
-        Permissions.get({}, function (permissions) {
-            permissions.data.forEach(function (permission) {
-                if ($scope.type == 'create'){
-                    $scope.role = {}
-                }
-                permissions.data.forEach(function (permission) {
-                    if ($scope.type == 'edit'){
-                        permission.selected = hasPermission($scope.role, permission.slug);
-                        permission.changed  = false;
-                    }
-                    permission.toggleSelected = function() {
-                        permission.selected = !permission.selected;
-                        permission.changed  = !permission.changed;
-                    };
-                });
-
-
-                            });
-            $scope.role.permissions = permissions.data;
-            $scope.loading = false
-        }, function(error) {
-            ErrorHandler.alert(error);
-        });
-    }
-
-    if ($scope.type == "edit"){
-        Roles.get({'id' : role.id}, function(data) {
-            $scope.role = data.data;
-            getPermissions()
-        }, function(error) {
-            ErrorHandler.alert(error);
-        });
-    } else if ($scope.type == "create"){
-        getPermissions()
-    }
-
-    $scope.save = function() {
-        $scope.errors   = false;
-        $scope.saving   = true;
-
-        var role = Object.assign({}, $scope.role);
-        role.permissions = mapPermissions($scope.role);
-
-        if ($scope.type == "create"){
-            Roles.save({}, role, function (data) {
-                $uibModalInstance.close();
-                $scope.saving = false;
-            }, function (error) {
-                $scope.errors = ErrorHandler.parse(error);
-                $scope.saving = false;
-            });
-        } else if ($scope.type == "edit") {
-            Roles.update({id : $scope.role.id}, role, function (data) {
-                UTCAuth.refreshPermissions().then(function () {
-                    $uibModalInstance.close();
-                    $scope.saving = false;
-                });
-            }, function (error) {
-                $scope.errors = ErrorHandler.parse(error);
-                $scope.saving = false;
-            });
-        }  
-    };
-
-    $scope.cancel = function() {
-        $uibModalInstance.dismiss('cancel');
-    };
-
-    $scope.deleteModal = function() {
-
-
-        if ($scope.role.name == "Membre CAS") {
-            var error = {}          
-            error.message = "Erreur 403 : Impossible de supprimer le rôle Membre CAS"
-            ErrorHandler.alert(error)
-
-        } else {
-
-            Roles.delete({id: $scope.role.id}, function(data) {
-                $uibModalInstance.close();
-            }, function (error) {
-                ErrorHandler.alert(error);
-            });
-
-        }
-
-    };
-
 })
 
 app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandler, Scripts, Esprima, $rootScope, type, script){
@@ -1771,6 +1651,127 @@ app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandle
         });
     };
 });
+
+app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, Roles, ErrorHandler, Permissions, UTCAuth) {
+
+    $scope.errors  = false;
+    $scope.loading = true;
+    $scope.saving  = false;
+    $scope.type = type
+    $scope.role = role;
+
+
+        var mapPermissions = function(role) {
+        var permissions = [];
+        role.permissions.forEach(function (permission) {
+            if (permission.selected === true) {
+                permissions.push(permission.id);
+            }
+        });
+
+        return permissions;
+    };
+
+    var hasPermission = function(role, permission) {
+        var res = false;
+        role.permissions.forEach(function (userPerm) {
+            if (userPerm.slug == permission) {
+                res = true
+            }
+        });
+        return res;
+    };
+
+    var getPermissions = function() {
+        Permissions.get({}, function (permissions) {
+            permissions.data.forEach(function (permission) {
+                if ($scope.type == 'create'){
+                    $scope.role = {}
+                }
+                permissions.data.forEach(function (permission) {
+                    if ($scope.type == 'edit'){
+                        permission.selected = hasPermission($scope.role, permission.slug);
+                        permission.changed  = false;
+                    }
+                    permission.toggleSelected = function() {
+                        permission.selected = !permission.selected;
+                        permission.changed  = !permission.changed;
+                    };
+                });
+
+
+                            });
+            $scope.role.permissions = permissions.data;
+            $scope.loading = false
+        }, function(error) {
+            ErrorHandler.alert(error);
+        });
+    }
+
+    if ($scope.type == "edit"){
+        Roles.get({'id' : role.id}, function(data) {
+            $scope.role = data.data;
+            getPermissions()
+        }, function(error) {
+            ErrorHandler.alert(error);
+        });
+    } else if ($scope.type == "create"){
+        getPermissions()
+    }
+
+    $scope.save = function() {
+        $scope.errors   = false;
+        $scope.saving   = true;
+
+        var role = Object.assign({}, $scope.role);
+        role.permissions = mapPermissions($scope.role);
+
+        if ($scope.type == "create"){
+            Roles.save({}, role, function (data) {
+                $uibModalInstance.close();
+                $scope.saving = false;
+            }, function (error) {
+                $scope.errors = ErrorHandler.parse(error);
+                $scope.saving = false;
+            });
+        } else if ($scope.type == "edit") {
+            Roles.update({id : $scope.role.id}, role, function (data) {
+                UTCAuth.refreshPermissions().then(function () {
+                    $uibModalInstance.close();
+                    $scope.saving = false;
+                });
+            }, function (error) {
+                $scope.errors = ErrorHandler.parse(error);
+                $scope.saving = false;
+            });
+        }  
+    };
+
+    $scope.cancel = function() {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+    $scope.deleteModal = function() {
+
+
+        if ($scope.role.name == "Membre CAS") {
+            var error = {}          
+            error.message = "Erreur 403 : Impossible de supprimer le rôle Membre CAS"
+            ErrorHandler.alert(error)
+
+        } else {
+
+            Roles.delete({id: $scope.role.id}, function(data) {
+                $uibModalInstance.close();
+            }, function (error) {
+                ErrorHandler.alert(error);
+            });
+
+        }
+
+    };
+
+})
 
 app.controller('editServiceCtrl', function($scope, $uibModalInstance, service, type, Scripts, Services, Engines, ErrorHandler) {
 
@@ -2029,118 +2030,6 @@ app.controller("syncUserCtrl", function($scope, $uibModalInstance, scopeParent, 
         });
     };
 })
-app.controller('enginesEditCtrl', function($scope, $window, object, type, $uibModalInstance, $http, Engines, ErrorHandler, Rooms) {
-    $scope.engine = object;
-    $scope.type = type;
-    $scope.previewSrc = null;
-    $scope.errors = null;
-    if($scope.engine.picture) {
-        $scope.previewSrc = __ENV.apiUrl + "/engines/image/" + $scope.engine.id;
-    }
-    Rooms.get({}, function(res){
-        $scope.rooms = res.data;
-        $scope.engine.room = res.data.filter((r)=>r.id == $scope.engine.room_id)[0];
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
-
-    $scope.$watch("type", () => {
-        $scope.show = $scope.type == 'show' || $scope.type == 'view';
-        $scope.edit = $scope.type == 'edit' || $scope.type == 'create';
-        $scope.canChange = $scope.type == 'view';
-        $scope.canDelete = $scope.type == 'edit' || $scope.type == 'view';
-    })
-
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss();
-    }
-
-    $scope.delete = function() {
-        $uibModalInstance.close({id:$scope.engine.id, type:"delete"});
-    }
-
-    $scope.$watch("engine.pic", function(newV, oldV) {
-        if(newV !== oldV && newV instanceof File) {
-            $scope.previewSrc = $window.URL.createObjectURL(newV);
-        }
-    });
-
-    function updatePreview() {
-        if($scope.engine.pic instanceof File && !$scope.engine.picture) {
-            $scope.previewSrc = $window.URL.createObjectURL($scope.engine.pic);
-        }
-    }
-
-    $scope.iconColor = function() {
-        var color;
-        switch ($scope.engine.status) {
-            case "Disponible":
-                color = '#c2db9b';
-                break;
-            case "En utilisation":
-                color = '#ffdb93';
-                break;
-            case "En maintenance":
-                color = '#f3997b';
-                break;
-            default:
-                color = '#c2db9b';
-        }
-        return {'background-color':color};
-    }
-
-    $scope.save = function() {
-        $scope.messageError = null;
-        $scope.inputErrors = null;
-        if ($scope.engine.room) {
-            $scope.engine.room_id = $scope.engine.room.id;
-        }
-
-        if ($scope.type=='edit') {
-            Engines.update({id:$scope.engine.id}, $scope.engine, envoyerImage, gererErreur);
-        }else if($scope.type=='create') {
-            Engines.save({}, $scope.engine, envoyerImage, gererErreur);
-        }
-    }
-
-    var envoyerImage = function(res) {
-        if(res.meta.status == 201) {
-            $scope.engine.id = res.data.newId;
-        }
-
-        if($scope.engine.pic && $scope.engine.pic instanceof File){
-
-            var url = __ENV.apiUrl + "/engines/"+$scope.engine.id+"/image";
-            var fd = new FormData();
-            fd.append('updatePic', $scope.engine.pic);
-            $http.post(url, fd, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            })
-            .success(function(r){
-                $scope.engine.picture = r.data
-                $uibModalInstance.close({changedEngine:$scope.engine, type:$scope.type});
-            })
-            .error(function(r){
-                ErrorHandler.alert("Erreur lors de la sauvegarde de l'image");
-            });
-        }else {
-            $uibModalInstance.close({changedEngine:$scope.engine, type:$scope.type});
-        }
-
-    }
-
-    var gererErreur = function(error) {
-        if(error.status == 422) {
-            $scope.inputErrors = error.data.data;
-        }
-        else if(error.status == 409) {
-            $scope.messageError = "Une machine avec le même nom existe déjà";
-        }
-
-    }
-});
-
 app.controller('enginePartsEditCtrl', function($scope, $window, object, type, $uibModalInstance, $http, Engines, ErrorHandler, Rooms, EngineParts) {
     $scope.enginepart = object;
     $scope.type = type;
@@ -2338,6 +2227,118 @@ app.controller('expendablesEditCtrl', function($scope, object, type, $uibModalIn
     }
 });
 
+app.controller('enginesEditCtrl', function($scope, $window, object, type, $uibModalInstance, $http, Engines, ErrorHandler, Rooms) {
+    $scope.engine = object;
+    $scope.type = type;
+    $scope.previewSrc = null;
+    $scope.errors = null;
+    if($scope.engine.picture) {
+        $scope.previewSrc = __ENV.apiUrl + "/engines/image/" + $scope.engine.id;
+    }
+    Rooms.get({}, function(res){
+        $scope.rooms = res.data;
+        $scope.engine.room = res.data.filter((r)=>r.id == $scope.engine.room_id)[0];
+    }, function(error){
+        ErrorHandler.alert(error);
+    });
+
+    $scope.$watch("type", () => {
+        $scope.show = $scope.type == 'show' || $scope.type == 'view';
+        $scope.edit = $scope.type == 'edit' || $scope.type == 'create';
+        $scope.canChange = $scope.type == 'view';
+        $scope.canDelete = $scope.type == 'edit' || $scope.type == 'view';
+    })
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+    }
+
+    $scope.delete = function() {
+        $uibModalInstance.close({id:$scope.engine.id, type:"delete"});
+    }
+
+    $scope.$watch("engine.pic", function(newV, oldV) {
+        if(newV !== oldV && newV instanceof File) {
+            $scope.previewSrc = $window.URL.createObjectURL(newV);
+        }
+    });
+
+    function updatePreview() {
+        if($scope.engine.pic instanceof File && !$scope.engine.picture) {
+            $scope.previewSrc = $window.URL.createObjectURL($scope.engine.pic);
+        }
+    }
+
+    $scope.iconColor = function() {
+        var color;
+        switch ($scope.engine.status) {
+            case "Disponible":
+                color = '#c2db9b';
+                break;
+            case "En utilisation":
+                color = '#ffdb93';
+                break;
+            case "En maintenance":
+                color = '#f3997b';
+                break;
+            default:
+                color = '#c2db9b';
+        }
+        return {'background-color':color};
+    }
+
+    $scope.save = function() {
+        $scope.messageError = null;
+        $scope.inputErrors = null;
+        if ($scope.engine.room) {
+            $scope.engine.room_id = $scope.engine.room.id;
+        }
+
+        if ($scope.type=='edit') {
+            Engines.update({id:$scope.engine.id}, $scope.engine, envoyerImage, gererErreur);
+        }else if($scope.type=='create') {
+            Engines.save({}, $scope.engine, envoyerImage, gererErreur);
+        }
+    }
+
+    var envoyerImage = function(res) {
+        if(res.meta.status == 201) {
+            $scope.engine.id = res.data.newId;
+        }
+
+        if($scope.engine.pic && $scope.engine.pic instanceof File){
+
+            var url = __ENV.apiUrl + "/engines/"+$scope.engine.id+"/image";
+            var fd = new FormData();
+            fd.append('updatePic', $scope.engine.pic);
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            })
+            .success(function(r){
+                $scope.engine.picture = r.data
+                $uibModalInstance.close({changedEngine:$scope.engine, type:$scope.type});
+            })
+            .error(function(r){
+                ErrorHandler.alert("Erreur lors de la sauvegarde de l'image");
+            });
+        }else {
+            $uibModalInstance.close({changedEngine:$scope.engine, type:$scope.type});
+        }
+
+    }
+
+    var gererErreur = function(error) {
+        if(error.status == 422) {
+            $scope.inputErrors = error.data.data;
+        }
+        else if(error.status == 409) {
+            $scope.messageError = "Une machine avec le même nom existe déjà";
+        }
+
+    }
+});
+
 app.controller('paymentConfirmationCtrl', function($scope, $http, ErrorHandler, $location) {
 
 	$scope.loading = true
@@ -2363,129 +2364,6 @@ app.controller('paymentConfirmationCtrl', function($scope, $http, ErrorHandler, 
 
 
 })
-
-app.controller('productsEditCtrl', function($scope, object, type, $uibModalInstance, $http, Elements, $window, ErrorHandler, Rooms, Wardrobes, Categories) {
-    $scope.product = object;
-    $scope.type = type;
-    $scope.previewSrc = null;
-    $scope.errors = null;
-    if($scope.product.picture) {
-        $scope.previewSrc = __ENV.apiUrl + "/products/image/" + $scope.product.id;
-    }
-    Categories.get({}, function(res){
-        $scope.categories = res.data;
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
-
-    Rooms.get({}, function(res){
-        $scope.rooms = res.data;
-        $scope.selectedRoom = res.data.filter((r)=>r.id == $scope.product.room_id)[0];
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
-
-    Wardrobes.get({}, function(res){
-        $scope.wardrobes = res.data;
-        $scope.selectedWardrobe = res.data.filter((r)=>r.id == $scope.product.wardrobe_id)[0];
-    }, function(error){
-        ErrorHandler.alert(error);
-    });
-
-    $scope.$watch("type", () => {
-        $scope.show = $scope.type == 'show' || $scope.type == 'view';
-        $scope.edit = $scope.type == 'edit' || $scope.type == 'create';
-        $scope.canChange = $scope.type == 'view';
-        $scope.canDelete = $scope.type == 'edit' || $scope.type == 'view';
-    })
-
-    $scope.cancel = function () {
-        $uibModalInstance.dismiss();
-    }
-
-
-    $scope.$watch("product.pic", function(newV, oldV) {
-        if(newV !== oldV && newV instanceof File) {
-            $scope.previewSrc = $window.URL.createObjectURL(newV);
-        }
-    });
-
-    $scope.delete = function() {
-        $uibModalInstance.close({id:$scope.product.id, type:"delete"});
-    }
-
-    function updatePreview() {
-        if($scope.product.pic instanceof File && !$scope.product.picture) {
-            $scope.previewSrc = $window.URL.createObjectURL($scope.product.pic);
-        }
-    }
-
-    $scope.save = function() {
-        $scope.messageError = null;
-        $scope.inputErrors = null;
-        $scope.product.wardrobe_id = null
-        $scope.product.room_id = null
-        if($scope.selectedRoom) {
-            $scope.product.room_id = $scope.selectedRoom.id;
-            $scope.product.roomName = $scope.selectedRoom.name;
-
-                        if($scope.selectedWardrobe) {
-                $scope.product.wardrobeName = $scope.selectedWardrobe.name;
-                for (var i = $scope.wardrobes.length - 1; i >= 0; i--) {
-                    if ($scope.wardrobes[i].name == $scope.selectedWardrobe.name && $scope.wardrobes[i].room_id == $scope.product.room_id){
-                        $scope.product.wardrobe_id = $scope.wardrobes[i].id
-                        break
-                    }
-                }
-            }
-        } 
-
-        $scope.product.categorie_id = null
-        if($scope.product.categorie){
-            $scope.product.categorie_id = $scope.product.categorie.id;
-            $scope.product.categorieName = $scope.product.categorie.name;
-        }
-        if ($scope.type=='edit') {
-            Elements.productsResource.update({id : $scope.product.id}, $scope.product, envoyerImage, gererErreur);
-        }else if($scope.type=='create') {
-            Elements.productsResource.save({}, $scope.product, envoyerImage, gererErreur);
-        }
-    }
-
-    var envoyerImage = function(res) {
-        if(res.meta.status == 201) {
-            $scope.product.id = res.data.newId;
-        }
-        if($scope.product.pic && $scope.product.pic instanceof File){
-            var url = __ENV.apiUrl + "/products/"+$scope.product.id+"/image";
-            var fd = new FormData();
-            fd.append('updatePic', $scope.product.pic);
-            $http.post(url, fd, {
-                transformRequest: angular.identity,
-                headers: {'Content-Type': undefined}
-            })
-            .success(function(r){
-                $scope.product.picture = r.data
-                $uibModalInstance.close({changedProduct:$scope.product, type:$scope.type});
-            })
-            .error(function(r){
-                ErrorHandler.alert("Erreur lors de la sauvegarde de l'image");
-            });
-        }else {
-            $uibModalInstance.close({changedProduct:$scope.product, type:$scope.type});
-        }
-
-    }
-    var gererErreur = function(error) {
-        if(error.status == 422) {
-            $scope.inputErrors = error.data.data;
-        }
-        else if(error.status == 409) {
-            $scope.messageError = "Un produit avec le même nom existe déjà";
-        }
-
-    }
-});
 
 app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $rootScope, ErrorHandler, Mail, Users, Services, Products, Purchases, PurchasedElements, Entities, $uibModal) {
 
@@ -3744,6 +3622,129 @@ $scope.Modify_button = function(id_wardrobe){
         }
         else if(error.status == 409) {
             $scope.messageError = "Une salle avec le même nom existe déjà";
+        }
+
+    }
+});
+
+app.controller('productsEditCtrl', function($scope, object, type, $uibModalInstance, $http, Elements, $window, ErrorHandler, Rooms, Wardrobes, Categories) {
+    $scope.product = object;
+    $scope.type = type;
+    $scope.previewSrc = null;
+    $scope.errors = null;
+    if($scope.product.picture) {
+        $scope.previewSrc = __ENV.apiUrl + "/products/image/" + $scope.product.id;
+    }
+    Categories.get({}, function(res){
+        $scope.categories = res.data;
+    }, function(error){
+        ErrorHandler.alert(error);
+    });
+
+    Rooms.get({}, function(res){
+        $scope.rooms = res.data;
+        $scope.selectedRoom = res.data.filter((r)=>r.id == $scope.product.room_id)[0];
+    }, function(error){
+        ErrorHandler.alert(error);
+    });
+
+    Wardrobes.get({}, function(res){
+        $scope.wardrobes = res.data;
+        $scope.selectedWardrobe = res.data.filter((r)=>r.id == $scope.product.wardrobe_id)[0];
+    }, function(error){
+        ErrorHandler.alert(error);
+    });
+
+    $scope.$watch("type", () => {
+        $scope.show = $scope.type == 'show' || $scope.type == 'view';
+        $scope.edit = $scope.type == 'edit' || $scope.type == 'create';
+        $scope.canChange = $scope.type == 'view';
+        $scope.canDelete = $scope.type == 'edit' || $scope.type == 'view';
+    })
+
+    $scope.cancel = function () {
+        $uibModalInstance.dismiss();
+    }
+
+
+    $scope.$watch("product.pic", function(newV, oldV) {
+        if(newV !== oldV && newV instanceof File) {
+            $scope.previewSrc = $window.URL.createObjectURL(newV);
+        }
+    });
+
+    $scope.delete = function() {
+        $uibModalInstance.close({id:$scope.product.id, type:"delete"});
+    }
+
+    function updatePreview() {
+        if($scope.product.pic instanceof File && !$scope.product.picture) {
+            $scope.previewSrc = $window.URL.createObjectURL($scope.product.pic);
+        }
+    }
+
+    $scope.save = function() {
+        $scope.messageError = null;
+        $scope.inputErrors = null;
+        $scope.product.wardrobe_id = null
+        $scope.product.room_id = null
+        if($scope.selectedRoom) {
+            $scope.product.room_id = $scope.selectedRoom.id;
+            $scope.product.roomName = $scope.selectedRoom.name;
+
+                        if($scope.selectedWardrobe) {
+                $scope.product.wardrobeName = $scope.selectedWardrobe.name;
+                for (var i = $scope.wardrobes.length - 1; i >= 0; i--) {
+                    if ($scope.wardrobes[i].name == $scope.selectedWardrobe.name && $scope.wardrobes[i].room_id == $scope.product.room_id){
+                        $scope.product.wardrobe_id = $scope.wardrobes[i].id
+                        break
+                    }
+                }
+            }
+        } 
+
+        $scope.product.categorie_id = null
+        if($scope.product.categorie){
+            $scope.product.categorie_id = $scope.product.categorie.id;
+            $scope.product.categorieName = $scope.product.categorie.name;
+        }
+        if ($scope.type=='edit') {
+            Elements.productsResource.update({id : $scope.product.id}, $scope.product, envoyerImage, gererErreur);
+        }else if($scope.type=='create') {
+            Elements.productsResource.save({}, $scope.product, envoyerImage, gererErreur);
+        }
+    }
+
+    var envoyerImage = function(res) {
+        if(res.meta.status == 201) {
+            $scope.product.id = res.data.newId;
+        }
+        if($scope.product.pic && $scope.product.pic instanceof File){
+            var url = __ENV.apiUrl + "/products/"+$scope.product.id+"/image";
+            var fd = new FormData();
+            fd.append('updatePic', $scope.product.pic);
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+            })
+            .success(function(r){
+                $scope.product.picture = r.data
+                $uibModalInstance.close({changedProduct:$scope.product, type:$scope.type});
+            })
+            .error(function(r){
+                ErrorHandler.alert("Erreur lors de la sauvegarde de l'image");
+            });
+        }else {
+            $uibModalInstance.close({changedProduct:$scope.product, type:$scope.type});
+        }
+
+    }
+    var gererErreur = function(error) {
+        if(error.status == 422) {
+            $scope.inputErrors = error.data.data;
+        }
+        else if(error.status == 409) {
+            $scope.messageError = "Un produit avec le même nom existe déjà";
         }
 
     }

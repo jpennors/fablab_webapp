@@ -93,21 +93,39 @@ app.directive('outWrapper', function($rootScope) {
   };
 });
 
-app.directive('search', function() {
-    return {
-        restrict: 'EA',
-        scope: {},
-        controller: function($scope) {
-            $scope.checkIfEnterKeyWasPressed = function($event){
-                var keyCode = $event.which || $event.keyCode;
-                if (keyCode === 13) {
-                    window.location.href = '#/search/?q='+$scope.q;
-                }
+app.controller('enginePartAlertsCtrl', function($http, $scope, $window, ErrorHandler, EngineParts){
 
-            };
-        },
-        template : '<input ng-keypress="checkIfEnterKeyWasPressed($event)" ng-model="q" type="text" size="40" placeholder="Recherche..." />',
+    init = function(){
+        EngineParts.get({}, function(res) {
+            console.log("pourlet", res)
+            $scope.ep = res.data
+        }, function(error){
+            ErrorHandler.alert(error);
+        });
     }
+    init()
+
+    $scope.filter = {}
+    $scope.filter.statusFilter = function(){
+        return function(pe){
+            return (pe.need_maintenance == true)
+        }
+    }
+
+    $scope.resetMaintenance = function($id){
+        console.log($id)
+        EngineParts.resetMaintenance({id: $id}, function(res){
+            init()
+        })
+    }
+});
+
+app.directive('showEnginePartAlerts', function() {
+    return {
+        restrict: 'E',
+        templateUrl: 'app/directives/showEnginePartAlerts/engine_part_alerts_show.html',
+        controller: 'enginePartAlertsCtrl',
+    };
 });
 
 app.controller('alertsCtrl', function($http, $scope, ErrorHandler, Products, Expendables, Tools, $uibModal){
@@ -180,65 +198,21 @@ app.directive('showAlerts', function() {
   };
 });
 
-app.controller('enginePartAlertsCtrl', function($http, $scope, $window, ErrorHandler, EngineParts){
-
-    init = function(){
-        EngineParts.get({}, function(res) {
-            console.log("pourlet", res)
-            $scope.ep = res.data
-        }, function(error){
-            ErrorHandler.alert(error);
-        });
-    }
-    init()
-
-    $scope.filter = {}
-    $scope.filter.statusFilter = function(){
-        return function(pe){
-            return (pe.need_maintenance == true)
-        }
-    }
-
-    $scope.resetMaintenance = function($id){
-        console.log($id)
-        EngineParts.resetMaintenance({id: $id}, function(res){
-            init()
-        })
-    }
-});
-
-app.directive('showEnginePartAlerts', function() {
-    return {
-        restrict: 'E',
-        templateUrl: 'app/directives/showEnginePartAlerts/engine_part_alerts_show.html',
-        controller: 'enginePartAlertsCtrl',
-    };
-});
-
-app.directive('showErrors', function() {
+app.directive('search', function() {
     return {
         restrict: 'EA',
-        transclude: true,
-        scope: {
-            errors : '=errorsData'
+        scope: {},
+        controller: function($scope) {
+            $scope.checkIfEnterKeyWasPressed = function($event){
+                var keyCode = $event.which || $event.keyCode;
+                if (keyCode === 13) {
+                    window.location.href = '#/search/?q='+$scope.q;
+                }
+
+            };
         },
-        templateUrl: 'app/directives/showErrors/errors_show.html',
-    };
-});
-
-app.directive('showProducts', function() {
-  return {
-    restrict: 'EA',
-    transclude: true,
-    scope: {
-      products : '=productsData',
-      callback : '&productsCallback',
-    },
-    controller: function($scope, $element, $attrs) {
-
-    },
-    templateUrl: 'app/directives/showProducts/products_show.html',
-  };
+        template : '<input ng-keypress="checkIfEnterKeyWasPressed($event)" ng-model="q" type="text" size="40" placeholder="Recherche..." />',
+    }
 });
 
 app.controller('alertsPurchaseCtrl', function($http, $scope, $window, ErrorHandler, PurchasedElements, $rootScope){
@@ -273,6 +247,32 @@ app.directive('showPurchaseAlerts', function() {
         restrict: 'E',
         templateUrl: 'app/directives/showPurchaseAlerts/purchase_alerts_show.html',
         controller: 'alertsPurchaseCtrl',
+    };
+});
+
+app.directive('showProducts', function() {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    scope: {
+      products : '=productsData',
+      callback : '&productsCallback',
+    },
+    controller: function($scope, $element, $attrs) {
+
+    },
+    templateUrl: 'app/directives/showProducts/products_show.html',
+  };
+});
+
+app.directive('showErrors', function() {
+    return {
+        restrict: 'EA',
+        transclude: true,
+        scope: {
+            errors : '=errorsData'
+        },
+        templateUrl: 'app/directives/showErrors/errors_show.html',
     };
 });
 
