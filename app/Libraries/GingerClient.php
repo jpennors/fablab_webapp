@@ -51,10 +51,16 @@ class GingerClient {
    * @return array        Retourne l'ensemble des données de l'utilisateur
    */
   public function getUser($login) {
+    $user_cached = \Cache::get('ginger_login_'.$login);
+    if($user_cached){
+      return $user_cached;
+    }
     $response = self::call(
       'GET',
       $login
     );
+
+    \Cache::add('ginger_login_'.$login, $response->content, 259200);
 
     $this->responseCode = $response === null ? null : $response->status;
 
