@@ -85,7 +85,8 @@ class Purchase extends Model
   static public function getHistoryIndex()
   {
       
-      $data = Purchase::onlyTrashed()->with(['elements', 'transactions'])->get();
+      $data = Purchase::onlyTrashed()->with(['elements', 'transactions', 'address', 'entity'])->get();
+      // dd($data);
 
       return $data;  
   }
@@ -108,10 +109,10 @@ class Purchase extends Model
    * Retourne le client
    *
    */
-  public function user()
-  {
-      return $this->belongsTo(User::class, 'login');
-  }
+  // public function user()
+  // {
+  //     return $this->belongsTo(User::class, 'login');
+  // }
 
   /**
    * On crée un attribut pour l'acheteur
@@ -139,7 +140,7 @@ class Purchase extends Model
     if($this->externalPaid)
       return true;
     else {
-      return $this->transactions()->where('paid', true)->first() ? true : false;
+      return $this->transactions->where('paid', true)->first() ? true : false;
     }
   }
 
@@ -156,7 +157,7 @@ class Purchase extends Model
     if($this->externalPaid) {
         return $this->externalPaid->toAtomString();
     } else {
-      return $this->transactions()->where('paid', true)->first()->created_at->toAtomString();
+      return $this->transactions->where('paid', true)->first()->created_at->toAtomString();
     }
   }
 
