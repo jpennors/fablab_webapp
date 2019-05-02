@@ -85,7 +85,7 @@ class Purchase extends Model
   static public function getHistoryIndex()
   {
       
-      $data = Purchase::onlyTrashed()->get();
+      $data = Purchase::onlyTrashed()->with(['elements', 'transactions'])->get();
 
       return $data;  
   }
