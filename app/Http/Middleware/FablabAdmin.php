@@ -24,7 +24,7 @@ class FablabAdmin
      */
     public function handle($request, Closure $next)
     {
-  
+        
         if(!($member = Auth::user())) {
             return response()->error("401, unauthorized, user must be present in session.", 401);
         }
@@ -32,6 +32,9 @@ class FablabAdmin
             return response()->error("401, unauthorized, user doesn't have the 'login' permission.", 401);
         }
 
+        $user = Auth::user();
+        
+        \Log::info("Action effectuée par ".$user->login." (".$user->firstName." ".$user->lastName.") sur route ".$request->method()."::".$request->path());
 
         $action = $request->route()->getAction();
         $action = explode('@', $action['controller']);
@@ -44,6 +47,7 @@ class FablabAdmin
                 if (Gate::check($permission)) {
                     return $next($request);
                 } else {
+                    Log::error("Refus action effectuée par ".$user->login." (".$user->firstName." ".$user->lastName.") sur route ".$request->method()."::".$request->path());
                     return response()->error("Vous n'êtes pas autorisé à accéder à cette ressource.", 403);
                 }
             } catch (\InvalidArgumentException $e) {
