@@ -151,7 +151,7 @@
                             <br><br>
                             Nom : <b>{{ element.purchasable.name }}</b><br>
                             <span ng-if="element.purchasable_type=='App\\Service'">Deadline : {{element.deadline.toString().replace(' ', 'T') | date :  "dd/MM/yyyy" }} </br></span>
-                            Quantité : {{ element.purchasedQuantity + " " + element.purchasable.quantityUnit }}<br>
+                            Quantité : {{ element.purchasedQuantity + " unité(" + element.purchasable.quantityUnit +")" }}<br>
                             <span>Prix retenu : {{ element.totalPrice }} </span><br>
                             <span ng-if="element.comment">Commentaire : {{ element.comment }}</span>                            
                           </div>
