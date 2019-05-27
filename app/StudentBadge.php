@@ -44,6 +44,11 @@ class StudentBadge extends Model
     *	Retourne les informations d'un utilisateur à partir de son login
     */
     public function getUserAttribute(){
-    	return Ginger::getUser($this->login);
+        $response = Ginger::getUser($this->login);
+        if ($response->status == 200) {
+            return $response->content;
+        } else {
+            return null;
+        }
     }
 }

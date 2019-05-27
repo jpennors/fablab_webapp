@@ -53,6 +53,10 @@ class GingerClient {
   public function getUser($login) {
     $user_cached = \Cache::get('ginger_login_'.$login);
     if($user_cached){
+      $response = collect();
+      $response->status = 200;
+      $response->content = $user_cached;
+      return $response;
       return $user_cached;
     }
     $response = self::call(
@@ -60,11 +64,11 @@ class GingerClient {
       $login
     );
 
-    \Cache::add('ginger_login_'.$login, $response->content, 259200);
+    if ($response->status == 200){ 
+      \Cache::add('ginger_login_'.$login, $response->content, 259200);
+    }
 
-    $this->responseCode = $response === null ? null : $response->status;
-
-    return $this->responseCode === 200 ? $response->content : null;
+    return $response;
   }
 
   /**

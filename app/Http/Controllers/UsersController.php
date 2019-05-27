@@ -130,9 +130,8 @@ class UsersController extends Controller
     public function gingerLogin($login)
     {
         try {
-            $user = Ginger::getUser($login);
-            // \Cache::add('ginger_login_'.$login, $user, 30);
-            return response()->success($user);
+            $response = Ginger::getUser($login);
+            return response()->json($response->content, $response->status);
         } catch (ApiException $e) {
             return response()->error("Ginger error", $e->getCode());
         }

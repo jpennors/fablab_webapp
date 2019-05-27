@@ -217,49 +217,6 @@ app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandl
 
 });
 
-app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
-
-  if(!$rootScope.can('super-admin'))
-    $location.path("/error/404");
-
-  else{
-    $scope.saving   = false;
-    $scope.error    = false;
-    $scope.success  = false;
-
-    Administratives.get({}, function(data){
-      $scope.admins = data.data;
-    }, function(error) {
-      ErrorHandler.alert(error);
-    });
-
-    $scope.update = function() {
-      $scope.saving   = true;
-      $scope.success  = false;
-      $scope.error    = false;
-
-      var done = 0;
-
-      for(var i=0; i<$scope.admins.length; i++) {
-        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
-          done++;
-          if(done == $scope.admins.length) {
-            $scope.saving   = false;
-            $scope.success  = true;
-          }
-        }, function(error) {
-          $scope.saving   = false;
-          $scope.success  = false;
-          $scope.errors    = error.data.meta;
-          return false;
-        });
-      }
-
-    };
-  }
-
-});
-
 app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Services, $location, $rootScope){
 
 	if(!$rootScope.can('edit-service'))
@@ -320,6 +277,49 @@ app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Se
 	        })
 		};
 	}
+
+});
+
+app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
+
+  if(!$rootScope.can('super-admin'))
+    $location.path("/error/404");
+
+  else{
+    $scope.saving   = false;
+    $scope.error    = false;
+    $scope.success  = false;
+
+    Administratives.get({}, function(data){
+      $scope.admins = data.data;
+    }, function(error) {
+      ErrorHandler.alert(error);
+    });
+
+    $scope.update = function() {
+      $scope.saving   = true;
+      $scope.success  = false;
+      $scope.error    = false;
+
+      var done = 0;
+
+      for(var i=0; i<$scope.admins.length; i++) {
+        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
+          done++;
+          if(done == $scope.admins.length) {
+            $scope.saving   = false;
+            $scope.success  = true;
+          }
+        }, function(error) {
+          $scope.saving   = false;
+          $scope.success  = false;
+          $scope.errors    = error.data.meta;
+          return false;
+        });
+      }
+
+    };
+  }
 
 });
 
@@ -1244,6 +1244,71 @@ app.controller('searchCtrl', function($scope, $routeParams, Expendables, Tools, 
     }
 });
 
+app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandler) {
+
+    init = function(){
+
+        $scope.loading = true
+
+        Tools.get({}, function(res){
+            $scope.tools = res.data;
+            $scope.loading = false
+        }, function(error){
+            ErrorHandler.alert(error);
+            $scope.loading = false
+        });
+    }
+    init()
+
+    $scope.delete = function(id) {
+        var aSupprimer = $scope.tools.filter((e)=>e.id==id)[0];
+        var index = $scope.tools.indexOf(aSupprimer);
+
+        Tools.remove({id:id}, function() {
+            $scope.tools.splice(index, 1);
+        })
+    }
+
+    $scope.alertFilter = function(e) {
+        return e.remainingQuantity <= e.minQuantity;
+    }
+
+    $scope.open = function(id, type) {
+        var selected;
+        if(id == null){
+            selected = {
+                minQuantity: 0,
+                remainingQuantity: 0
+            };
+        }else {
+            selected = $scope.tools.filter((e)=>e.id==id)[0];
+        }
+        var modalInstance = $uibModal.open({
+            backdrop: true,
+            keyboard: true,
+            size:'lg',
+            templateUrl: 'app/components/tools/modal/tools_edit.html',
+
+            resolve:{
+                object: function() {
+                    return angular.copy(selected);
+                },
+                type: function() {
+                    return type;
+                }
+            },
+            controller: 'toolsEditCtrl'
+        });
+
+        modalInstance.result.then(function(res) {
+            if(res.type == "delete"){
+                $scope.delete(res.id);
+            }
+            init()
+        })
+    }
+});
+
 app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
 
   Users.get({}, function(res){
@@ -1347,71 +1412,6 @@ app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, E
     ErrorHandler.alert(error);
   });
 
-});
-
-app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandler) {
-
-    init = function(){
-
-        $scope.loading = true
-
-        Tools.get({}, function(res){
-            $scope.tools = res.data;
-            $scope.loading = false
-        }, function(error){
-            ErrorHandler.alert(error);
-            $scope.loading = false
-        });
-    }
-    init()
-
-    $scope.delete = function(id) {
-        var aSupprimer = $scope.tools.filter((e)=>e.id==id)[0];
-        var index = $scope.tools.indexOf(aSupprimer);
-
-        Tools.remove({id:id}, function() {
-            $scope.tools.splice(index, 1);
-        })
-    }
-
-    $scope.alertFilter = function(e) {
-        return e.remainingQuantity <= e.minQuantity;
-    }
-
-    $scope.open = function(id, type) {
-        var selected;
-        if(id == null){
-            selected = {
-                minQuantity: 0,
-                remainingQuantity: 0
-            };
-        }else {
-            selected = $scope.tools.filter((e)=>e.id==id)[0];
-        }
-        var modalInstance = $uibModal.open({
-            backdrop: true,
-            keyboard: true,
-            size:'lg',
-            templateUrl: 'app/components/tools/modal/tools_edit.html',
-
-            resolve:{
-                object: function() {
-                    return angular.copy(selected);
-                },
-                type: function() {
-                    return type;
-                }
-            },
-            controller: 'toolsEditCtrl'
-        });
-
-        modalInstance.result.then(function(res) {
-            if(res.type == "delete"){
-                $scope.delete(res.id);
-            }
-            init()
-        })
-    }
 });
 
 app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, type, Addresses, ErrorHandler) {
@@ -2543,20 +2543,22 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
                 method : 'GET',
                 url : __ENV.apiUrl + '/users/ginger/' + $scope.purchase.login
             }).then(function(res){
-                if(res.data.data != null) {
+                if(res.data != null) {
                     $scope.error = null;
                     var data = {
-                        "login" : res.data.data.login,
-                        "firstName" : res.data.data.prenom,
-                        "lastName" : res.data.data.nom,
-                        "email" : res.data.data.mail,
-                        "status" : res.data.data.type,
-                        "isCotisant" : res.data.data.is_cotisant
+                        "login" : res.data.login,
+                        "firstName" : res.data.prenom,
+                        "lastName" : res.data.nom,
+                        "email" : res.data.mail,
+                        "status" : res.data.type,
+                        "isCotisant" : res.data.is_cotisant
                     };
                     $scope.purchase.user = data;
                 }else {
                     $scope.error = "Login invalide";
                 }
+            }, function(error){
+                $scope.error = "Login invalide ou expiré";
             });
         }
 

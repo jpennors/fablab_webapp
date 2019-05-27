@@ -82,11 +82,9 @@ class User extends Model implements Authenticatable
         if (!$this->login) {
             throw new \Exception("Login should be filled");
         }
-        if (\Cache::has("ginger_".$this->login)) {
-            $this->ginger = \Cache::get("ginger_".$this->login);
-        } else {
-            $this->ginger = Ginger::getUser($this->login);
-            \Cache::add("ginger_".$this->login, $this->ginger, 60);
+        $response = Ginger::getUser($this->login);
+        if ($response->status == 200){
+            $this->ginger = $response->content;
         }
     }
 

@@ -120,7 +120,12 @@ class Purchase extends Model
    */
   public function getUserAttribute() 
   {
-    return Ginger::getUser($this->login);
+    $response = Ginger::getUser($this->login);
+    if ($response->status == 200) {
+      return $response->content;
+    } else {
+      return null;
+    }
   }
 
   /**

@@ -75,20 +75,22 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
                 method : 'GET',
                 url : __ENV.apiUrl + '/users/ginger/' + $scope.purchase.login
             }).then(function(res){
-                if(res.data.data != null) {
+                if(res.data != null) {
                     $scope.error = null;
                     var data = {
-                        "login" : res.data.data.login,
-                        "firstName" : res.data.data.prenom,
-                        "lastName" : res.data.data.nom,
-                        "email" : res.data.data.mail,
-                        "status" : res.data.data.type,
-                        "isCotisant" : res.data.data.is_cotisant
+                        "login" : res.data.login,
+                        "firstName" : res.data.prenom,
+                        "lastName" : res.data.nom,
+                        "email" : res.data.mail,
+                        "status" : res.data.type,
+                        "isCotisant" : res.data.is_cotisant
                     };
                     $scope.purchase.user = data;
                 }else {
                     $scope.error = "Login invalide";
                 }
+            }, function(error){
+                $scope.error = "Login invalide ou expiré";
             });
         }
 
