@@ -2766,6 +2766,112 @@ app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $ro
 
 });
 
+app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $rootScope, $location, Purchases, PurchasedElements, $uibModal, $window) {
+
+    if(!$rootScope.can('order-CAS-member')){
+        $location.path('error/404')
+    } else {
+
+        $scope.user = $rootScope.auth.member;
+        $scope.membreCAS = $rootScope.isExtern();
+        $scope.apiUrl = __ENV.apiUrl;
+
+        $scope.selectedTab = 'commandes';
+
+        $scope.filter = {}
+        $scope.filter.type = "3"
+
+        $scope.loading = true;
+
+        $scope.filter.statusFilter = function(){
+            return function(purchase){
+                switch ($scope.filter.type){
+                    case "0":
+                        return purchase.status == 0
+                    case "1":
+                        return purchase.status == 1
+                    case "2":
+                        return purchase.status == 2
+                    case "3":
+                        return purchase.status < 3
+                }
+            }
+
+                    }
+
+        $scope.filter.unpaidFilter = function(){
+            return function(purchase){
+                if (purchase.status == 3 && !purchase.paid) {
+                    return true;
+                } else {
+                    return false
+                }
+            }
+
+                    }
+
+        $scope.filter.enCours = function(){
+            return function(purchase){
+                if (purchase.status < 3) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
+        $scope.triStatus = 3;
+
+
+        switch ($location.path()){
+            case '/mypurchases':
+                Purchases.getMyPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases':
+                Purchases.get({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases/history':
+                Purchases.getHistoryPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+        }
+
+
+        if (!$scope.membreCAS) {
+            PurchasedElements.get({}, function(res){
+                $scope.elements = res.data;
+            }, function(error){
+                ErrorHandler.alert(error);
+            });
+        }
+
+
+
+
+        $scope.open = function(id) {
+            $window.location.href = "#/purchases/" + id + "/edit"
+        }
+    }
+
+});
+
 app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $scope, $http, $routeParams, $location, $uibModal, ErrorHandler, PurchasedElements, Purchases, Entities, UTCAuth, Mail) {
 
     if (!$rootScope.can('order-CAS-member')) {
@@ -2790,12 +2896,12 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
                 url : __ENV.apiUrl + '/users/ginger/' + res.data.login
             }).then(function(res){
                 var data = {
-                    "login" : res.data.data.login,
-                    "firstName" : res.data.data.prenom,
-                    "lastName" : res.data.data.nom,
-                    "email" : res.data.data.mail,
-                    "status" : res.data.data.type,
-                    "isCotisant" : res.data.data.is_cotisant
+                    "login" : res.data.login,
+                    "firstName" : res.data.prenom,
+                    "lastName" : res.data.nom,
+                    "email" : res.data.mail,
+                    "status" : res.data.type,
+                    "isCotisant" : res.data.is_cotisant
                 };
                 $scope.purchase.user = data;
 
@@ -3134,112 +3240,6 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         };
 
     }
-});
-
-app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $rootScope, $location, Purchases, PurchasedElements, $uibModal, $window) {
-
-    if(!$rootScope.can('order-CAS-member')){
-        $location.path('error/404')
-    } else {
-
-        $scope.user = $rootScope.auth.member;
-        $scope.membreCAS = $rootScope.isExtern();
-        $scope.apiUrl = __ENV.apiUrl;
-
-        $scope.selectedTab = 'commandes';
-
-        $scope.filter = {}
-        $scope.filter.type = "3"
-
-        $scope.loading = true;
-
-        $scope.filter.statusFilter = function(){
-            return function(purchase){
-                switch ($scope.filter.type){
-                    case "0":
-                        return purchase.status == 0
-                    case "1":
-                        return purchase.status == 1
-                    case "2":
-                        return purchase.status == 2
-                    case "3":
-                        return purchase.status < 3
-                }
-            }
-
-                    }
-
-        $scope.filter.unpaidFilter = function(){
-            return function(purchase){
-                if (purchase.status == 3 && !purchase.paid) {
-                    return true;
-                } else {
-                    return false
-                }
-            }
-
-                    }
-
-        $scope.filter.enCours = function(){
-            return function(purchase){
-                if (purchase.status < 3) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-        }
-
-        $scope.triStatus = 3;
-
-
-        switch ($location.path()){
-            case '/mypurchases':
-                Purchases.getMyPurchases({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
-            case '/purchases':
-                Purchases.get({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
-            case '/purchases/history':
-                Purchases.getHistoryPurchases({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
-        }
-
-
-        if (!$scope.membreCAS) {
-            PurchasedElements.get({}, function(res){
-                $scope.elements = res.data;
-            }, function(error){
-                ErrorHandler.alert(error);
-            });
-        }
-
-
-
-
-        $scope.open = function(id) {
-            $window.location.href = "#/purchases/" + id + "/edit"
-        }
-    }
-
 });
 
 app.controller('configureServiceCtrl', function($window, Engines, $scope, $http, $q, object, type, email, num_commande, $uibModalInstance, $filter, ScriptFactory, $rootScope, PurchasedElements, Mail) {
