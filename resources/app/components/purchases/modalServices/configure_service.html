@@ -256,6 +256,9 @@
                     <div class="text-center" ng-if="type == 'view' && element.status == 2 && can('edit-order')">
                         <button class="btn btn-yellow" type="button" ng-click="confirm(3)">Réaliser</button>
                     </div>
+                    <div class="text-center" ng-if="type == 'view' && element.status == 1 && $root.can('super-admin')">
+                        <button class="btn btn-yellow" type="button" ng-click="confirm(2)">Forcer la validation</button>
+                    </div>
                 </div>
             </div> 
             <br>
