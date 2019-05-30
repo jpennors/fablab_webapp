@@ -44,7 +44,7 @@ app.controller('editUserCtrl', function($scope, $uibModalInstance, scopeParent, 
       $scope.loading = true;
       $scope.suggestedUsers = [];
       Users.gingerLogin({'login': login}, function (data) {
-          data = data.data;
+          data = data;
           $scope.user = {
               firstName: data.prenom,
               lastName: data.nom,
