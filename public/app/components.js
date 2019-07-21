@@ -280,49 +280,6 @@ app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Se
 
 });
 
-app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
-
-  if(!$rootScope.can('super-admin'))
-    $location.path("/error/404");
-
-  else{
-    $scope.saving   = false;
-    $scope.error    = false;
-    $scope.success  = false;
-
-    Administratives.get({}, function(data){
-      $scope.admins = data.data;
-    }, function(error) {
-      ErrorHandler.alert(error);
-    });
-
-    $scope.update = function() {
-      $scope.saving   = true;
-      $scope.success  = false;
-      $scope.error    = false;
-
-      var done = 0;
-
-      for(var i=0; i<$scope.admins.length; i++) {
-        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
-          done++;
-          if(done == $scope.admins.length) {
-            $scope.saving   = false;
-            $scope.success  = true;
-          }
-        }, function(error) {
-          $scope.saving   = false;
-          $scope.success  = false;
-          $scope.errors    = error.data.meta;
-          return false;
-        });
-      }
-
-    };
-  }
-
-});
-
 app.controller('adminUsersCtrl', function($scope, $http, $log, $uibModal, ErrorHandler, Users, Roles, Entities, $rootScope, $location){
 
   if(!$rootScope.can('list-user'))
@@ -445,6 +402,49 @@ app.controller('adminUsersCtrl', function($scope, $http, $log, $uibModal, ErrorH
         })  
       };
   }
+});
+
+app.controller('adminSettingsCtrl', function($scope, $http, $q, ErrorHandler, Administratives, $rootScope, $location){
+
+  if(!$rootScope.can('super-admin'))
+    $location.path("/error/404");
+
+  else{
+    $scope.saving   = false;
+    $scope.error    = false;
+    $scope.success  = false;
+
+    Administratives.get({}, function(data){
+      $scope.admins = data.data;
+    }, function(error) {
+      ErrorHandler.alert(error);
+    });
+
+    $scope.update = function() {
+      $scope.saving   = true;
+      $scope.success  = false;
+      $scope.error    = false;
+
+      var done = 0;
+
+      for(var i=0; i<$scope.admins.length; i++) {
+        Administratives.update({'id' : $scope.admins[i].id}, $scope.admins[i], function(data){
+          done++;
+          if(done == $scope.admins.length) {
+            $scope.saving   = false;
+            $scope.success  = true;
+          }
+        }, function(error) {
+          $scope.saving   = false;
+          $scope.success  = false;
+          $scope.errors    = error.data.meta;
+          return false;
+        });
+      }
+
+    };
+  }
+
 });
 
 app.controller('mainCtrl', function($http, $scope){
@@ -2781,6 +2781,13 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         $scope.errors         = false;
         $scope.entities       = [];
 
+        $scope.email = {
+            content : '',
+            sent: false,
+            error: false,
+            loading : false
+        }
+
 
         Purchases.get({ id : $routeParams.id }, function(res) {
             $scope.purchase = res.data;
@@ -3025,6 +3032,39 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
                 }
 
                 $scope.loading = false;
+            });
+
+        }
+
+
+        $scope.send_email = function(){
+
+            $scope.email.sent = false;
+            $scope.email.error = false;
+            $scope.email.loading = true;
+
+            const subject = "Site de gestion du Fablab : commande n° " + $scope.purchase.number
+
+            dataMail = {
+                "subject" : subject,
+                "content" : $scope.email.content,
+                "receiver" : $scope.membreCAS ? "fablab@assos.utc.fr": $scope.purchase.user.email,
+            }
+
+            $http({
+                method : 'POST',
+				url : __ENV.apiUrl + "/send",
+				headers : {
+          			'Content-Type': 'application/json'
+        		},
+        		data : dataMail,
+                }).then(function successCallback(response) {
+                    $scope.email.sent = true;
+                    $scope.email.content = "";
+                    $scope.email.loading = false;
+                }, function errorCallback(response) {
+                    $scope.email.error = true;
+                    $scope.email.loading = false;
             });
 
         }

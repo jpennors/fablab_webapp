@@ -121,6 +121,40 @@
             </div>
           </div>
         </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4>Envoyer un mail</h4>
+                </div>
+                <br>
+                <div class="alert alert-success" ng-if="email.sent">
+                    Mail envoyé avec succès !
+                </div>
+                <div class="alert alert-danger" ng-if="email.error">
+                    Une erreur est survenue lors de l'envoi du mail ...
+                </div>
+                <div class="panel-body">
+                    <div ng-if="email.loading" class="text-center" style="margin-top: 50px">
+                        <i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i>
+                    </div>
+                    <form class="form-horizontal" ng-if="!email.loading">
+                      <textarea ng-model="email.content" type="text" class="form-control" rows="4"></textarea>
+                    </form>
+                  <div class="text-center">
+                    <p>
+                      <div>
+                        <button class="btn btn-adaptable-yellow"
+                                ng-click="send_email()">
+                          Envoyer
+                        </button>
+                      </div>
+                    </p>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 

@@ -17,6 +17,14 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
         $scope.errors         = false;
         $scope.entities       = [];
 
+        // Relatif à l'envoi de mail
+        $scope.email = {
+            content : '',
+            sent: false,
+            error: false,
+            loading : false
+        }
+
 
         /**
         *  Récupération de la commande
@@ -323,6 +331,40 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
                 }
 
                 $scope.loading = false;
+            });
+
+        }
+
+        // PARTIE : Email
+
+        $scope.send_email = function(){
+
+            $scope.email.sent = false;
+            $scope.email.error = false;
+            $scope.email.loading = true;
+
+            const subject = "Site de gestion du Fablab : commande n° " + $scope.purchase.number
+
+            dataMail = {
+                "subject" : subject,
+                "content" : $scope.email.content,
+                "receiver" : $scope.membreCAS ? "fablab@assos.utc.fr": $scope.purchase.user.email,
+            }
+
+            $http({
+                method : 'POST',
+				url : __ENV.apiUrl + "/send",
+				headers : {
+          			'Content-Type': 'application/json'
+        		},
+        		data : dataMail,
+                }).then(function successCallback(response) {
+                    $scope.email.sent = true;
+                    $scope.email.content = "";
+                    $scope.email.loading = false;
+                }, function errorCallback(response) {
+                    $scope.email.error = true;
+                    $scope.email.loading = false;
             });
 
         }
