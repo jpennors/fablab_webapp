@@ -3236,7 +3236,10 @@ app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $
 
 
         $scope.open = function(id) {
-            $window.location.href = "#/purchases/" + id + "/edit"
+            window.open(
+                window.__env.webappUrl + "#/purchases/" + id + "/edit",
+                '_blank' 
+            );
         }
     }
 
