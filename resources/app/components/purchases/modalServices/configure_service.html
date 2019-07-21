@@ -244,19 +244,23 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="text-center" ng-if="type == 'create'">
-                        <button class="btn btn-grey" type="button" ng-click="cancel()">Annuler</button>
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Fermer</button>
                         <button class="btn btn-yellow" type="button" ng-click="add()">Ajouter</button>
                     </div>
                     <div class="text-center" ng-if="type == 'edit' && element.status < 4">
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Fermer</button>
                         <button class="btn btn-yellow" type="button" ng-click="edit()">Mettre à jour</button>
                     </div>
                     <div class="text-center" ng-if="type == 'view' && element.status == 1" ng-hide="versions[0].login_edit != user.login">
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Fermer</button>
                         <button class="btn btn-yellow" type="button" ng-click="confirm(2)">Valider</button>
                     </div>
                     <div class="text-center" ng-if="type == 'view' && element.status == 2 && can('edit-order')">
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Fermer</button>
                         <button class="btn btn-yellow" type="button" ng-click="confirm(3)">Réaliser</button>
                     </div>
                     <div class="text-center" ng-if="type == 'view' && element.status == 1 && $root.can('super-admin')">
+                        <button class="btn btn-grey" type="button" ng-click="cancel()">Fermer</button>
                         <button class="btn btn-yellow" type="button" ng-click="confirm(2)">Forcer la validation</button>
                     </div>
                 </div>
