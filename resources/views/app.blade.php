@@ -19,6 +19,8 @@
     <!-- Custom CSS -->
     <link href="assets/css/main.css" rel="stylesheet">
 
+    <link rel="icon" type="image/png" href="assets/img/logo_ico.png"/>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
