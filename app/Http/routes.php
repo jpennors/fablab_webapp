@@ -30,7 +30,10 @@ Route::get('/', function () {
 */
 
 Route::group(['prefix' => 'api/v1'], function(){
-
+    Route::resource('/semesters', 'SemestersController', ['only' => [
+        'index', 'store', 'update'
+    ]]);
+    Route::get('/semesters/current/{id}', 'SemestersController@setCurrentSemester');
 
 
     /**
