@@ -168,57 +168,6 @@ app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorH
     }
 });
 
-app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $rootScope, $location){
-
-    if(!$rootScope.can('super-admin'))
-        $location.path("/error/404");
-
-      else{
-
-        $scope.semesters = [];
-      $scope.current_semester = {}
-      $scope.new_semester = {
-        'name': ''
-      }
-      $scope.semester_in_session = {
-        'activate': false,
-        'set' : false,
-      }
-      $scope.use_semester_in_session = false;
-
-      $scope.update = function() {
-        Semesters.get({}, function(data){
-          $scope.semesters = data.data;
-          $scope.current_semester = $scope.semesters.filter((s => s.current == true))[0]
-        }, function(error){
-          ErrorHandler.alert(error);
-        });
-      };
-
-        $scope.update();
-
-      $scope.setNewCurrentSemester = function(){
-      }
-
-      $scope.addNewSemester = function(){
-      }
-
-      $scope.setSemesterInSession = function(){
-        $scope.semester_in_session.set = true;
-      }
-
-      $scope.removeSemesterFromSession = function(){
-        $scope.semester_in_session.set= false;
-        $scope.semester_in_session.activate = false;
-      }
-
-      $scope.activateSemesterInSession = function(){
-        $scope.semester_in_session.activate = true;
-      }
-
-    }
-  });
-
 app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
 
   if(!$rootScope.can('list-price'))
@@ -267,6 +216,63 @@ app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandl
   }
 
 });
+
+app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $rootScope, $location){
+
+    if(!$rootScope.can('super-admin'))
+        $location.path("/error/404");
+
+      else{
+
+        $scope.semesters = [];
+      $scope.current_semester = {}
+      $scope.new_semester = {
+        'name': ''
+      }
+      $scope.semester_added = false;
+      $scope.semester_in_session = {
+        'activate': false,
+        'set' : false,
+      }
+      $scope.use_semester_in_session = false;
+
+      $scope.update = function() {
+        Semesters.get({}, function(data){
+          $scope.semesters = data.data;
+          $scope.current_semester = $scope.semesters.filter((s => s.current == true))[0]
+        }, function(error){
+          ErrorHandler.alert(error);
+        });
+      };
+
+        $scope.update();
+
+      $scope.setNewCurrentSemester = function(){
+      }
+
+      $scope.addNewSemester = function(){
+        Semesters.save({}, $scope.new_semester, function(){
+          $scope.update();
+          $scope.new_semester.name = "";
+          $scope.semester_added = true;
+        });
+      }
+
+      $scope.setSemesterInSession = function(){
+        $scope.semester_in_session.set = true;
+      }
+
+      $scope.removeSemesterFromSession = function(){
+        $scope.semester_in_session.set= false;
+        $scope.semester_in_session.activate = false;
+      }
+
+      $scope.activateSemesterInSession = function(){
+        $scope.semester_in_session.activate = true;
+      }
+
+    }
+  });
 
 app.controller('adminServicesCtrl', function($scope, $uibModal, ErrorHandler, Services, $location, $rootScope){
 
@@ -762,32 +768,6 @@ app.controller('enginesCtrl', function($scope, $http, ErrorHandler, Engines, $ui
     }
 });
 
-app.controller('errorCtrl', function($scope, $routeParams, $location) {
-
-  if ($routeParams.code && $routeParams.code == 401) { 
-
-    $scope.errorCode = 401;
-    $scope.errorDesc = "Vous n'êtes pas autorisé à accéder à cette webapp.";
-
-  }
-  else if ($routeParams.code && $routeParams.code == 404) {
-
-    $scope.errorCode = 404;
-    $scope.errorDesc = "Page demandée introuvable";
-
-  }
-  else if ($routeParams.code && $routeParams.code == 500) {
-
-    $scope.errorCode = 500;
-    $scope.errorDesc = "Erreur interne, veuillez contacter un administrateur.";
-
-  }
-  else {
-    $location.path("/");
-  }
-
-});
-
 app.controller('enginePartsCtrl', function($scope, $http, ErrorHandler, Engines, EngineParts, $uibModal, $location, $rootScope) {
 
 
@@ -840,6 +820,32 @@ app.controller('enginePartsCtrl', function($scope, $http, ErrorHandler, Engines,
                 }
             })
         }
+});
+
+app.controller('errorCtrl', function($scope, $routeParams, $location) {
+
+  if ($routeParams.code && $routeParams.code == 401) { 
+
+    $scope.errorCode = 401;
+    $scope.errorDesc = "Vous n'êtes pas autorisé à accéder à cette webapp.";
+
+  }
+  else if ($routeParams.code && $routeParams.code == 404) {
+
+    $scope.errorCode = 404;
+    $scope.errorDesc = "Page demandée introuvable";
+
+  }
+  else if ($routeParams.code && $routeParams.code == 500) {
+
+    $scope.errorCode = 500;
+    $scope.errorDesc = "Erreur interne, veuillez contacter un administrateur.";
+
+  }
+  else {
+    $location.path("/");
+  }
+
 });
 
 app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal, ErrorHandler, $location, $rootScope) {
@@ -1295,6 +1301,71 @@ app.controller('searchCtrl', function($scope, $routeParams, Expendables, Tools, 
     }
 });
 
+app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandler) {
+
+    init = function(){
+
+        $scope.loading = true
+
+        Tools.get({}, function(res){
+            $scope.tools = res.data;
+            $scope.loading = false
+        }, function(error){
+            ErrorHandler.alert(error);
+            $scope.loading = false
+        });
+    }
+    init()
+
+    $scope.delete = function(id) {
+        var aSupprimer = $scope.tools.filter((e)=>e.id==id)[0];
+        var index = $scope.tools.indexOf(aSupprimer);
+
+        Tools.remove({id:id}, function() {
+            $scope.tools.splice(index, 1);
+        })
+    }
+
+    $scope.alertFilter = function(e) {
+        return e.remainingQuantity <= e.minQuantity;
+    }
+
+    $scope.open = function(id, type) {
+        var selected;
+        if(id == null){
+            selected = {
+                minQuantity: 0,
+                remainingQuantity: 0
+            };
+        }else {
+            selected = $scope.tools.filter((e)=>e.id==id)[0];
+        }
+        var modalInstance = $uibModal.open({
+            backdrop: true,
+            keyboard: true,
+            size:'lg',
+            templateUrl: 'app/components/tools/modal/tools_edit.html',
+
+            resolve:{
+                object: function() {
+                    return angular.copy(selected);
+                },
+                type: function() {
+                    return type;
+                }
+            },
+            controller: 'toolsEditCtrl'
+        });
+
+        modalInstance.result.then(function(res) {
+            if(res.type == "delete"){
+                $scope.delete(res.id);
+            }
+            init()
+        })
+    }
+});
+
 app.controller('usersCtrl', function($scope, $http, $filter, ErrorHandler, Users) {
 
   Users.get({}, function(res){
@@ -1398,71 +1469,6 @@ app.controller('usersShowCtrl', function($scope, $http, $filter, $routeParams, E
     ErrorHandler.alert(error);
   });
 
-});
-
-app.controller('toolsCtrl', function($scope, $http, Tools, $uibModal, ErrorHandler) {
-
-    init = function(){
-
-        $scope.loading = true
-
-        Tools.get({}, function(res){
-            $scope.tools = res.data;
-            $scope.loading = false
-        }, function(error){
-            ErrorHandler.alert(error);
-            $scope.loading = false
-        });
-    }
-    init()
-
-    $scope.delete = function(id) {
-        var aSupprimer = $scope.tools.filter((e)=>e.id==id)[0];
-        var index = $scope.tools.indexOf(aSupprimer);
-
-        Tools.remove({id:id}, function() {
-            $scope.tools.splice(index, 1);
-        })
-    }
-
-    $scope.alertFilter = function(e) {
-        return e.remainingQuantity <= e.minQuantity;
-    }
-
-    $scope.open = function(id, type) {
-        var selected;
-        if(id == null){
-            selected = {
-                minQuantity: 0,
-                remainingQuantity: 0
-            };
-        }else {
-            selected = $scope.tools.filter((e)=>e.id==id)[0];
-        }
-        var modalInstance = $uibModal.open({
-            backdrop: true,
-            keyboard: true,
-            size:'lg',
-            templateUrl: 'app/components/tools/modal/tools_edit.html',
-
-            resolve:{
-                object: function() {
-                    return angular.copy(selected);
-                },
-                type: function() {
-                    return type;
-                }
-            },
-            controller: 'toolsEditCtrl'
-        });
-
-        modalInstance.result.then(function(res) {
-            if(res.type == "delete"){
-                $scope.delete(res.id);
-            }
-            init()
-        })
-    }
 });
 
 app.controller('editAddressCtrl', function($scope, $uibModalInstance, address, type, Addresses, ErrorHandler) {
@@ -2538,285 +2544,6 @@ app.controller('productsEditCtrl', function($scope, object, type, $uibModalInsta
     }
 });
 
-app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $rootScope, ErrorHandler, Mail, Users, Services, Products, Purchases, PurchasedElements, Entities, $uibModal) {
-
-    if(!$rootScope.can('order-CAS-member')){
-        $location.path("/error/404")
-    } else {
-
-
-        $scope.purchase = {
-            login : $rootScope.auth.user,
-            products : [],
-            services : [],
-            association : ""
-        };
-        $scope.entities = [];
-        $scope.purchase.price = "0.00 €"
-
-        $scope.membreCAS = $rootScope.isExtern();
-        if($scope.membreCAS) {
-            $scope.purchase.user = $rootScope.auth.member;
-        }
-
-
-        if(!$scope.membreCAS) {
-            Products.get({},function(res){
-                $scope.products = res.data;
-            }, function(error) {
-                ErrorHandler.alert(error);
-                $scope.error = ErrorHandler.parse(error);
-            }); 
-        }
-
-
-        Services.get({},function(res){
-            $scope.services = res.data;
-        }, function(error) {
-            ErrorHandler.alert(error);
-            $scope.error = ErrorHandler.parse(error);
-        });
-
-
-        Entities.get({}, function(res) {
-            $scope.entities = res.data;
-            if ($scope.membreCAS){
-                $scope.purchase.entity = res.data.filter((r)=>r.name == "Fablab UTC")[0];
-            }
-        }, function (error) {
-            ErrorHandler.alert(error);
-        });
-
-
-
-        $scope.setUserFromLogin = function() {
-            $http({
-                method : 'GET',
-                url : __ENV.apiUrl + '/users/ginger/' + $scope.purchase.login
-            }).then(function(res){
-                if(res.data != null) {
-                    $scope.error = null;
-                    var data = {
-                        "login" : res.data.login,
-                        "firstName" : res.data.prenom,
-                        "lastName" : res.data.nom,
-                        "email" : res.data.mail,
-                        "status" : res.data.type,
-                        "isCotisant" : res.data.is_cotisant
-                    };
-                    $scope.purchase.user = data;
-                }else {
-                    $scope.error = "Login invalide";
-                }
-            }, function(error){
-                $scope.error = "Login invalide ou expiré";
-            });
-        }
-
-
-        $scope.autocomplete = function () {
-            if ($scope.purchase.login.length >= 3) {
-                Users.gingerSearch({'query': $scope.purchase.login}, function (data) {
-                    $scope.suggestedUsers = data.data;
-                });
-            } else {
-                $scope.suggestedUsers = [];
-            }
-        }
-
-        $scope.selectUser = function(login){
-            $scope.purchase.login = login;
-            this.setUserFromLogin();
-        }
-
-
-
-        $scope.selectEntity = function(entity){
-            $scope.purchase.entity = entity;
-        };
-
-
-
-        $scope.addProduct = function(product) {
-            product.remainingQuantity -= 1;
-            var index = $scope.purchase.products.map((p) => { return p.id; }).indexOf(product.id);
-            if(index == -1) {
-                $scope.purchase.products.push({
-                    id: product.id,
-                    purchasable: product,
-                    finalPrice: product.price,
-                    suggestedPrice: product.price,
-                    purchasable_type : "product",
-                    purchasedQuantity: 1
-                })
-            }else {
-                var a = $scope.purchase.products[index]
-                a.purchasedQuantity += 1;
-                a.finalPrice += a.purchasable.price;
-            }
-            $scope.priceCalculation()
-        }
-
-        $scope.openModalServices = function(service, type) {
-            var modalInstance = $uibModal.open({
-                backdrop: true,
-                keyboard: true,
-                size:'lg',
-                templateUrl: 'app/components/purchases/modalServices/configure_service.html',
-
-                resolve:{
-                    object: function() {
-                        return angular.copy(service);
-                    },
-                    type: function() {
-                        return type
-                    },
-                    email: function(){
-                        return $scope.purchase.user.email
-                    },
-                    num_commande: function(){
-                        return null
-                    }
-                },
-                controller: 'configureServiceCtrl'
-            });
-
-            modalInstance.result.then(function(res) {
-                $scope.purchase.services.push(res.service);
-                $scope.priceCalculation()
-            })
-        }
-
-
-
-        $scope.addProductByIndex = function(index) {
-            var aAugmenter = $scope.purchase.products[index];
-            if(aAugmenter.purchasable.remainingQuantity > 0){
-                aAugmenter.purchasedQuantity += 1;
-                aAugmenter.finalPrice += aAugmenter.purchasable.price;
-                aAugmenter.purchasable.remainingQuantity -= 1;
-            }
-            $scope.priceCalculation()
-        }
-
-        $scope.removeProductByIndex = function(index) {
-            var aReduire = $scope.purchase.products[index];
-            aReduire.purchasedQuantity -= 1;
-            aReduire.finalPrice -= aReduire.purchasable.price;
-            aReduire.purchasable.remainingQuantity += 1;
-            if(aReduire.purchasedQuantity == 0){
-                $scope.purchase.products.splice(index, 1);
-            }
-            $scope.priceCalculation()
-        } 
-
-        $scope.priceCalculation = function(){
-            var price = 0
-            for (var i = $scope.purchase.services.length - 1; i >= 0; i--) {
-                if (!$scope.purchase.services[i].finalPrice){
-                    price = "A déterminer"
-                    break;
-                } else {
-                    price += $scope.purchase.services[i].finalPrice
-                }
-            }
-            if (price != "A déterminer") {
-                for (var i = $scope.purchase.products.length - 1; i >= 0; i--) {
-                    price += $scope.purchase.products[i].finalPrice
-                }
-                $scope.purchase.price = price.toFixed(2) + " €"
-            } else {
-                $scope.purchase.price = price
-            }
-        }
-
-
-        $scope.save = function() {
-            $scope.saving = true;
-
-            var purchaseToSave = new Purchases();
-
-            purchaseToSave.association = $scope.purchase.association;
-            purchaseToSave.login = $scope.purchase.user.login;
-            if($scope.purchase.entity) 
-                purchaseToSave.entity_id = $scope.purchase.entity.id;
-
-            purchaseToSave.$save(function(resP){
-                var idPurchase = resP.data.id;
-                var num_commande = resP.data.number
-                var pe;
-
-                $scope.saveProductsElements(idPurchase).then(function(res){
-
-                    $scope.saveServicesElements(idPurchase).then(function(res){
-
-                                                Mail.demande_envoyée($scope.purchase.user.email, num_commande)
-
-                        if($scope.membreCAS){
-                            $location.path('/purchases/success');
-                        } else {
-                            $location.path('/purchases/' + idPurchase + '/edit');
-                        }
-                    }, function(error){
-                        $scope.saving = false
-                    })
-
-                })
-            });
-        }
-
-        $scope.devis = function() {
-            $scope.loadingQuote = true;
-
-            $scope.purchase.devis().then(function(res){
-                $scope.loadingQuote = false;
-            }, function(error){
-                $scope.loadingQuote = false;
-                $scope.error = ErrorHandler.parse(error);
-            });
-
-        }
-
-        $scope.saveProductsElements = function(idPurchase){
-
-            var promises = $scope.purchase.products.map(function(product) {
-                product.purchase_id = idPurchase
-                return PurchasedElements.storeElement(product)
-            });
-
-            return $q.all(promises); 
-        }
-
-
-        $scope.saveServicesElements = function(idPurchase){
-
-            var promises = $scope.purchase.services.map(function(service) {
-                service.purchase_id = idPurchase
-                return PurchasedElements.storeElement(service, function(res){
-                    var idPE = res.data.newId;
-
-                    if(service.files != undefined) {
-                        Array.prototype.forEach.call(service.files, function(file) {
-                            if(file instanceof File){
-                                var url = __ENV.apiUrl + "/purchased/"+idPE+"/file";
-                                var fd = new FormData();
-                                fd.append('file', file);
-                                $http.post(url, fd, {
-                                    transformRequest: angular.identity,
-                                    headers: {'Content-Type': undefined}
-                                });
-                            }
-                        });
-                    }
-                })
-            });
-
-            return $q.all(promises); 
-        }
-    }
-
-});
-
 app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $scope, $http, $routeParams, $location, $uibModal, ErrorHandler, PurchasedElements, Purchases, Entities, UTCAuth, Mail) {
 
     if (!$rootScope.can('order-CAS-member')) {
@@ -3227,110 +2954,280 @@ app.controller('purchasesEditCtrl', function($rootScope, $location, $window, $sc
     }
 });
 
-app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $rootScope, $location, Purchases, PurchasedElements, $uibModal, $window) {
+app.controller('purchasesCreateCtrl', function($scope, $q, $location, $http, $rootScope, ErrorHandler, Mail, Users, Services, Products, Purchases, PurchasedElements, Entities, $uibModal) {
 
     if(!$rootScope.can('order-CAS-member')){
-        $location.path('error/404')
+        $location.path("/error/404")
     } else {
 
-        $scope.user = $rootScope.auth.member;
+
+        $scope.purchase = {
+            login : $rootScope.auth.user,
+            products : [],
+            services : [],
+            association : ""
+        };
+        $scope.entities = [];
+        $scope.purchase.price = "0.00 €"
+
         $scope.membreCAS = $rootScope.isExtern();
-        $scope.apiUrl = __ENV.apiUrl;
-
-        $scope.selectedTab = 'commandes';
-
-        $scope.filter = {}
-        $scope.filter.type = "3"
-
-        $scope.loading = true;
-
-        $scope.filter.statusFilter = function(){
-            return function(purchase){
-                switch ($scope.filter.type){
-                    case "0":
-                        return purchase.status == 0
-                    case "1":
-                        return purchase.status == 1
-                    case "2":
-                        return purchase.status == 2
-                    case "3":
-                        return purchase.status < 3
-                }
-            }
-
-                    }
-
-        $scope.filter.unpaidFilter = function(){
-            return function(purchase){
-                if (purchase.status == 3 && !purchase.paid) {
-                    return true;
-                } else {
-                    return false
-                }
-            }
-
-                    }
-
-        $scope.filter.enCours = function(){
-            return function(purchase){
-                if (purchase.status < 3) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-        }
-
-        $scope.triStatus = 3;
-
-
-        switch ($location.path()){
-            case '/mypurchases':
-                Purchases.getMyPurchases({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
-            case '/purchases':
-                Purchases.get({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
-            case '/purchases/history':
-                Purchases.getHistoryPurchases({}, function(res){
-                    $scope.purchases = res.data
-                    $scope.loading = false;
-                }, function(error){
-                    ErrorHandler.alert(error);
-                    $scope.loading = false;
-                });
-                break;
+        if($scope.membreCAS) {
+            $scope.purchase.user = $rootScope.auth.member;
         }
 
 
-        if (!$scope.membreCAS) {
-            PurchasedElements.get({}, function(res){
-                $scope.elements = res.data;
-            }, function(error){
+        if(!$scope.membreCAS) {
+            Products.get({},function(res){
+                $scope.products = res.data;
+            }, function(error) {
                 ErrorHandler.alert(error);
+                $scope.error = ErrorHandler.parse(error);
+            }); 
+        }
+
+
+        Services.get({},function(res){
+            $scope.services = res.data;
+        }, function(error) {
+            ErrorHandler.alert(error);
+            $scope.error = ErrorHandler.parse(error);
+        });
+
+
+        Entities.get({}, function(res) {
+            $scope.entities = res.data;
+            if ($scope.membreCAS){
+                $scope.purchase.entity = res.data.filter((r)=>r.name == "Fablab UTC")[0];
+            }
+        }, function (error) {
+            ErrorHandler.alert(error);
+        });
+
+
+
+        $scope.setUserFromLogin = function() {
+            $http({
+                method : 'GET',
+                url : __ENV.apiUrl + '/users/ginger/' + $scope.purchase.login
+            }).then(function(res){
+                if(res.data != null) {
+                    $scope.error = null;
+                    var data = {
+                        "login" : res.data.login,
+                        "firstName" : res.data.prenom,
+                        "lastName" : res.data.nom,
+                        "email" : res.data.mail,
+                        "status" : res.data.type,
+                        "isCotisant" : res.data.is_cotisant
+                    };
+                    $scope.purchase.user = data;
+                }else {
+                    $scope.error = "Login invalide";
+                }
+            }, function(error){
+                $scope.error = "Login invalide ou expiré";
             });
         }
 
 
+        $scope.autocomplete = function () {
+            if ($scope.purchase.login.length >= 3) {
+                Users.gingerSearch({'query': $scope.purchase.login}, function (data) {
+                    $scope.suggestedUsers = data.data;
+                });
+            } else {
+                $scope.suggestedUsers = [];
+            }
+        }
+
+        $scope.selectUser = function(login){
+            $scope.purchase.login = login;
+            this.setUserFromLogin();
+        }
 
 
-        $scope.open = function(id) {
-            window.open(
-                window.__env.webappUrl + "#/purchases/" + id + "/edit",
-                '_blank' 
-            );
+
+        $scope.selectEntity = function(entity){
+            $scope.purchase.entity = entity;
+        };
+
+
+
+        $scope.addProduct = function(product) {
+            product.remainingQuantity -= 1;
+            var index = $scope.purchase.products.map((p) => { return p.id; }).indexOf(product.id);
+            if(index == -1) {
+                $scope.purchase.products.push({
+                    id: product.id,
+                    purchasable: product,
+                    finalPrice: product.price,
+                    suggestedPrice: product.price,
+                    purchasable_type : "product",
+                    purchasedQuantity: 1
+                })
+            }else {
+                var a = $scope.purchase.products[index]
+                a.purchasedQuantity += 1;
+                a.finalPrice += a.purchasable.price;
+            }
+            $scope.priceCalculation()
+        }
+
+        $scope.openModalServices = function(service, type) {
+            var modalInstance = $uibModal.open({
+                backdrop: true,
+                keyboard: true,
+                size:'lg',
+                templateUrl: 'app/components/purchases/modalServices/configure_service.html',
+
+                resolve:{
+                    object: function() {
+                        return angular.copy(service);
+                    },
+                    type: function() {
+                        return type
+                    },
+                    email: function(){
+                        return $scope.purchase.user.email
+                    },
+                    num_commande: function(){
+                        return null
+                    }
+                },
+                controller: 'configureServiceCtrl'
+            });
+
+            modalInstance.result.then(function(res) {
+                $scope.purchase.services.push(res.service);
+                $scope.priceCalculation()
+            })
+        }
+
+
+
+        $scope.addProductByIndex = function(index) {
+            var aAugmenter = $scope.purchase.products[index];
+            if(aAugmenter.purchasable.remainingQuantity > 0){
+                aAugmenter.purchasedQuantity += 1;
+                aAugmenter.finalPrice += aAugmenter.purchasable.price;
+                aAugmenter.purchasable.remainingQuantity -= 1;
+            }
+            $scope.priceCalculation()
+        }
+
+        $scope.removeProductByIndex = function(index) {
+            var aReduire = $scope.purchase.products[index];
+            aReduire.purchasedQuantity -= 1;
+            aReduire.finalPrice -= aReduire.purchasable.price;
+            aReduire.purchasable.remainingQuantity += 1;
+            if(aReduire.purchasedQuantity == 0){
+                $scope.purchase.products.splice(index, 1);
+            }
+            $scope.priceCalculation()
+        } 
+
+        $scope.priceCalculation = function(){
+            var price = 0
+            for (var i = $scope.purchase.services.length - 1; i >= 0; i--) {
+                if (!$scope.purchase.services[i].finalPrice){
+                    price = "A déterminer"
+                    break;
+                } else {
+                    price += $scope.purchase.services[i].finalPrice
+                }
+            }
+            if (price != "A déterminer") {
+                for (var i = $scope.purchase.products.length - 1; i >= 0; i--) {
+                    price += $scope.purchase.products[i].finalPrice
+                }
+                $scope.purchase.price = price.toFixed(2) + " €"
+            } else {
+                $scope.purchase.price = price
+            }
+        }
+
+
+        $scope.save = function() {
+            $scope.saving = true;
+
+            var purchaseToSave = new Purchases();
+
+            purchaseToSave.association = $scope.purchase.association;
+            purchaseToSave.login = $scope.purchase.user.login;
+            if($scope.purchase.entity) 
+                purchaseToSave.entity_id = $scope.purchase.entity.id;
+
+            purchaseToSave.$save(function(resP){
+                var idPurchase = resP.data.id;
+                var num_commande = resP.data.number
+                var pe;
+
+                $scope.saveProductsElements(idPurchase).then(function(res){
+
+                    $scope.saveServicesElements(idPurchase).then(function(res){
+
+                                                Mail.demande_envoyée($scope.purchase.user.email, num_commande)
+
+                        if($scope.membreCAS){
+                            $location.path('/purchases/success');
+                        } else {
+                            $location.path('/purchases/' + idPurchase + '/edit');
+                        }
+                    }, function(error){
+                        $scope.saving = false
+                    })
+
+                })
+            });
+        }
+
+        $scope.devis = function() {
+            $scope.loadingQuote = true;
+
+            $scope.purchase.devis().then(function(res){
+                $scope.loadingQuote = false;
+            }, function(error){
+                $scope.loadingQuote = false;
+                $scope.error = ErrorHandler.parse(error);
+            });
+
+        }
+
+        $scope.saveProductsElements = function(idPurchase){
+
+            var promises = $scope.purchase.products.map(function(product) {
+                product.purchase_id = idPurchase
+                return PurchasedElements.storeElement(product)
+            });
+
+            return $q.all(promises); 
+        }
+
+
+        $scope.saveServicesElements = function(idPurchase){
+
+            var promises = $scope.purchase.services.map(function(service) {
+                service.purchase_id = idPurchase
+                return PurchasedElements.storeElement(service, function(res){
+                    var idPE = res.data.newId;
+
+                    if(service.files != undefined) {
+                        Array.prototype.forEach.call(service.files, function(file) {
+                            if(file instanceof File){
+                                var url = __ENV.apiUrl + "/purchased/"+idPE+"/file";
+                                var fd = new FormData();
+                                fd.append('file', file);
+                                $http.post(url, fd, {
+                                    transformRequest: angular.identity,
+                                    headers: {'Content-Type': undefined}
+                                });
+                            }
+                        });
+                    }
+                })
+            });
+
+            return $q.all(promises); 
         }
     }
 
@@ -3665,6 +3562,115 @@ app.controller('configureServiceCtrl', function($window, Engines, $scope, $http,
 
 
             };
+
+});
+
+app.controller('purchasesCtrl', function($scope, $http, $filter, ErrorHandler, $rootScope, $location, Purchases, PurchasedElements, $uibModal, $window) {
+
+    if(!$rootScope.can('order-CAS-member')){
+        $location.path('error/404')
+    } else {
+
+        $scope.user = $rootScope.auth.member;
+        $scope.membreCAS = $rootScope.isExtern();
+        $scope.apiUrl = __ENV.apiUrl;
+
+        $scope.selectedTab = 'commandes';
+
+        $scope.filter = {}
+        $scope.filter.type = "3"
+
+        $scope.loading = true;
+
+        $scope.filter.statusFilter = function(){
+            return function(purchase){
+                switch ($scope.filter.type){
+                    case "0":
+                        return purchase.status == 0
+                    case "1":
+                        return purchase.status == 1
+                    case "2":
+                        return purchase.status == 2
+                    case "3":
+                        return purchase.status < 3
+                }
+            }
+
+                    }
+
+        $scope.filter.unpaidFilter = function(){
+            return function(purchase){
+                if (purchase.status == 3 && !purchase.paid) {
+                    return true;
+                } else {
+                    return false
+                }
+            }
+
+                    }
+
+        $scope.filter.enCours = function(){
+            return function(purchase){
+                if (purchase.status < 3) {
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+
+        $scope.triStatus = 3;
+
+
+        switch ($location.path()){
+            case '/mypurchases':
+                Purchases.getMyPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases':
+                Purchases.get({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+            case '/purchases/history':
+                Purchases.getHistoryPurchases({}, function(res){
+                    $scope.purchases = res.data
+                    $scope.loading = false;
+                }, function(error){
+                    ErrorHandler.alert(error);
+                    $scope.loading = false;
+                });
+                break;
+        }
+
+
+        if (!$scope.membreCAS) {
+            PurchasedElements.get({}, function(res){
+                $scope.elements = res.data;
+            }, function(error){
+                ErrorHandler.alert(error);
+            });
+        }
+
+
+
+
+        $scope.open = function(id) {
+            window.open(
+                window.__env.webappUrl + "#/purchases/" + id + "/edit",
+                '_blank' 
+            );
+        }
+    }
 
 });
 

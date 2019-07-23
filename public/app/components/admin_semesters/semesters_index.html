@@ -52,11 +52,11 @@
                                     <button class="btn btn-yellow" type="button" ng-click="setNewCurrentSemester()">Modifier</button>
                             </div>
                         </div>
-                        <br><br>
+                        <br><hr><br>
                         <div class="row">
                             <div class="col-md-8">
                                 <label class="col-sm-6 control-label print_item-localisation">Ajouter un nouveau semestre</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" ng-if="!semester_added">
                                     <input 
                                         class="form-control" 
                                         ng-model="new_semester.name"
@@ -64,27 +64,52 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                    <button class="btn btn-yellow" type="button" ng-click="addNewSemester()">Ajouter</button>
+                            <div class="col-md-4" ng-if="!semester_added">
+                                <button class="btn btn-yellow" type="button" ng-click="addNewSemester()">Ajouter</button>
+                            </div>
+                            <div class="col-md-4" ng-if="semester_added">
+                                <span class="alert alert-success">Semestre ajouté !</span>
                             </div>
                         </div>
-                        <br><br>
+                        <br><hr><br>
                         <div class="row">
                             <div class="col-md-8">
                                 <label class="col-sm-6 control-label print_item-localisation">Semestre en session personnelle</label>
-                                <div class="col-sm-6">
+                                <div class="col-sm-6" ng-if="semester_in_session.activate">
                                     <select 
                                         class="form-control" 
                                         ng-options="semester.name for semester in semesters track by semester.id" 
                                         ng-model="current_semester"
+                                        ng-disabled="semester_in_session.set"
                                     >
                                     </select>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                    <button class="btn btn-yellow" type="button" ng-click="activateSemesterInSession()">Activer</button>
-                                    <button class="btn btn-yellow" type="button" ng-click="setNewCurrentSemester()">Ajouter</button>
-                                    <button class="btn btn-yellow" type="button" ng-click="removeSemesterFromSession()">Supprimer</button>
+                                    <button 
+                                        class="btn btn-yellow" 
+                                        type="button" 
+                                        ng-click="activateSemesterInSession()"
+                                        ng-if="!semester_in_session.activate"
+                                    >
+                                        Activer
+                                    </button>
+                                    <button 
+                                        class="btn btn-yellow" 
+                                        type="button" 
+                                        ng-click="setSemesterInSession()"
+                                        ng-if="semester_in_session.activate && !semester_in_session.set"
+                                    >
+                                        Ajouter
+                                    </button>
+                                    <button 
+                                        class="btn btn-yellow" 
+                                        type="button" 
+                                        ng-click="removeSemesterFromSession()"
+                                        ng-if="semester_in_session.activate && semester_in_session.set"
+                                    >
+                                        Supprimer
+                                    </button>
                             </div>
                         </div>
                     </div>

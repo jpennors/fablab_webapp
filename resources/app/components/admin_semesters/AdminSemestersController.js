@@ -14,6 +14,7 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
       $scope.new_semester = {
         'name': ''
       }
+      $scope.semester_added = false;
       $scope.semester_in_session = {
         'activate': false,
         'set' : false,
@@ -42,7 +43,11 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
 
       // Création d'un nouveau semestre
       $scope.addNewSemester = function(){
-        // TO DO
+        Semesters.save({}, $scope.new_semester, function(){
+          $scope.update();
+          $scope.new_semester.name = "";
+          $scope.semester_added = true;
+        });
       }
 
       // Ajout d'un semestre provisoire utilisé dans la session
