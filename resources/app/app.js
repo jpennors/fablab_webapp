@@ -173,6 +173,9 @@ app.run(function($rootScope, UTCAuth) {
      .when("/admin/entities", {
          templateUrl : "app/components/admin_entities/entities_index.html"
      })
+     .when("/admin/semesters", {
+        templateUrl : "app/components/admin_semesters/semesters_index.html"
+    })
      .when("/help", {
          templateUrl : "app/components/help_page/help_index.html"
      })

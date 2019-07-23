@@ -1,0 +1,67 @@
+/*
+ *  Gestion des Semestres
+ */
+app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $rootScope, $location){
+
+    //On vérifie que l'utilisateur a l'autorisation d'accéder à la page
+    if(!$rootScope.can('super-admin'))
+        $location.path("/error/404");
+  
+    else{
+  
+      $scope.semesters = [];
+      $scope.current_semester = {}
+      $scope.new_semester = {
+        'name': ''
+      }
+      $scope.semester_in_session = {
+        'activate': false,
+        'set' : false,
+      }
+      $scope.use_semester_in_session = false;
+  
+      /*
+       *  Mise à jour des Semestres
+       */
+      $scope.update = function() {
+        // Chargement des Semestres
+        Semesters.get({}, function(data){
+          $scope.semesters = data.data;
+          $scope.current_semester = $scope.semesters.filter((s => s.current == true))[0]
+        }, function(error){
+          ErrorHandler.alert(error);
+        });
+      };
+  
+      $scope.update();
+
+      // Redéfinition du semestre courant à utiliser dans l'application
+      $scope.setNewCurrentSemester = function(){
+        // TO DO
+      }
+
+      // Création d'un nouveau semestre
+      $scope.addNewSemester = function(){
+        // TO DO
+      }
+
+      // Ajout d'un semestre provisoire utilisé dans la session
+      // Il sera envoyé à UTCAuth et récupéré au moment de l'envoi de chaque requête
+      $scope.setSemesterInSession = function(){
+        $scope.semester_in_session.set = true;
+        // TO DO in UTC AUth
+      }
+
+      $scope.removeSemesterFromSession = function(){
+        $scope.semester_in_session.set= false;
+        $scope.semester_in_session.activate = false;
+        // TO DO Remove from UTCAuth
+      }
+
+      $scope.activateSemesterInSession = function(){
+        $scope.semester_in_session.activate = true;
+      }
+
+    }
+  });
+  
