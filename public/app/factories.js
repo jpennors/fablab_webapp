@@ -1463,6 +1463,12 @@ app.factory('Scripts', function($resource){
    });
 });
 
+app.factory('Semesters', function($resource){
+    return $resource(__ENV.apiUrl + "/semesters/:id", {}, {
+         'update': { method:'PUT' },
+     });
+  });
+
 app.factory('Services', function($resource){
   return $resource(__ENV.apiUrl + "/services/:id", {}, {
        'update': { method:'PUT' },
