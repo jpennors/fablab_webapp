@@ -1464,6 +1464,7 @@ app.factory('Scripts', function($resource){
 });
 
 app.factory('Semesters', function($resource){
+
     return $resource(__ENV.apiUrl + "/semesters/:id", {}, {
          'update': { method:'PUT' },
 
@@ -1694,6 +1695,33 @@ app.factory('UTCAuth', function($http, $window, $location, $cookies, $q, Users, 
   } else {
       factory.saveCookie();
   }
+
+
+  factory.semester_in_session = null;
+
+  factory.setNewSemesterInSession = function(id){
+    that.semester_in_session = id;
+    $cookies.put('semester', id);
+  }
+
+  factory.isSemesterNull = function(){
+    return that.semester_in_session === null;
+  }
+
+  factory.getSemesterInSession = function(){
+    return that.semester_in_session;
+  }
+
+  factory.removeSemesterInSession = function(){
+    that.semester_in_session = null;
+    $cookies.remove('semester');
+  }
+
+  factory.loadSemesterInSession = function(){
+    that.semester_in_session = $cookies.get('semester');
+  }
+
+  loadSemesterInSession();
 
   return factory;
 });

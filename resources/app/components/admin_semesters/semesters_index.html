@@ -86,7 +86,7 @@
                                     <select 
                                         class="form-control" 
                                         ng-options="semester.name for semester in semesters track by semester.id" 
-                                        ng-model="current_semester"
+                                        ng-model="semester_in_session.semester"
                                         ng-disabled="semester_in_session.set"
                                     >
                                     </select>

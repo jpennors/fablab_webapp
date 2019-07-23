@@ -106,6 +106,55 @@ app.controller('adminEntitiesCtrl', function($scope, $http, ErrorHandler, $uibMo
   }
 });
 
+app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
+
+  if(!$rootScope.can('list-price'))
+      $location.path("/error/404");
+
+  else{
+
+    $scope.scripts = [];
+
+    $scope.update = function(){
+      Scripts.get({}, function(data){
+        $scope.scripts = data.data;
+      }, function(error) {
+        ErrorHandler.alert(error);
+      });
+    }
+
+    $scope.update();
+
+    $scope.open = function(script, type) {
+      var modalInstance = $uibModal.open({
+          backdrop: true,
+          keyboard: true,
+          size:'lg',
+          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
+
+          resolve: {
+              script: function() {
+                return script;
+              },
+              type: function(){
+                return type
+              }
+          },
+          controller: 'editScriptCtrl'
+      });
+      modalInstance.result.then(function() {
+        $scope.update();
+      })
+
+    };
+
+    $scope.goEdit = function(script) {
+      $location.path("/admin/scripts/" + script.id + "/edit");
+    }
+  }
+
+});
+
 
 app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorHandler, Roles, Permissions, $rootScope, $location){
 
@@ -168,56 +217,7 @@ app.controller('adminRolesCtrl', function($scope, $http, $log, $uibModal, ErrorH
     }
 });
 
-app.controller('adminScriptsCtrl', function($scope, $http, $location, ErrorHandler, Scripts, $location, $rootScope, $uibModal){
-
-  if(!$rootScope.can('list-price'))
-      $location.path("/error/404");
-
-  else{
-
-    $scope.scripts = [];
-
-    $scope.update = function(){
-      Scripts.get({}, function(data){
-        $scope.scripts = data.data;
-      }, function(error) {
-        ErrorHandler.alert(error);
-      });
-    }
-
-    $scope.update();
-
-    $scope.open = function(script, type) {
-      var modalInstance = $uibModal.open({
-          backdrop: true,
-          keyboard: true,
-          size:'lg',
-          templateUrl: 'app/components/admin_scripts/modal/edit_script.html',
-
-          resolve: {
-              script: function() {
-                return script;
-              },
-              type: function(){
-                return type
-              }
-          },
-          controller: 'editScriptCtrl'
-      });
-      modalInstance.result.then(function() {
-        $scope.update();
-      })
-
-    };
-
-    $scope.goEdit = function(script) {
-      $location.path("/admin/scripts/" + script.id + "/edit");
-    }
-  }
-
-});
-
-app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $rootScope, $location){
+app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, UTCAuth, $rootScope, $location){
 
     if(!$rootScope.can('super-admin'))
         $location.path("/error/404");
@@ -234,6 +234,7 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
       $scope.semester_in_session = {
         'activate': false,
         'set' : false,
+        'semester': {}
       }
       $scope.use_semester_in_session = false;
 
@@ -263,10 +264,12 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
       }
 
       $scope.setSemesterInSession = function(){
+        UTCAuth.setNewSemesterInSession($scope.semester_in_session.semester.id);
         $scope.semester_in_session.set = true;
       }
 
       $scope.removeSemesterFromSession = function(){
+        UTCAuth.removeSemesterFromSession();
         $scope.semester_in_session.set= false;
         $scope.semester_in_session.activate = false;
       }
@@ -852,6 +855,14 @@ app.controller('errorCtrl', function($scope, $routeParams, $location) {
 
 });
 
+app.controller('helpCtrl', function($scope, $location, $rootScope) {
+
+    if ($rootScope.isExtern()) {
+        $location.path("/error/404")
+    }
+
+});
+
 app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal, ErrorHandler, $location, $rootScope) {
 
     if(!$rootScope.can('list-expendable'))
@@ -917,14 +928,6 @@ app.controller('expendablesCtrl', function($scope, $http, Expendables, $uibModal
 
         init();
     }
-});
-
-app.controller('helpCtrl', function($scope, $location, $rootScope) {
-
-    if ($rootScope.isExtern()) {
-        $location.path("/error/404")
-    }
-
 });
 
 app.controller('loginCtrl', function($scope, $location, $rootScope, $routeParams, Users) {
@@ -1563,126 +1566,6 @@ app.controller('editEntityCtrl', function($scope, $uibModalInstance, entity, typ
         });
     };
 })
-app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, Roles, ErrorHandler, Permissions, UTCAuth) {
-
-    $scope.errors  = false;
-    $scope.loading = true;
-    $scope.saving  = false;
-    $scope.type = type
-    $scope.role = role;
-
-
-        var mapPermissions = function(role) {
-        var permissions = [];
-        role.permissions.forEach(function (permission) {
-            if (permission.selected === true) {
-                permissions.push(permission.id);
-            }
-        });
-
-        return permissions;
-    };
-
-    var hasPermission = function(role, permission) {
-        var res = false;
-        role.permissions.forEach(function (userPerm) {
-            if (userPerm.slug == permission) {
-                res = true
-            }
-        });
-        return res;
-    };
-
-    var getPermissions = function() {
-        Permissions.get({}, function (permissions) {
-            permissions.data.forEach(function (permission) {
-                if ($scope.type == 'create'){
-                    $scope.role = {}
-                }
-                permissions.data.forEach(function (permission) {
-                    if ($scope.type == 'edit'){
-                        permission.selected = hasPermission($scope.role, permission.slug);
-                        permission.changed  = false;
-                    }
-                    permission.toggleSelected = function() {
-                        permission.selected = !permission.selected;
-                        permission.changed  = !permission.changed;
-                    };
-                });
-
-
-                            });
-            $scope.role.permissions = permissions.data;
-            $scope.loading = false
-        }, function(error) {
-            ErrorHandler.alert(error);
-        });
-    }
-
-    if ($scope.type == "edit"){
-        Roles.get({'id' : role.id}, function(data) {
-            $scope.role = data.data;
-            getPermissions()
-        }, function(error) {
-            ErrorHandler.alert(error);
-        });
-    } else if ($scope.type == "create"){
-        getPermissions()
-    }
-
-    $scope.save = function() {
-        $scope.errors   = false;
-        $scope.saving   = true;
-
-        var role = Object.assign({}, $scope.role);
-        role.permissions = mapPermissions($scope.role);
-
-        if ($scope.type == "create"){
-            Roles.save({}, role, function (data) {
-                $uibModalInstance.close();
-                $scope.saving = false;
-            }, function (error) {
-                $scope.errors = ErrorHandler.parse(error);
-                $scope.saving = false;
-            });
-        } else if ($scope.type == "edit") {
-            Roles.update({id : $scope.role.id}, role, function (data) {
-                UTCAuth.refreshPermissions().then(function () {
-                    $uibModalInstance.close();
-                    $scope.saving = false;
-                });
-            }, function (error) {
-                $scope.errors = ErrorHandler.parse(error);
-                $scope.saving = false;
-            });
-        }  
-    };
-
-    $scope.cancel = function() {
-        $uibModalInstance.dismiss('cancel');
-    };
-
-    $scope.deleteModal = function() {
-
-
-        if ($scope.role.name == "Membre CAS") {
-            var error = {}          
-            error.message = "Erreur 403 : Impossible de supprimer le rôle Membre CAS"
-            ErrorHandler.alert(error)
-
-        } else {
-
-            Roles.delete({id: $scope.role.id}, function(data) {
-                $uibModalInstance.close();
-            }, function (error) {
-                ErrorHandler.alert(error);
-            });
-
-        }
-
-    };
-
-})
 
 app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandler, Scripts, Esprima, $rootScope, type, script){
 
@@ -1832,6 +1715,127 @@ app.controller('editScriptCtrl', function($scope, $uibModalInstance, ErrorHandle
         });
     };
 });
+
+app.controller("editRoleCtrl", function($scope, $uibModalInstance, role, type, Roles, ErrorHandler, Permissions, UTCAuth) {
+
+    $scope.errors  = false;
+    $scope.loading = true;
+    $scope.saving  = false;
+    $scope.type = type
+    $scope.role = role;
+
+
+        var mapPermissions = function(role) {
+        var permissions = [];
+        role.permissions.forEach(function (permission) {
+            if (permission.selected === true) {
+                permissions.push(permission.id);
+            }
+        });
+
+        return permissions;
+    };
+
+    var hasPermission = function(role, permission) {
+        var res = false;
+        role.permissions.forEach(function (userPerm) {
+            if (userPerm.slug == permission) {
+                res = true
+            }
+        });
+        return res;
+    };
+
+    var getPermissions = function() {
+        Permissions.get({}, function (permissions) {
+            permissions.data.forEach(function (permission) {
+                if ($scope.type == 'create'){
+                    $scope.role = {}
+                }
+                permissions.data.forEach(function (permission) {
+                    if ($scope.type == 'edit'){
+                        permission.selected = hasPermission($scope.role, permission.slug);
+                        permission.changed  = false;
+                    }
+                    permission.toggleSelected = function() {
+                        permission.selected = !permission.selected;
+                        permission.changed  = !permission.changed;
+                    };
+                });
+
+
+                            });
+            $scope.role.permissions = permissions.data;
+            $scope.loading = false
+        }, function(error) {
+            ErrorHandler.alert(error);
+        });
+    }
+
+    if ($scope.type == "edit"){
+        Roles.get({'id' : role.id}, function(data) {
+            $scope.role = data.data;
+            getPermissions()
+        }, function(error) {
+            ErrorHandler.alert(error);
+        });
+    } else if ($scope.type == "create"){
+        getPermissions()
+    }
+
+    $scope.save = function() {
+        $scope.errors   = false;
+        $scope.saving   = true;
+
+        var role = Object.assign({}, $scope.role);
+        role.permissions = mapPermissions($scope.role);
+
+        if ($scope.type == "create"){
+            Roles.save({}, role, function (data) {
+                $uibModalInstance.close();
+                $scope.saving = false;
+            }, function (error) {
+                $scope.errors = ErrorHandler.parse(error);
+                $scope.saving = false;
+            });
+        } else if ($scope.type == "edit") {
+            Roles.update({id : $scope.role.id}, role, function (data) {
+                UTCAuth.refreshPermissions().then(function () {
+                    $uibModalInstance.close();
+                    $scope.saving = false;
+                });
+            }, function (error) {
+                $scope.errors = ErrorHandler.parse(error);
+                $scope.saving = false;
+            });
+        }  
+    };
+
+    $scope.cancel = function() {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+    $scope.deleteModal = function() {
+
+
+        if ($scope.role.name == "Membre CAS") {
+            var error = {}          
+            error.message = "Erreur 403 : Impossible de supprimer le rôle Membre CAS"
+            ErrorHandler.alert(error)
+
+        } else {
+
+            Roles.delete({id: $scope.role.id}, function(data) {
+                $uibModalInstance.close();
+            }, function (error) {
+                ErrorHandler.alert(error);
+            });
+
+        }
+
+    };
+
+})
 
 app.controller('editServiceCtrl', function($scope, $uibModalInstance, service, type, Scripts, Services, Engines, ErrorHandler) {
 

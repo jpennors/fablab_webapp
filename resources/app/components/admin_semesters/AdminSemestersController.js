@@ -1,7 +1,7 @@
 /*
  *  Gestion des Semestres
  */
-app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $rootScope, $location){
+app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, UTCAuth, $rootScope, $location){
 
     //On vérifie que l'utilisateur a l'autorisation d'accéder à la page
     if(!$rootScope.can('super-admin'))
@@ -19,6 +19,7 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
       $scope.semester_in_session = {
         'activate': false,
         'set' : false,
+        'semester': {}
       }
       $scope.use_semester_in_session = false;
   
@@ -56,16 +57,16 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
       // Ajout d'un semestre provisoire utilisé dans la session
       // Il sera envoyé à UTCAuth et récupéré au moment de l'envoi de chaque requête
       $scope.setSemesterInSession = function(){
+        UTCAuth.setNewSemesterInSession($scope.semester_in_session.semester.id);
         $scope.semester_in_session.set = true;
-        // TO DO in UTC AUth
       }
 
       // Suppression du semestre utilisé en session
       // Retour à l'utilisation par défaut
       $scope.removeSemesterFromSession = function(){
+        UTCAuth.removeSemesterFromSession();
         $scope.semester_in_session.set= false;
         $scope.semester_in_session.activate = false;
-        // TO DO Remove from UTCAuth
       }
 
       // Active dans le fichier HTML la possibilité de choisir 

@@ -239,5 +239,34 @@ app.factory('UTCAuth', function($http, $window, $location, $cookies, $q, Users, 
       factory.saveCookie();
   }
 
+
+  // Ajout dans la factory de la gestion du semester pouvant être utilisé pour
+  // faire des requêtes sur des semestres autres que celui courant
+  factory.semester_in_session = null;
+
+  factory.setNewSemesterInSession = function(id){
+    that.semester_in_session = id;
+    $cookies.put('semester', id);
+  }
+
+  factory.isSemesterNull = function(){
+    return that.semester_in_session === null;
+  }
+
+  factory.getSemesterInSession = function(){
+    return that.semester_in_session;
+  }
+
+  factory.removeSemesterInSession = function(){
+    that.semester_in_session = null;
+    $cookies.remove('semester');
+  }
+
+  factory.loadSemesterInSession = function(){
+    that.semester_in_session = $cookies.get('semester');
+  }
+
+  loadSemesterInSession();
+
   return factory;
 });
