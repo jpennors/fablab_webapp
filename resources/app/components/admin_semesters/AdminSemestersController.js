@@ -11,6 +11,7 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
   
       $scope.semesters = [];
       $scope.current_semester = {}
+      $scope.current_semester_changed = false;
       $scope.new_semester = {
         'name': ''
       }
@@ -38,7 +39,9 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
 
       // Redéfinition du semestre courant à utiliser dans l'application
       $scope.setNewCurrentSemester = function(){
-        // TO DO
+        Semesters.setCurrentSemester({id: $scope.current_semester.id}, function(){
+          $scope.current_semester_changed = true;
+        })
       }
 
       // Création d'un nouveau semestre
@@ -57,12 +60,16 @@ app.controller('adminSemestersCtrl', function($scope, ErrorHandler, Semesters, $
         // TO DO in UTC AUth
       }
 
+      // Suppression du semestre utilisé en session
+      // Retour à l'utilisation par défaut
       $scope.removeSemesterFromSession = function(){
         $scope.semester_in_session.set= false;
         $scope.semester_in_session.activate = false;
         // TO DO Remove from UTCAuth
       }
 
+      // Active dans le fichier HTML la possibilité de choisir 
+      // un semestre à utiliser pour la session
       $scope.activateSemesterInSession = function(){
         $scope.semester_in_session.activate = true;
       }

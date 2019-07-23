@@ -49,14 +49,19 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                    <button class="btn btn-yellow" type="button" ng-click="setNewCurrentSemester()">Modifier</button>
+                                <button class="btn btn-yellow" type="button" ng-click="setNewCurrentSemester()">Modifier</button>
+                            </div>
+                        </div>
+                        <div class="row" ng-if="current_semester_changed" style="margin-top:10px">
+                            <div class="col-md-10 col-md-offset-1">
+                                <span class="alert alert-success">Semestre courant changé !</span>
                             </div>
                         </div>
                         <br><hr><br>
                         <div class="row">
                             <div class="col-md-8">
                                 <label class="col-sm-6 control-label print_item-localisation">Ajouter un nouveau semestre</label>
-                                <div class="col-sm-6" ng-if="!semester_added">
+                                <div class="col-sm-6">
                                     <input 
                                         class="form-control" 
                                         ng-model="new_semester.name"
@@ -64,10 +69,12 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4" ng-if="!semester_added">
+                            <div class="col-md-4">
                                 <button class="btn btn-yellow" type="button" ng-click="addNewSemester()">Ajouter</button>
                             </div>
-                            <div class="col-md-4" ng-if="semester_added">
+                        </div>
+                        <div class="row" ng-if="semester_added" style="margin-top:10px">
+                            <div class="col-md-10 col-md-offset-1">
                                 <span class="alert alert-success">Semestre ajouté !</span>
                             </div>
                         </div>
