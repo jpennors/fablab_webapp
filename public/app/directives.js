@@ -39,6 +39,17 @@ app.directive('inWrapper', function($rootScope) {
     };
 });
 
+app.directive('outWrapper', function($rootScope) {
+  return {
+    restrict: 'EA',
+    transclude: true,
+    scope: {},
+    controller: function($rootScope, $scope, $element, $attrs) {
+    },
+    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
+  };
+});
+
 app.directive('confirm', function(ConfirmFactory) {
     return {
         restrict: 'A',
@@ -79,17 +90,6 @@ app.directive('modalConfirm', function() {
 
     },
     templateUrl: 'app/directives/modalConfirm/modal_show.html'
-  };
-});
-
-app.directive('outWrapper', function($rootScope) {
-  return {
-    restrict: 'EA',
-    transclude: true,
-    scope: {},
-    controller: function($rootScope, $scope, $element, $attrs) {
-    },
-    templateUrl: 'app/directives/outWrapper/out_wrapper.html',
   };
 });
 
@@ -215,17 +215,6 @@ app.directive('showEnginePartAlerts', function() {
     };
 });
 
-app.directive('showErrors', function() {
-    return {
-        restrict: 'EA',
-        transclude: true,
-        scope: {
-            errors : '=errorsData'
-        },
-        templateUrl: 'app/directives/showErrors/errors_show.html',
-    };
-});
-
 app.directive('showProducts', function() {
   return {
     restrict: 'EA',
@@ -239,6 +228,17 @@ app.directive('showProducts', function() {
     },
     templateUrl: 'app/directives/showProducts/products_show.html',
   };
+});
+
+app.directive('showErrors', function() {
+    return {
+        restrict: 'EA',
+        transclude: true,
+        scope: {
+            errors : '=errorsData'
+        },
+        templateUrl: 'app/directives/showErrors/errors_show.html',
+    };
 });
 
 app.controller('alertsPurchaseCtrl', function($http, $scope, $window, ErrorHandler, PurchasedElements, $rootScope){
@@ -572,19 +572,6 @@ app.directive('showUsers', function(Roles, ErrorHandler) {
   };
 });
 
-app.directive('csvExpendables', function($rootScope) {
-  return {
-    restrict: 'E',
-    transclude: true,
-    scope: {
-        items : '=',
-        headers : '='
-    },
-    templateUrl: 'app/directives/csv/csvExpendables/csv_expendables.html',
-  };
-});
-
-
 app.directive('csvEngines', function($rootScope) {
   return {
     restrict: 'E',
@@ -594,6 +581,19 @@ app.directive('csvEngines', function($rootScope) {
         headers : '='
     },
     templateUrl: 'app/directives/csv/csvEngines/csv_engines.html',
+  };
+});
+
+
+app.directive('csvExpendables', function($rootScope) {
+  return {
+    restrict: 'E',
+    transclude: true,
+    scope: {
+        items : '=',
+        headers : '='
+    },
+    templateUrl: 'app/directives/csv/csvExpendables/csv_expendables.html',
   };
 });
 

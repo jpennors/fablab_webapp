@@ -1705,7 +1705,7 @@ app.factory('UTCAuth', function($http, $window, $location, $cookies, $q, Users, 
   }
 
   factory.isSemesterNull = function(){
-    return that.semester_in_session === null;
+    return that.semester_in_session == null;
   }
 
   factory.getSemesterInSession = function(){
@@ -1721,7 +1721,7 @@ app.factory('UTCAuth', function($http, $window, $location, $cookies, $q, Users, 
     that.semester_in_session = $cookies.get('semester');
   }
 
-  loadSemesterInSession();
+  factory.loadSemesterInSession();
 
   return factory;
 });

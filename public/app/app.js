@@ -180,6 +180,15 @@ app.config(['$httpProvider', function($httpProvider) {
 
         }
 
+        if(!$rootScope.auth.isSemesterNull()){
+          const semester_id = $rootScope.auth.getSemesterInSession()
+          if (config.url.indexOf('?') !== -1) {
+            config.url += '&semester=' + semester_id;
+          } else {
+            config.url += '?semester=' + semester_id;
+          }
+        }
+
         return config;
       },
       'responseError': function (response) {  

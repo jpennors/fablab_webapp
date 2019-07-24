@@ -235,6 +235,16 @@ app.config(['$httpProvider', function($httpProvider) {
 
         }
 
+        // Ajout du semestre utilisé en session si besoin
+        if(!$rootScope.auth.isSemesterNull()){
+          const semester_id = $rootScope.auth.getSemesterInSession()
+          if (config.url.indexOf('?') !== -1) {
+            config.url += '&semester=' + semester_id;
+          } else {
+            config.url += '?semester=' + semester_id;
+          }
+        }
+
         return config;
       },
       'responseError': function (response) {  // Pour les réponses, en cas d'erreur (status!=200)
