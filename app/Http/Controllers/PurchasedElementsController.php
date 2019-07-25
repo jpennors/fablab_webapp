@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Response;
 use Gate;
 use Auth;
+use App\Semester;
 
 
 class PurchasedElementsController extends Controller
@@ -28,7 +29,13 @@ class PurchasedElementsController extends Controller
 
         $this->authorize('view-all-entity-purchase');
 
-        $elements = PurchasedElement::where("purchasable_type", "<>", "App\Product")->get();
+        $semester_id = Semester::getSemesterToUse();
+
+        $elements = PurchasedElement::where([
+            ["purchasable_type", "<>", "App\Product"],
+            ["semester_id", $semester_id]
+        ])->get();
+
         $maxVersions = [];
 
         // Mise en forme des purchased Elements, tri par id et par version
@@ -103,6 +110,7 @@ class PurchasedElementsController extends Controller
             $pe->finalPrice = $request->input('finalPrice');
             $pe->login_edit = $p->login;
             $pe->version = 1;
+            $pe->semester_id = $p->semester_id;
 
             try {
                 $pe->save();

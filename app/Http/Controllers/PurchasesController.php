@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use Gate;
 use Illuminate\Http\Request;
-use App\Http\Requests;
+// use App\Http\Requests;
 use App\Purchase;
 use App\PurchasedElement;
 use App\Service;
@@ -13,6 +13,8 @@ use App\Product;
 use App\User;
 use App\Member;
 use App\Administrative;
+use App\Semester;
+use Request as Request_input;
 use App\Address;
 use Validator;
 use PDF;
@@ -26,14 +28,19 @@ class PurchasesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $semester_id = Semester::getSemesterToUse();
+
         // Afficher toutes les commandes seulement si l'utilisateur est abilité,
         // sinon afficher les commandes de l'entité à laquelle il est rattaché
         if (Gate::check('view-all-entity-purchase')) {
-            $data = Purchase::all();
+            $data = Purchase::where('semester_id', $semester_id)->get();
         } else {
-            $data = Purchase::where('login', Auth::user()->login)->get();
+            $data = Purchase::where([
+                ['login', Auth::user()->login],
+                ['semester_id', $semester_id],
+            ])->get();
         }
 
         return response()->success($data);
@@ -44,8 +51,12 @@ class PurchasesController extends Controller
     */
     public function getPersonalIndex()
     {
+        $semester_id = Semester::getSemesterToUse();
 
-        $data = Purchase::withTrashed()->where('login', Auth::user()->login)->get();
+        $data = Purchase::withTrashed()->where([
+            ['login', Auth::user()->login],
+            ['semester_id', $semester_id]
+        ])->get();
 
         return response()->success($data);
 
@@ -57,8 +68,10 @@ class PurchasesController extends Controller
     */
     public function getHistoryIndex()
     {
+        $semester_id = Semester::getSemesterToUse();
+        
         if (Gate::check('view-all-entity-purchase')) {   
-            $data = Purchase::getHistoryIndex();
+            $data = Purchase::getHistoryIndex($semester_id);
             return response()->success($data);
         }   
     }
@@ -77,6 +90,8 @@ class PurchasesController extends Controller
 
         if (Gate::check('order-for-someone') || Gate::check('order-CAS-member')){
 
+            $semester_id = Semester::getSemesterToUse();
+
             // Validation des inputs
             $validator = Validator::make($request->all(), Purchase::$rules);
 
@@ -89,8 +104,7 @@ class PurchasesController extends Controller
             $purchase->association = $request['association'];
             $purchase->entity_id = $request['entity_id'];
             $purchase->login = $request['login'];
-
-
+            $purchase->semester_id = $semester_id;
 
             try {
                 $purchase->save();
@@ -363,5 +377,4 @@ class PurchasesController extends Controller
         return response()->success();
 
     }
-
 }

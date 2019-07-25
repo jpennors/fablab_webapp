@@ -28,7 +28,7 @@ class Purchase extends Model
    *
    * @var array
    */
-  protected $fillable = ['externalPaid', 'entity_id', 'association', 'login', 'address_id'];
+  protected $fillable = ['externalPaid', 'entity_id', 'association', 'login', 'address_id', 'semester_id'];
 
   /**
   *   Retourne l'entité
@@ -82,10 +82,14 @@ class Purchase extends Model
   /**
   *   Sort tous les commandes de l'historique
   */
-  static public function getHistoryIndex()
+  static public function getHistoryIndex($semester_id)
   {
       
-      $data = Purchase::onlyTrashed()->with(['elements', 'transactions', 'address', 'entity'])->get();
+      $data = Purchase::onlyTrashed()
+        ->where([
+          ['semester_id', $semester_id]
+        ])
+        ->with(['elements', 'transactions', 'address', 'entity'])->get();
       // dd($data);
 
       return $data;  
