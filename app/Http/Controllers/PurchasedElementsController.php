@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Exceptions\PayutcException;
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Purchase;
 use App\PurchasedElement;
 use App\Service;
 use App\Product;
-use App\User;
-use App\Member;
 use App\PurchaseFile;
-use Validator;
 use File;
 use Illuminate\Support\Facades\Storage;
 use Response;

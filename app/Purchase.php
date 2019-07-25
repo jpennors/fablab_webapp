@@ -2,10 +2,8 @@
 
 namespace App;
 
-use Carbon\Carbon;
-use DateTimeInterface;
+
 use Illuminate\Database\Eloquent\Model;
-use App\User;
 use App\PurchasedElement;
 use Ginger;
 use Illuminate\Database\Eloquent\SoftDeletes;

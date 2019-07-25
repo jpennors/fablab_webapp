@@ -5,8 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Nanigans\SingleTableInheritance\SingleTableInheritanceTrait;
 use App\Chemical;
-use App\Room;
-use App\Wardrobe;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use File;
 use Storage;

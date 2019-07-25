@@ -30,10 +30,7 @@ Route::get('/', function () {
 */
 
 Route::group(['prefix' => 'api/v1'], function(){
-    Route::resource('/semesters', 'SemestersController', ['only' => [
-        'index', 'store', 'update'
-    ]]);
-    Route::get('/semesters/current/{id}', 'SemestersController@setCurrentSemester');
+    
 
 
     /**
@@ -42,8 +39,6 @@ Route::group(['prefix' => 'api/v1'], function(){
     */
 
     Route::get('/login', 'LoginController@login')->name('login');
-
-    Route::get('/cas', 'CasController@get');
 
 
 
@@ -308,6 +303,18 @@ Route::group(['prefix' => 'api/v1'], function(){
         */
 
         Route::resource('/rooms', 'RoomsController');
+
+
+
+        /**
+        *      SEMESTERS
+        * 
+        */
+
+        Route::resource('/semesters', 'SemestersController', ['only' => [
+            'index', 'store', 'update'
+        ]]);
+        Route::get('/semesters/current/{id}', 'SemestersController@setCurrentSemester');
 
 
 

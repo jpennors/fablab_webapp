@@ -3,7 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Categorie;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use File;
 use Storage;

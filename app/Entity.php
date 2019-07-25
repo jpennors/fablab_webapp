@@ -2,10 +2,8 @@
 
 namespace App;
 
-use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Storage;
 
 
 class Entity extends Model

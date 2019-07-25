@@ -3,11 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Product;
-use App\PurchasedElement;
 use App\Service;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use App\Categorie;
 use Payutc;
 use Validator;
 use Log;

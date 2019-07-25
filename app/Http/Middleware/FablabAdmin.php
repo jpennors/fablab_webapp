@@ -5,8 +5,6 @@ namespace App\Http\Middleware;
 use Auth;
 use Closure;
 use Gate;
-use JWTFactory;
-use JWTAuth;
 
 /**
  * This class try to check permission for requiring ressource based

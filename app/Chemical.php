@@ -2,9 +2,6 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
-use Nanigans\SingleTableInheritance\SingleTableInheritanceTrait;
-
 
 class Chemical extends Tool
 {

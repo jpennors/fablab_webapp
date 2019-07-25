@@ -12,7 +12,6 @@ namespace App\Http\Controllers;
 use App\Role;
 use Illuminate\Http\Request;
 use Log;
-use Schema;
 use Validator;
 
 class RolesController extends Controller

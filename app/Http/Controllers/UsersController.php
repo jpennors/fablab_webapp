@@ -6,7 +6,6 @@ use App\Member;
 use App\Role;
 use Curl;
 use DB;
-use function foo\func;
 use Ginger;
 use Illuminate\Http\Request;
 use Validator;

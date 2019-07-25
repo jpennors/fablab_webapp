@@ -2,7 +2,6 @@
 
 namespace App;
 use App\Libraries\PayutcLinkable;
-use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends PayutcLinkable
 {

@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
-use \Illuminate\Database\Eloquent\ModelNotFoundException;
 use Validator;
 use App\Tool;
 use App\Chemical;
@@ -12,7 +10,6 @@ use App\Wardrobe;
 use App\Room;
 use Excel;
 use App\Exports\ToolsExport;
-use Carbon\Carbon;
 
 
 class ToolsController extends Controller

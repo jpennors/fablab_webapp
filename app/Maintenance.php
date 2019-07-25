@@ -3,9 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use App\EnginePart;
-use App\Member;
+
 
 class Maintenance extends Model
 {

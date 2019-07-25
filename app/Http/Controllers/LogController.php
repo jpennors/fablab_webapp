@@ -1,9 +1,6 @@
 <?php
 namespace App\Http\Controllers;
 
-
-// use Encore\Admin\Facades\Admin;
-// use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 // use LogViewer;

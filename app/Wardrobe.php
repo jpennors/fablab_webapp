@@ -3,8 +3,6 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Room;
-use App\Tool;
 
 class Wardrobe extends Model
 {

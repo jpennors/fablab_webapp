@@ -7,7 +7,6 @@ use Payutc;
 use Auth;
 use Closure;
 use App\User;
-use JWTFactory;
 use JWTAuth;
 
 class UTCAuth
