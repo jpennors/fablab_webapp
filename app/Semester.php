@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Request;
+use Gate;
 
 class Semester extends Model
 {
@@ -48,9 +50,11 @@ class Semester extends Model
      * 
      */
 
-     public static function getSemesterToUse($request_parameter_semester)
+     public static function getSemesterToUse()
      {  
-        if ($request_parameter_semester) {
+        $request_parameter_semester = Request::input('semester');
+        $is_user_authorized = Gate::check('view-all-entity-purchase');
+        if ($request_parameter_semester && $is_user_authorized) {
             $semester_id = Semester::findOrFail($request_parameter_semester); 
             return $semester_id;   
         }
