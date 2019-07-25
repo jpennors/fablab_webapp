@@ -20,7 +20,7 @@ class RoomsController extends Controller
      */
     public function index()
     {
-        $data = Room::all();
+        $data = Room::with('wardrobes')->get();
         return response()->success($data);
     }
 
@@ -72,7 +72,7 @@ class RoomsController extends Controller
      */
     public function show($id)
     {
-        $room = Room::findOrFail($id);
+        $room = Room::findOrFail($id)->with('wardrobes')->get();
         return response()->success($room);
     }
 

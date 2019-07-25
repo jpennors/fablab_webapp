@@ -188,19 +188,19 @@ class Room extends Model
     *       Attribut ajouté
     *
     */
-    protected $appends = ['wardrobes'];
+    // protected $appends = ['wardrobes'];
 
 
     /**
     *       Renvoie les étagères associées
     *
     */
-    public function getWardrobesAttribute(){
+    // public function getWardrobesAttribute(){
 
-        $wardrobes = $this->wardrobes()->get();
-        return $wardrobes;
+    //     $wardrobes = $this->wardrobes()->get();
+    //     return $wardrobes;
 
-    }
+    // }
 
 }
 
