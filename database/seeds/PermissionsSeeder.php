@@ -150,6 +150,12 @@ class PermissionsSeeder extends Seeder
             'delete-engine-part' => 'Supprimer une machine',
             'edit-engine-part-permission' => "Modifier les permissions d'une machine",
 
+            //Semester
+            'edit-semesters'   => 'Modifier un semester',
+            'list-semesters'   => 'Lister les semestres',
+            'add-semesters'    => 'Ajouter un semestre',
+            'delete-semesters' => 'Supprimer un semestre',
+
 
         ];
 
