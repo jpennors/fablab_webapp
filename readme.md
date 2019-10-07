@@ -2,7 +2,7 @@
 
 
 Code source du projet de __site de gestion du Fablab__.
-Pour toute question, ne pas hésiter à nous écrire: <josselin.pennors@etu.utc.fr> et <ayman.lamdasni@etu.utc.fr>.
+Pour toute question, ne pas hésiter à m'écrire: <josselin.pennors@etu.utc.fr>.
 
 ## Historique
 
