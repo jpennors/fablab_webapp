@@ -1,9 +1,36 @@
-# Sébastien
+# Site de gestion du Fablab UTC
 
-Code source du projet `Sébastien`, le __site de gestion du Fablab__.
+
+Code source du projet de __site de gestion du Fablab__.
 Pour toute question, ne pas hésiter à nous écrire: <josselin.pennors@etu.utc.fr> et <ayman.lamdasni@etu.utc.fr>.
 
-### Installation
+## Historique
+
+La conception et le développement du site de gestion du Fablab UTC ont démarré en 2017 dans le cadre d'UV Projet à l'UTC (PR). Après de multiples semestres le site est en production depuis janvier 2019.
+
+## Fonctionnalités
+
+### Interface principale
+
+L'interface principale permet la gestion des tâches à réaliser avec deadline et avancement, une gestion des stocks en alerte ainsi que des services commandés triés par date de réalisation.
+
+![Dashboard!](/documentation/images/dashboard.png "Dashboard")
+
+### Gestion du matériel
+
+Quatre onglets permettent de gérer les produits, les consommables, les outils ainsi que les machines présentes au sein du Fablab.
+
+![Engine management!](/documentation/images/engine.png "Engine management")
+
+### Gestion des utilisateurs
+
+L'authentification passe par le CAS UTC. Il existe différents rôles donnant accès à un certain nombre de droits, le plus petit étant celui de membre CAS UTC.
+
+![User management!](/documentation/images/user.png "User management")
+
+![Permission management!](/documentation/images/permission.png "Permission management")
+
+## Installation
 
 Si vous n'avez jamais utilisé Node ou que vous partez d'une installation vierge, installez tout d'abord NodeJs et Node Package Manager (npm). Les commandes sont adaptées au cas d'un environnement Linux mais les étapes restent les mêmes quel que soit votre système d'exploitation.
 
@@ -15,7 +42,7 @@ Si vous n'avez jamais utilisé Node ou que vous partez d'une installation vierge
 
 NodeJS installera les dépendances npm en même temps.
 
-## Installez composer, MySQL, PHP, Apache, gulp
+### Installez composer, MySQL, PHP, Apache, gulp
 
 ```sudo apt install composer```
 ```sudo apt install mysql-server```
@@ -55,7 +82,7 @@ Vous pouvez vous rendre avec votre navigateur dans `public`.
 
 
 
-## Pré-requis
+### Pré-requis
 
 ### Génération de PDF
 
@@ -84,7 +111,7 @@ chmod -R o+w bootstrap
 
 Le déploiement en preview et production se fait via [deployer](https://deployer.org/).
 
-### Déployer en preview/production
+## Déployer en preview/production
 Executer à la racine :
 ```
 vendor/bin/dep deploy preview
@@ -95,7 +122,7 @@ vendor/bin/dep deploy production
 ```
 Le ficher de configuration `server.yml` permet de configurer les paramètres du serveur.
 
-#### Help
+### Help
 Pour débugger le script deployer :
 ```
 vendor/bin/dep deploy production -vvv
