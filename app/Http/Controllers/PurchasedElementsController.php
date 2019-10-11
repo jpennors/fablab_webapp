@@ -133,6 +133,7 @@ class PurchasedElementsController extends Controller
             // Création de l'instance reliée à la Purchase
             $pe = new PurchasedElement();
             $pe->purchase()->associate($p);
+            $pe->semester_id = $p->semester_id;
 
 
             // Ajout du lien entre le Service/Product associé
