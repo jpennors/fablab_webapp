@@ -55,8 +55,8 @@ class Semester extends Model
         $request_parameter_semester = Request::input('semester');
         $is_user_authorized = Gate::check('view-all-entity-purchase');
         if ($request_parameter_semester && $is_user_authorized) {
-            $semester_id = Semester::findOrFail($request_parameter_semester); 
-            return $semester_id;   
+            $semester = Semester::findOrFail($request_parameter_semester); 
+            return $semester->id;   
         }
 
         $semester = Semester::getCurrentSemester();
