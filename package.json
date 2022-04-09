@@ -16,6 +16,6 @@
   },
   "dependencies": {
     "gulp-sass": "^4.0.2",
-    "moment": "^2.23.0"
+    "moment": "^2.29.2"
   }
 }
